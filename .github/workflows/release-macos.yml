@@ -1,4 +1,4 @@
-name: Release macOS
+name: Release macOS (unsigned)
 
 on:
   workflow_dispatch:
@@ -18,6 +18,10 @@ jobs:
             arch: x64
 
     runs-on: macos-latest
+
+    env:
+      # Ad-hoc signing only — no Apple Developer certificate / notarization
+      APPLE_SIGNING_IDENTITY: "-"
 
     steps:
       - name: Checkout
@@ -42,41 +46,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Import Apple Developer Certificate
-        if: ${{ vars.APPLE_SIGNING_ENABLED == 'true' }}
-        env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
-          security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
-          security set-keychain-settings -t 3600 -u build.keychain
-          security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
-          CERT_ID=$(security find-identity -v -p codesigning build.keychain | grep "Developer ID Application" | head -1 | awk -F'"' '{print $2}')
-          echo "APPLE_SIGNING_IDENTITY=$CERT_ID" >> "$GITHUB_ENV"
-
-      - name: Build and publish
+      - name: Build and publish (unsigned)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
         with:
           tagName: app-v__VERSION__
           releaseName: MD Editor v__VERSION__
           releaseBody: |
-            macOS release builds (arm64 + x64).
+            Unsigned macOS release (arm64 + x64).
 
-            - `.app` and `.dmg` for each architecture are attached below.
-            - Unsigned builds use ad-hoc signing; Gatekeeper may require right-click → Open.
+            - Built with ad-hoc signing (`signingIdentity: "-"`)
+            - Not notarized — first launch: right-click → Open, or allow in Privacy & Security
           releaseDraft: true
           prerelease: false
           args: --target ${{ matrix.target }}
