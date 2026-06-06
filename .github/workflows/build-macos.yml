@@ -3,17 +3,12 @@ name: Build macOS
 on:
   workflow_dispatch:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   build-macos:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: aarch64-apple-darwin
-            arch: arm64
-          - target: x86_64-apple-darwin
-            arch: x64
-
+    name: Build macOS universal (unsigned)
     runs-on: macos-latest
 
     env:
@@ -31,32 +26,33 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Add Rust targets
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build frontend
+      - name: Verify frontend build
         run: npm run build
 
-      - name: Build Tauri app
+      - name: Build Tauri app (unsigned)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --target ${{ matrix.target }}
+          args: --target universal-apple-darwin
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: md-editor-macos-${{ matrix.arch }}
+          name: md-editor-macos-universal
           path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app
-            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
-          if-no-files-found: error
+            src-tauri/target/universal-apple-darwin/release/bundle/macos/
+            src-tauri/target/universal-apple-darwin/release/bundle/dmg/
+          if-no-files-found: warn

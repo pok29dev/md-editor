@@ -2,21 +2,112 @@ name: Release macOS (signed)
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag e.g. v.2026.06.06-23. Leave empty to use package.json."
+        required: false
+        type: string
+  push:
+    tags:
+      - "v.*"
 
 permissions:
   contents: write
 
-jobs:
-  release-macos-sign:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: aarch64-apple-darwin
-            arch: arm64
-          - target: x86_64-apple-darwin
-            arch: x64
+env:
+  CARGO_TERM_COLOR: always
 
+concurrency:
+  group: release-signed-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-version:
+    name: Validate release version
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.version.outputs.should_release }}
+      version: ${{ steps.version.outputs.version }}
+      version_tag: ${{ steps.version.outputs.version_tag }}
+      tauri_version: ${{ steps.version.outputs.tauri_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          FILE_VERSION="$(cat VERSION)"
+          TAURI_VERSION="$(node -p "require('./src-tauri/tauri.conf.json').version")"
+          CARGO_VERSION="$(node -e "const fs = require('fs'); const text = fs.readFileSync('src-tauri/Cargo.toml', 'utf8'); const match = text.match(/^version = \"([^\"]+)\"/m); process.stdout.write(match ? match[1] : '')")"
+
+          if [[ "$FILE_VERSION" != "$PKG_VERSION" ]]; then
+            echo "::error::VERSION file ($FILE_VERSION) does not match package.json ($PKG_VERSION)"
+            exit 1
+          fi
+
+          if [[ "$TAURI_VERSION" != "$CARGO_VERSION" ]]; then
+            echo "::error::Tauri/Cargo version mismatch: tauri=$TAURI_VERSION cargo=$CARGO_VERSION"
+            exit 1
+          fi
+
+          EXPECTED_TAG="v.$PKG_VERSION"
+
+          if [[ "${{ github.ref_type }}" == "tag" && "${{ github.ref_name }}" == *-unsigned ]]; then
+            echo "Tag ${{ github.ref_name }} is for unsigned release; skipping signed workflow."
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+            echo "version_tag=" >> "$GITHUB_OUTPUT"
+            echo "tauri_version=$TAURI_VERSION" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          INPUT_VERSION="${{ github.event.inputs.version || '' }}"
+          if [[ -n "$INPUT_VERSION" ]]; then
+            raw="$INPUT_VERSION"
+          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
+            raw="${{ github.ref_name }}"
+          else
+            raw="$EXPECTED_TAG"
+          fi
+
+          sem="${raw#v}"
+          sem="${sem#.}"
+          sem="${sem%-unsigned}"
+          VERSION_TAG="v.$sem"
+
+          if [[ "$VERSION_TAG" != "$EXPECTED_TAG" ]]; then
+            echo "::error::Signed release tag must be $EXPECTED_TAG (from package.json $PKG_VERSION). Normalized \"$raw\" -> \"$VERSION_TAG\"."
+            exit 1
+          fi
+
+          SHOULD_RELEASE="true"
+          if [[ "${{ github.event_name }}" == "push" && "${{ github.ref_type }}" == "branch" ]]; then
+            BEFORE_SHA="${{ github.event.before }}"
+            if [[ -n "$BEFORE_SHA" && "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+              PREV_VERSION="$(git show "$BEFORE_SHA:package.json" 2>/dev/null | node -e "const fs = require('fs'); const data = fs.readFileSync(0, 'utf8'); try { process.stdout.write(JSON.parse(data).version || '') } catch {}" || true)"
+              if [[ "$PREV_VERSION" == "$PKG_VERSION" ]]; then
+                SHOULD_RELEASE="false"
+                echo "package.json version did not change ($PKG_VERSION); skipping release build."
+              fi
+            fi
+          fi
+
+          echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
+          echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_tag=$VERSION_TAG" >> "$GITHUB_OUTPUT"
+          echo "tauri_version=$TAURI_VERSION" >> "$GITHUB_OUTPUT"
+
+  build-release:
+    name: Build macOS universal (signed)
+    needs: validate-version
+    if: needs.validate-version.outputs.should_release == 'true'
     runs-on: macos-latest
 
     steps:
@@ -31,23 +122,42 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin,x86_64-apple-darwin
+
+      - name: Add Rust targets
+        run: rustup target add x86_64-apple-darwin aarch64-apple-darwin
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: npm ci
 
-      - name: Import Apple Developer Certificate
+      - name: Verify frontend build
+        run: npm run build
+
+      - name: Import Apple code signing certificate
         env:
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
         run: |
+          set -euo pipefail
+
+          if [[ -z "${APPLE_CERTIFICATE:-}" ]]; then
+            echo "::error::Missing APPLE_CERTIFICATE secret for macOS signing."
+            exit 1
+          fi
+          if [[ -z "${APPLE_CERTIFICATE_PASSWORD:-}" ]]; then
+            echo "::error::Missing APPLE_CERTIFICATE_PASSWORD secret for macOS signing."
+            exit 1
+          fi
+          if [[ -z "${KEYCHAIN_PASSWORD:-}" ]]; then
+            echo "::error::Missing KEYCHAIN_PASSWORD secret for macOS signing."
+            exit 1
+          fi
+
           echo "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
           security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security default-keychain -s build.keychain
@@ -55,32 +165,57 @@ jobs:
           security set-keychain-settings -t 3600 -u build.keychain
           security import certificate.p12 -k build.keychain -P "$APPLE_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" build.keychain
+          security find-identity -v -p codesigning build.keychain
           CERT_ID=$(security find-identity -v -p codesigning build.keychain | grep "Developer ID Application" | head -1 | awk -F'"' '{print $2}')
-          if [ -z "$CERT_ID" ]; then
-            echo "Developer ID Application certificate not found in keychain"
+          if [[ -z "$CERT_ID" ]]; then
+            echo "::error::Developer ID Application certificate not found in keychain"
             exit 1
           fi
-          echo "APPLE_SIGNING_IDENTITY=$CERT_ID" >> "$GITHUB_ENV"
-          echo "Using signing identity: $CERT_ID"
+          {
+            echo "APPLE_SIGNING_IDENTITY<<EOF"
+            echo "$CERT_ID"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
-      - name: Build and publish (signed + notarized)
+      - name: Configure Apple notarization API key
+        env:
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+          APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+          APPLE_API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${APPLE_API_ISSUER:-}" || -z "${APPLE_API_KEY:-}" || -z "${APPLE_API_KEY_CONTENT:-}" ]]; then
+            echo "::warning::Notarization secrets are incomplete; macOS build will be signed but not notarized."
+            exit 0
+          fi
+
+          api_key_path="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY}.p8"
+          printf '%s\n' "$APPLE_API_KEY_CONTENT" > "$api_key_path"
+          chmod 600 "$api_key_path"
+
+          {
+            echo "APPLE_API_ISSUER=$APPLE_API_ISSUER"
+            echo "APPLE_API_KEY=$APPLE_API_KEY"
+            echo "APPLE_API_KEY_PATH=$api_key_path"
+          } >> "$GITHUB_ENV"
+
+      - name: Build and upload Tauri release assets
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ env.APPLE_SIGNING_IDENTITY }}
         with:
-          tagName: app-v__VERSION__
-          releaseName: MD Editor v__VERSION__
+          tagName: ${{ needs.validate-version.outputs.version_tag }}
+          releaseName: "MD Editor ${{ needs.validate-version.outputs.version_tag }}"
           releaseBody: |
-            Signed and notarized macOS release (arm64 + x64).
+            Signed macOS universal release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
+            - Tauri/Cargo version: ${{ needs.validate-version.outputs.tauri_version }}
             - Signed with Developer ID Application certificate
-            - Submitted to Apple notarization
+            - Notarized when Apple API secrets are configured
           releaseDraft: true
           prerelease: false
-          args: --target ${{ matrix.target }}
+          args: --target universal-apple-darwin
