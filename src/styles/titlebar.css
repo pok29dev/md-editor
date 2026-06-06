@@ -1,0 +1,117 @@
+.window-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-height: 38px;
+  padding: 0 8px 0 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.window-titlebar--overlay {
+  /* Match macOS overlay title bar height so traffic lights align vertically */
+  height: 52px;
+  min-height: 52px;
+  padding-left: 78px;
+  box-sizing: border-box;
+}
+
+.window-titlebar-drag {
+  flex: 1;
+  min-width: 24px;
+  height: 100%;
+  align-self: stretch;
+}
+
+.window-titlebar-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.window-titlebar .toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.window-titlebar .toolbar-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-primary);
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.window-titlebar .toolbar-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.window-titlebar .toolbar-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.window-titlebar .view-mode-segmented {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.window-titlebar .view-mode-segmented .segment-btn {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  min-width: 48px;
+}
+
+.window-titlebar .view-mode-segmented .segment-btn:last-child {
+  border-right: none;
+}
+
+.window-titlebar .view-mode-segmented .segment-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.window-titlebar .view-mode-segmented .segment-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.window-titlebar-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 28px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.window-titlebar-theme-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}

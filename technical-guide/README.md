@@ -1,0 +1,47 @@
+# MD Editor — Technical Guide
+
+เอกสารทางเทคนิคสำหรับนักพัฒนาและผู้ดูแลโปรเจกต **MD Editor**
+
+**เวอร์ชันอ้างอิง:** `2026.06.06-21` (ดู `src/version.ts`)  
+**สถานะ:** MVP Complete  
+**อัปเดตล่าสุด:** 2026-06-06
+
+---
+
+## สารบัญ
+
+| เอกสาร | เนื้อหา |
+|--------|---------|
+| [01-overview.md](./01-overview.md) | ภาพรวมโปรเจกต, หลักการออกแบบ, tech stack |
+| [02-architecture.md](./02-architecture.md) | สถาปัตยกรรมระบบ, data flow, โครงสร้างโฟลเดอร์ |
+| [03-frontend.md](./03-frontend.md) | React components, Zustand stores, hooks |
+| [04-markdown-engine.md](./04-markdown-engine.md) | Preview pipeline, worker, extensions, performance |
+| [05-backend.md](./05-backend.md) | Tauri/Rust commands, models, file I/O |
+| [06-ui-ux.md](./06-ui-ux.md) | Layout, theme, view modes, keyboard shortcuts |
+| [07-api-reference.md](./07-api-reference.md) | ฟังก์ชันหลัก, IPC, constants |
+| [08-development.md](./08-development.md) | Setup, build, การขยายระบบ, known gaps |
+
+---
+
+## เอกสารที่เกี่ยวข้อง
+
+| เอกสาร | ที่อยู่ | วัตถุประสงค์ |
+|--------|--------|-------------|
+| Product Specification | [docs/specification.md](../docs/specification.md) | ข้อกำหนดผลิตภัณฑ์ |
+| Development Plan | [docs/plan.md](../docs/plan.md) | แผนพัฒนา Phase 0–9 |
+| Settings Plan | [docs/settings-plan.md](../docs/settings-plan.md) | แผน implement Settings MVP (Phase S-1–S-7) |
+| Testing Checklist | [docs/testing.md](../docs/TESTING.md) | Acceptance criteria |
+| Changelog | [CHANGELOG.md](../CHANGELOG.md) | ประวัติการเปลี่ยนแปลง |
+
+---
+
+## สรุปสั้น
+
+MD Editor เป็น **desktop app แบบ local-first** ที่ใช้:
+
+- **Tauri v2 + Rust** — file I/O, preferences, native dialogs
+- **React 19 + TypeScript + Vite 7** — UI และ state
+- **CodeMirror 6** — text editor
+- **marked.js pipeline** — live preview (GFM, Mermaid, MathJax, footnotes, alerts)
+
+การประมวลผลทั้งหมดเกิดขึ้นในเครื่อง ไม่มี server และไม่มี analytics
