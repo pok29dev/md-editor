@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "windows": {
+      "wix": {
+        "version": "26.6.7.2"
+      }
+    }
+  }
+}

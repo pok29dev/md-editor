@@ -35,6 +35,9 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
+      - name: Sync Windows MSI version
+        run: node scripts/sync-windows-msi-version.mjs
+
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
         env:

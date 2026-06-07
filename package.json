@@ -8,6 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "sync:windows-msi-version": "node scripts/sync-windows-msi-version.mjs",
     "design-pack": "bash scripts/assemble-design-pack.sh"
   },
   "dependencies": {
