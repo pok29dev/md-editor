@@ -30,7 +30,9 @@ pub struct FileContent {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AppPreferences {
-    #[serde(default = "default_theme")]
+    #[serde(default = "default_color_scheme")]
+    pub color_scheme: String,
+    #[serde(default = "default_app_theme")]
     pub theme: String,
     #[serde(default = "default_sidebar_width")]
     pub sidebar_width: u32,
@@ -59,8 +61,12 @@ pub struct AppPreferences {
     pub last_open_folder: Option<String>,
 }
 
-fn default_theme() -> String {
+fn default_color_scheme() -> String {
     "system".to_string()
+}
+
+fn default_app_theme() -> String {
+    "apple".to_string()
 }
 
 fn default_sidebar_width() -> u32 {
@@ -94,7 +100,8 @@ fn default_export_pdf_page_size() -> String {
 impl Default for AppPreferences {
     fn default() -> Self {
         Self {
-            theme: default_theme(),
+            color_scheme: default_color_scheme(),
+            theme: default_app_theme(),
             sidebar_width: default_sidebar_width(),
             sidebar_collapsed: false,
             sync_scroll: default_true(),

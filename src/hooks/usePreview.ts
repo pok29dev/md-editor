@@ -41,8 +41,8 @@ export function usePreview(
   tabId: string | null,
   scrollElRef: RefObject<HTMLElement | null>,
 ) {
-  const resolvedTheme = useAppStore((s) => s.resolvedTheme);
-  const isDark = resolvedTheme === "dark";
+  const resolvedColorScheme = useAppStore((s) => s.resolvedColorScheme);
+  const isDark = resolvedColorScheme === "dark";
 
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(null);

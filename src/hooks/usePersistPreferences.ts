@@ -7,6 +7,7 @@ function preferencesChanged(
   prev: ReturnType<typeof useAppStore.getState>,
 ): boolean {
   return !(
+    state.colorScheme === prev.colorScheme &&
     state.theme === prev.theme &&
     state.syncScroll === prev.syncScroll &&
     state.sidebarCollapsed === prev.sidebarCollapsed &&

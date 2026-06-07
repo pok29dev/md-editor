@@ -1,7 +1,7 @@
 # MD Editor — TODO List
 
-**Current version:** `2026.06.06-6`  
-**Status:** MVP Complete ✅
+**Current version:** `2026.06.07-1`  
+**Status:** MVP Complete + UI Redesign ✅
 
 ---
 
@@ -20,20 +20,46 @@
 
 ---
 
+## Settings MVP ✅
+
+- [x] Phase S-1: Settings shell + persist foundation
+- [x] Phase S-2: General (color scheme + app theme)
+- [x] Phase S-3: Files & startup
+- [x] Phase S-4: Sidebar width
+- [x] Phase S-5: Editor
+- [x] Phase S-6: Export PDF options
+- [x] Phase S-7: Polish & QA
+
+---
+
+## Formatting MVP ✅
+
+- [x] Editor toolbar + native menus + shortcuts
+- [x] Link dialog + expanded insert actions
+- [x] Lucide icons ทั้ง toolbar
+
+---
+
+## UI Redesign ✅
+
+- [x] Phase 1: Design tokens + status bar dark fix
+- [x] Phase 2: Title bar, tab bar, file tree icons
+- [x] Phase 3: Editor toolbar, preview padding, empty states
+- [x] Phase 4: Dialogs polish, Settings visual refresh
+- [x] Phase 5: File tree keyboard nav, Lucide toolbar icons
+- [x] Sidebar open-folder button
+- [x] design-pack assemble script
+
+---
+
 ## Post-MVP (Optional)
 
-- [ ] **Settings UI** — ดูแผน [docs/settings-plan.md](./settings-plan.md)
-  - [x] Phase S-1: Settings shell + persist foundation
-  - [x] Phase S-2: General
-  - [x] Phase S-3: Files & startup
-  - [x] Phase S-4: Sidebar width
-  - [ ] Phase S-5: Editor
-  - [ ] Phase S-6: Export PDF options
-  - [ ] Phase S-7: Polish & QA
 - [ ] CI/CD release workflow
 - [ ] Windows / Linux release builds
 - [ ] Code-split Mermaid bundle (ลดขนาด)
 - [ ] Create new file จาก sidebar
 - [ ] Git status ใน file tree
-- [x] PDF export
-- [ ] Settings UI — [docs/settings-plan.md](../docs/settings-plan.md)
+- [ ] Sidebar live drag-resize
+- [ ] File watcher อัตโนมัติ
+- [ ] Regenerate design-pack screenshots
+- [ ] Emoji shortcodes (`:rocket:`)

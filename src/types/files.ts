@@ -18,6 +18,9 @@ export interface FileContent {
 }
 
 export interface AppPreferences {
+  /** Light/dark appearance: system | light | dark */
+  colorScheme: string;
+  /** Color + icon system: apple | ibm | warm */
   theme: string;
   sidebarWidth: number;
   sidebarCollapsed: boolean;

@@ -24,8 +24,8 @@ export function getExportPageWidthMm(pageSize: ExportPdfPageSize): number {
 
 export function resolveExportPdfIsDark(
   theme: ExportPdfTheme,
-  resolvedTheme: "light" | "dark",
+  resolvedColorScheme: "light" | "dark",
 ): boolean {
-  if (theme === "app") return resolvedTheme === "dark";
+  if (theme === "app") return resolvedColorScheme === "dark";
   return theme === "dark";
 }

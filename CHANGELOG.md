@@ -2,6 +2,33 @@
 
 รูปแบบ version: `yyyy.mm.dd-build`
 
+## [2026.06.07-1] — 2026-06-07
+
+### Added
+
+- **UI redesign** — Chrome, workspace, overlays, a11y polish (Phases 1–5)
+- **Lucide icons** — title bar, editor toolbar, color scheme toggle, panel controls
+- **App themes** — Apple / IBM / Warm (`data-app-theme`) แยกจาก color scheme
+- **Expanded editor toolbar** — 7 กลุ่ม (history, heading, inline, align, lists, insert, utilities) sync กับ native menu
+- **Native menus** — File, Edit, Insert, Format, Window, Help ครบ (`useAppMenu.ts`)
+- **File tree keyboard nav** — ↑↓ Enter, →← expand/collapse, Home/End
+- **Sidebar Open folder** — ปุ่ม `FolderOpen` ใน sidebar title bar (`⌘⇧O`)
+- **design-pack** — `npm run design-pack` รวม components, styles, hooks, Lucide icons
+
+### Changed
+
+- **Title bar** — icon buttons + overflow menu; Settings มุมขวา; sync scroll ใช้ `accent-subtle`
+- **Tab bar** — active accent top border; dirty indicator amber; close on hover
+- **Status bar (dark)** — ไม่ใช้สีฟ้าเต็มแถบ
+- **Dialogs** — Find/Link ใช้ `dialogs.css` ร่วมกับ Settings
+- **Empty states** — sidebar, editor, preview
+- **Touch targets** — title bar 40px, editor toolbar 36px
+
+### Documentation
+
+- อัปเดต README, technical-guide, specification, TESTING, TODO
+- `docs/editor-toolbar-lucide.md` — อ้างอิง Lucide mapping
+
 ## [2026.06.06-23] — 2026-06-06
 
 ### Added

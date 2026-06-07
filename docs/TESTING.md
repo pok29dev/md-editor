@@ -1,7 +1,7 @@
 # MD Editor — Testing Checklist
 
-**Version:** `2026.06.06-23`  
-**Last updated:** 2026-06-06
+**Version:** `2026.06.07-1`  
+**Last updated:** 2026-06-07
 
 ---
 
@@ -9,7 +9,7 @@
 
 ### AC-1: เปิดโฟลเดอร์และ browse ไฟล์
 
-- [ ] กด Open Folder → เลือกโฟลเดอร์ที่มี `.md`
+- [ ] กด Open Folder (sidebar icon, File menu, หรือ `⌘⇧O`) → เลือกโฟลเดอร์ที่มี `.md`
 - [ ] Sidebar แสดง tree structure ถูกต้อง (nested folders)
 - [ ] คลิกไฟล์ → เปิด tab และแสดงเนื้อหา
 - [ ] Active file highlight ใน tree
@@ -132,6 +132,17 @@
 
 - [ ] สลับ tab / view mode ไม่ regression
 - [ ] Find/Replace, Settings ยังทำงาน
+
+### AC-8: UI redesign
+
+- [ ] Title bar — icon buttons (Find, Sync, overflow), color scheme, settings
+- [ ] Tab bar — active accent top border, dirty amber dot, close on hover
+- [ ] Sidebar — open folder icon, refresh, file tree keyboard nav (↑↓ Enter)
+- [ ] Editor toolbar — Lucide icons ครบ 7 กลุ่ม, active state, horizontal scroll
+- [ ] Status bar (dark) — ไม่ใช้สีฟ้าเต็มแถบ
+- [ ] Settings — 4 tabs, color scheme + app theme picker
+- [ ] Dialogs — Find/Link สไตล์เดียวกับ Settings modal
+- [ ] App themes — สลับ Apple / IBM / Warm แล้ว tokens + tree icons เปลี่ยน
 
 ---
 

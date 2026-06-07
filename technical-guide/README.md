@@ -2,9 +2,9 @@
 
 เอกสารทางเทคนิคสำหรับนักพัฒนาและผู้ดูแลโปรเจกต **MD Editor**
 
-**เวอร์ชันอ้างอิง:** `2026.06.06-21` (ดู `src/version.ts`)  
-**สถานะ:** MVP Complete  
-**อัปเดตล่าสุด:** 2026-06-06
+**เวอร์ชันอ้างอิง:** `2026.06.07-1` (ดู `src/version.ts`)  
+**สถานะ:** MVP Complete + UI Redesign  
+**อัปเดตล่าสุด:** 2026-06-07
 
 ---
 
@@ -29,8 +29,10 @@
 |--------|--------|-------------|
 | Product Specification | [docs/specification.md](../docs/specification.md) | ข้อกำหนดผลิตภัณฑ์ |
 | Development Plan | [docs/plan.md](../docs/plan.md) | แผนพัฒนา Phase 0–9 |
-| Settings Plan | [docs/settings-plan.md](../docs/settings-plan.md) | แผน implement Settings MVP (Phase S-1–S-7) |
-| Testing Checklist | [docs/testing.md](../docs/TESTING.md) | Acceptance criteria |
+| Settings Plan | [docs/settings-plan.md](../docs/settings-plan.md) | แผน implement Settings MVP |
+| Editor Toolbar Lucide | [docs/editor-toolbar-lucide.md](../docs/editor-toolbar-lucide.md) | Icon mapping อ้างอิง |
+| Testing Checklist | [docs/TESTING.md](../docs/TESTING.md) | Acceptance criteria |
+| Design Pack | [design-pack/DESIGN-BRIEF.md](../design-pack/DESIGN-BRIEF.md) | UI brief สำหรับ AI design tools |
 | Changelog | [CHANGELOG.md](../CHANGELOG.md) | ประวัติการเปลี่ยนแปลง |
 
 ---
@@ -43,5 +45,6 @@ MD Editor เป็น **desktop app แบบ local-first** ที่ใช้:
 - **React 19 + TypeScript + Vite 7** — UI และ state
 - **CodeMirror 6** — text editor
 - **marked.js pipeline** — live preview (GFM, Mermaid, MathJax, footnotes, alerts)
+- **lucide-react** — icon สำหรับ toolbar ทั้งหมด
 
 การประมวลผลทั้งหมดเกิดขึ้นในเครื่อง ไม่มี server และไม่มี analytics

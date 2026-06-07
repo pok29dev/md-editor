@@ -29,7 +29,8 @@ export function renderMarkdownCore(content: string): RawRenderResult {
 
   if (!content.trim()) {
     return {
-      bodyHtml: '<p class="preview-empty">Preview will appear here</p>',
+      bodyHtml:
+        '<div class="workspace-empty preview-empty"><p class="workspace-empty-title">No preview</p><p class="workspace-empty-hint">Start writing markdown to see the preview</p></div>',
       hasMermaid: false,
       hasMath: false,
       references: emptyReferences,

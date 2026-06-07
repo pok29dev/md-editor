@@ -32,6 +32,7 @@ Tauri เปิด window และเชื่อมกับ dev server อั
 | `preview` | `vite preview` | Preview production build |
 | `tauri dev` | Tauri + Vite HMR | **แนะนำสำหรับพัฒนา** |
 | `tauri build` | Release build | `.app` / `.dmg` / `.msi` / `.deb` |
+| `design-pack` | `bash scripts/assemble-design-pack.sh` | Sync `design-pack/` สำหรับ AI design tools |
 
 ## 8.4 Release Build Output
 
@@ -103,25 +104,24 @@ npm run build   # ต้อง pass tsc + vite โดยไม่มี error
 
 | Feature | Spec | สถานะ |
 |---------|------|--------|
-| Sidebar drag-resize | §4.2 | Fixed 240px |
+| Sidebar drag-resize | §4.2 | Width จาก Settings slider; ไม่มี live drag |
 | File watcher | F-05 | Manual refresh only |
-| Cmd+B / Cmd+I | §5.8 | ไม่มี |
 | Emoji shortcodes | M-17 | ไม่มี |
 | Encoding ใน status bar | §4.1 | มีใน `FileContent` แต่ไม่แสดง UI |
 | Export HTML + Mermaid/Math | S-04 | Static HTML only |
-| Open Folder = Cmd+O | Spec | จริง: Cmd+O = Open File |
+| Open Folder = Cmd+O | Spec | จริง: Cmd+O = Open File, Cmd+Shift+O = Open Folder |
+| design-pack screenshots | Brief | บางรูปยังไม่ regenerate หลัง UI redesign |
 
 ## 8.9 Post-MVP Roadmap
 
 จาก [docs/TODO.md](../docs/TODO.md):
 
-- **Settings UI** — [docs/settings-plan.md](../docs/settings-plan.md) (Phase S-1–S-7)
 - CI/CD release workflow
 - Windows / Linux release builds
 - Code-split Mermaid bundle
 - สร้างไฟล์ใหม่จาก sidebar
 - Git status ใน file tree
-- PDF export
+- Regenerate design-pack screenshots (`editor-toolbar.png`, `sidebar-tree.png`)
 
 ## 8.10 Troubleshooting
 

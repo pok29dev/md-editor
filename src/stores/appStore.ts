@@ -16,9 +16,20 @@ import {
 } from "../lib/markdown/exportSettings";
 import type { TreeNode } from "../types/files";
 import { pathsEqual } from "../lib/paths";
+import {
+  DEFAULT_APP_THEME,
+  DEFAULT_COLOR_SCHEME,
+  normalizeAppTheme,
+  normalizeColorScheme,
+} from "../lib/theme/defaults";
+import type {
+  AppTheme,
+  ColorScheme,
+  ResolvedColorScheme,
+} from "../lib/theme/types";
 
 export type ViewMode = "split" | "editor" | "preview";
-export type Theme = "light" | "dark" | "system";
+export type { AppTheme, ColorScheme, ResolvedColorScheme };
 export type { ExportPdfPageSize, ExportPdfTheme } from "../lib/markdown/exportSettings";
 
 export interface EditorTab {
@@ -31,8 +42,9 @@ export interface EditorTab {
 }
 
 interface AppState {
-  theme: Theme;
-  resolvedTheme: "light" | "dark";
+  colorScheme: ColorScheme;
+  resolvedColorScheme: ResolvedColorScheme;
+  theme: AppTheme;
   sidebarCollapsed: boolean;
   sidebarWidth: number;
   syncScroll: boolean;
@@ -54,8 +66,9 @@ interface AppState {
   fileTreeLoading: boolean;
   fileTreeError: string | null;
 
-  setTheme: (theme: Theme) => void;
-  setResolvedTheme: (theme: "light" | "dark") => void;
+  setColorScheme: (colorScheme: ColorScheme) => void;
+  setResolvedColorScheme: (colorScheme: ResolvedColorScheme) => void;
+  setTheme: (theme: AppTheme) => void;
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSidebarWidth: (width: number) => void;
@@ -120,8 +133,9 @@ function collectFolderPaths(nodes: TreeNode[]): Record<string, boolean> {
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
-  theme: "system",
-  resolvedTheme: "light",
+  colorScheme: DEFAULT_COLOR_SCHEME,
+  resolvedColorScheme: "light",
+  theme: DEFAULT_APP_THEME,
   sidebarCollapsed: false,
   sidebarWidth: 240,
   syncScroll: true,
@@ -148,8 +162,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   fileTreeLoading: false,
   fileTreeError: null,
 
-  setTheme: (theme) => set({ theme }),
-  setResolvedTheme: (resolvedTheme) => set({ resolvedTheme }),
+  setColorScheme: (colorScheme) =>
+    set({ colorScheme: normalizeColorScheme(colorScheme) }),
+  setResolvedColorScheme: (resolvedColorScheme) => set({ resolvedColorScheme }),
+  setTheme: (theme) => set({ theme: normalizeAppTheme(theme) }),
   toggleSidebar: () => {
     const next = !get().sidebarCollapsed;
     set({ sidebarCollapsed: next });

@@ -127,11 +127,11 @@ export function useFileActions() {
     setPdfExportStep("Preparing");
 
     try {
-      const { exportPdfTheme, exportPdfPageSize, resolvedTheme } =
+      const { exportPdfTheme, exportPdfPageSize, resolvedColorScheme } =
         useAppStore.getState();
       const pdfBytes = await buildPdfBytes({
         markdown: activeTab.content,
-        isDark: resolveExportPdfIsDark(exportPdfTheme, resolvedTheme),
+        isDark: resolveExportPdfIsDark(exportPdfTheme, resolvedColorScheme),
         pageSize: exportPdfPageSize,
         signal: controller.signal,
         onProgress: ({ percent, step }) => {

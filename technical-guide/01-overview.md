@@ -73,19 +73,22 @@ Use cases หลัก:
 
 **รวมแล้ว:**
 
-- Open Folder + file tree
+- Open Folder + file tree (keyboard nav, open-folder button ใน sidebar)
 - Multi-tab editing
 - Live preview (GFM + extensions)
-- Save / Save As / Export HTML
-- Theme (light/dark/system)
+- Save / Save As / Export HTML / Export PDF
+- Settings modal (General, Editor, Files, Export)
+- Formatting — expanded toolbar + native menus + shortcuts
+- Color scheme (system/light/dark) + app themes (apple/ibm/warm)
+- Lucide icon toolbar, UI redesign (chrome, dialogs, empty states)
 - Sync scroll, view modes per tab
-- Find & Replace
+- Find & Replace, Link/Reference/Emoji/Symbols dialogs
 
 **ยังไม่รวม (Post-MVP):**
 
-- PDF export, Git integration, emoji picker
+- Git integration
 - File watcher อัตโนมัติ
-- Sidebar drag-resize (ปัจจุบัน fixed 240px)
+- Sidebar drag-resize แบบ live (ปรับ width จาก Settings)
 - Emoji shortcodes (`:rocket:`)
 
 ดูรายละเอียด gaps ใน [08-development.md](./08-development.md)

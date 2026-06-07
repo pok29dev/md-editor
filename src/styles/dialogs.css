@@ -1,0 +1,234 @@
+.app-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 80px 24px 24px;
+  z-index: 1000;
+}
+
+.app-dialog {
+  width: min(420px, 100%);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  padding: 16px 18px;
+}
+
+.app-dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.app-dialog-close {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text-muted);
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+}
+
+.app-dialog-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.app-dialog-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.app-dialog-field > span {
+  width: 56px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.app-dialog-field--narrow > span {
+  width: 40px;
+}
+
+.app-dialog-field input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.app-dialog-field input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.app-dialog-hint {
+  margin: 2px 0 14px 66px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.app-dialog-hint--narrow {
+  margin-left: 50px;
+}
+
+.app-dialog-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 2px 0 14px 66px;
+  min-height: 16px;
+}
+
+.app-dialog-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.app-dialog-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.app-dialog-btn:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.app-dialog-btn--primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.app-dialog-btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.app-dialog-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.app-dialog--wide {
+  width: min(560px, 100%);
+}
+
+.app-dialog-btn--danger {
+  background: var(--danger, #c0392b);
+  color: #fff;
+  border-color: var(--danger, #c0392b);
+}
+
+.app-dialog-hint:not(.app-dialog-hint--narrow) {
+  margin-left: 0;
+}
+
+.toolbar-picker-search {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.toolbar-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 6px;
+  max-height: 280px;
+  overflow: auto;
+  margin-bottom: 8px;
+}
+
+.toolbar-picker-grid--symbols {
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+}
+
+.toolbar-picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 6px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.toolbar-picker-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.toolbar-picker-preview {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.toolbar-picker-meta {
+  color: var(--text-muted);
+  font-size: 10px;
+  text-align: center;
+  word-break: break-all;
+}
+
+.toolbar-help-body h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.toolbar-help-body p,
+.toolbar-help-body ul {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.toolbar-help-body ul {
+  padding-left: 18px;
+}
+
+.toolbar-help-body code {
+  font-size: 11px;
+}
+
+.toolbar-help-body kbd {
+  font-size: 11px;
+  padding: 1px 4px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-secondary);
+}

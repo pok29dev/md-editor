@@ -23,7 +23,7 @@ export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps
   const containerRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
   const mountKeyRef = useRef("");
-  const resolvedTheme = useAppStore((s) => s.resolvedTheme);
+  const resolvedColorScheme = useAppStore((s) => s.resolvedColorScheme);
   const editorFontSize = useAppStore((s) => s.editorFontSize);
   const editorTabSize = useAppStore((s) => s.editorTabSize);
   const editorLineNumbers = useAppStore((s) => s.editorLineNumbers);
@@ -45,7 +45,7 @@ export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps
     const mount = (): boolean => {
       if (!active || parent.clientWidth === 0) return false;
 
-      const isDark = resolvedTheme === "dark";
+      const isDark = resolvedColorScheme === "dark";
       const settings = getEditorSettingsFromStore();
       const mountKey = editorSettingsKey(isDark, settings);
       const configChanged = mountKeyRef.current !== mountKey;
@@ -85,7 +85,7 @@ export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps
     };
   }, [
     tabId,
-    resolvedTheme,
+    resolvedColorScheme,
     editorFontSize,
     editorTabSize,
     editorLineNumbers,

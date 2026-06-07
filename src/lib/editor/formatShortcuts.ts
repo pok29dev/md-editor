@@ -1,13 +1,13 @@
 import { useAppStore } from "../../stores/appStore";
-import { useEditorStore } from "../../stores/editorStore";
+import { isToolbarDialogOpen, useEditorStore } from "../../stores/editorStore";
 
 export function shouldHandleEditorFormatShortcut(event: KeyboardEvent): boolean {
   if (!event.metaKey && !event.ctrlKey) return false;
 
   const { settingsOpen } = useAppStore.getState();
-  const { findReplaceOpen, linkDialogOpen, view } = useEditorStore.getState();
+  const { view } = useEditorStore.getState();
 
-  if (settingsOpen || findReplaceOpen || linkDialogOpen) return false;
+  if (settingsOpen || isToolbarDialogOpen()) return false;
 
   const target = event.target as HTMLElement | null;
   if (!target) return false;

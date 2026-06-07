@@ -9,6 +9,7 @@ import {
 } from "../lib/editor/formatActiveState";
 import { getHeadingLevelAtCursor, type HeadingLevelValue } from "../lib/editor/headingLevel";
 import { getTabEditorView, subscribeTabEditorUpdate } from "../lib/editor/tabEditorCache";
+import { canEditorRedo, canEditorUndo } from "../lib/editor/editorHistory";
 
 const DEFAULT_INLINE: Record<InlineFormatId, boolean> = {
   bold: false,
@@ -22,6 +23,7 @@ const DEFAULT_LIST: Record<ListFormatId, boolean> = {
   bulletList: false,
   numberedList: false,
   taskList: false,
+  blockquote: false,
 };
 
 function resolveEditorView(
@@ -42,12 +44,16 @@ export function useEditorToolbarState() {
     useState<Record<InlineFormatId, boolean>>(DEFAULT_INLINE);
   const [activeList, setActiveList] =
     useState<Record<ListFormatId, boolean>>(DEFAULT_LIST);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   useEffect(() => {
     if (!view) {
       setHeadingLevel("body");
       setActiveInline(DEFAULT_INLINE);
       setActiveList(DEFAULT_LIST);
+      setCanUndo(false);
+      setCanRedo(false);
       return;
     }
 
@@ -55,6 +61,8 @@ export function useEditorToolbarState() {
       setHeadingLevel(getHeadingLevelAtCursor(target));
       setActiveInline(getInlineActiveState(target));
       setActiveList(getListActiveState(target));
+      setCanUndo(canEditorUndo(target));
+      setCanRedo(canEditorRedo(target));
     };
 
     sync();
@@ -65,5 +73,5 @@ export function useEditorToolbarState() {
     });
   }, [view]);
 
-  return { headingLevel, activeInline, activeList };
+  return { headingLevel, activeInline, activeList, canUndo, canRedo };
 }

@@ -3,6 +3,7 @@ import type { EditorView } from "@codemirror/view";
 const BULLET_LIST_PATTERN = /^[-*+]\s+/;
 const NUMBERED_LIST_PATTERN = /^\d+\.\s+/;
 const TASK_LIST_PATTERN = /^-\s+\[[ xX]\]\s+/;
+const BLOCKQUOTE_PATTERN = /^>\s+/;
 
 const INLINE_WRAP_ACTIONS = {
   bold: { before: "**", after: "**" },
@@ -13,7 +14,7 @@ const INLINE_WRAP_ACTIONS = {
 } as const;
 
 export type InlineFormatId = keyof typeof INLINE_WRAP_ACTIONS;
-export type ListFormatId = "bulletList" | "numberedList" | "taskList";
+export type ListFormatId = "bulletList" | "numberedList" | "taskList" | "blockquote";
 
 function expandToWordIfEmpty(
   view: EditorView,
@@ -114,6 +115,8 @@ export function isListFormatActive(view: EditorView, id: ListFormatId): boolean 
       return NUMBERED_LIST_PATTERN.test(line);
     case "taskList":
       return TASK_LIST_PATTERN.test(line);
+    case "blockquote":
+      return BLOCKQUOTE_PATTERN.test(line);
   }
 }
 
@@ -136,5 +139,6 @@ export function getListActiveState(
     bulletList: isListFormatActive(view, "bulletList"),
     numberedList: isListFormatActive(view, "numberedList"),
     taskList: isListFormatActive(view, "taskList"),
+    blockquote: isListFormatActive(view, "blockquote"),
   };
 }

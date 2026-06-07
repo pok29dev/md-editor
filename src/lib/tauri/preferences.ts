@@ -1,5 +1,5 @@
 import type { AppPreferences } from "../../types/files";
-import type { Theme, ViewMode } from "../../stores/appStore";
+import type { AppTheme, ColorScheme, ViewMode } from "../../stores/appStore";
 import { useAppStore } from "../../stores/appStore";
 import {
   SIDEBAR_WIDTH_DEFAULT,
@@ -18,6 +18,14 @@ import {
   normalizeExportPdfPageSize,
   normalizeExportPdfTheme,
 } from "../markdown/exportSettings";
+import {
+  DEFAULT_APP_THEME,
+  DEFAULT_COLOR_SCHEME,
+  isAppTheme,
+  isColorScheme,
+  normalizeAppTheme,
+  normalizeColorScheme,
+} from "../theme/defaults";
 import { getPreferences, savePreferences } from "./commands";
 
 export {
@@ -29,7 +37,8 @@ export {
 export { applySidebarWidth, clampSidebarWidth };
 
 export const DEFAULT_PREFERENCES: AppPreferences = {
-  theme: "system",
+  colorScheme: DEFAULT_COLOR_SCHEME,
+  theme: DEFAULT_APP_THEME,
   sidebarWidth: SIDEBAR_WIDTH_DEFAULT,
   sidebarCollapsed: false,
   syncScroll: true,
@@ -45,15 +54,32 @@ export const DEFAULT_PREFERENCES: AppPreferences = {
   lastOpenFolder: null,
 };
 
-const DEFAULT_THEME: Theme = "system";
 const DEFAULT_VIEW_MODE: ViewMode = "split";
-
-function isTheme(value: string): value is Theme {
-  return value === "light" || value === "dark" || value === "system";
-}
 
 function isViewMode(value: string): value is ViewMode {
   return value === "split" || value === "editor" || value === "preview";
+}
+
+/** Migrate legacy preferences where `theme` stored color scheme. */
+export function normalizePreferences(
+  raw: Partial<AppPreferences>,
+): AppPreferences {
+  const merged: AppPreferences = {
+    ...DEFAULT_PREFERENCES,
+    ...raw,
+  };
+
+  if (!raw.colorScheme && raw.theme && isColorScheme(raw.theme)) {
+    merged.colorScheme = raw.theme;
+    merged.theme = DEFAULT_APP_THEME;
+  }
+
+  merged.colorScheme = normalizeColorScheme(merged.colorScheme);
+  merged.theme = normalizeAppTheme(
+    isAppTheme(merged.theme) ? merged.theme : DEFAULT_APP_THEME,
+  );
+
+  return merged;
 }
 
 export function buildPreferencesFromState(
@@ -62,6 +88,7 @@ export function buildPreferencesFromState(
   const state = useAppStore.getState();
 
   return {
+    colorScheme: state.colorScheme,
     theme: state.theme,
     sidebarWidth: state.sidebarWidth,
     sidebarCollapsed: state.sidebarCollapsed,
@@ -80,38 +107,41 @@ export function buildPreferencesFromState(
 }
 
 export function applyPreferencesToStore(prefs: AppPreferences) {
-  const theme: Theme = isTheme(prefs.theme) ? prefs.theme : DEFAULT_THEME;
-  const defaultViewMode: ViewMode = isViewMode(prefs.defaultViewMode)
-    ? prefs.defaultViewMode
+  const normalized = normalizePreferences(prefs);
+  const colorScheme: ColorScheme = normalized.colorScheme as ColorScheme;
+  const theme: AppTheme = normalized.theme as AppTheme;
+  const defaultViewMode: ViewMode = isViewMode(normalized.defaultViewMode)
+    ? normalized.defaultViewMode
     : DEFAULT_VIEW_MODE;
-  const sidebarWidth = clampSidebarWidth(prefs.sidebarWidth);
+  const sidebarWidth = clampSidebarWidth(normalized.sidebarWidth);
   const editorFontSize = clampEditorFontSize(
-    prefs.editorFontSize ?? EDITOR_FONT_SIZE_DEFAULT,
+    normalized.editorFontSize ?? EDITOR_FONT_SIZE_DEFAULT,
   );
   const editorTabSize = normalizeEditorTabSize(
-    prefs.editorTabSize ?? EDITOR_TAB_SIZE_DEFAULT,
+    normalized.editorTabSize ?? EDITOR_TAB_SIZE_DEFAULT,
   );
   const exportPdfTheme = normalizeExportPdfTheme(
-    prefs.exportPdfTheme ?? EXPORT_PDF_THEME_DEFAULT,
+    normalized.exportPdfTheme ?? EXPORT_PDF_THEME_DEFAULT,
   );
   const exportPdfPageSize = normalizeExportPdfPageSize(
-    prefs.exportPdfPageSize ?? EXPORT_PDF_PAGE_SIZE_DEFAULT,
+    normalized.exportPdfPageSize ?? EXPORT_PDF_PAGE_SIZE_DEFAULT,
   );
 
   useAppStore.setState((state) => ({
+    colorScheme,
     theme,
-    sidebarCollapsed: prefs.sidebarCollapsed,
-    syncScroll: prefs.syncScroll,
+    sidebarCollapsed: normalized.sidebarCollapsed,
+    syncScroll: normalized.syncScroll,
     sidebarWidth,
     defaultViewMode,
-    restoreLastFolderOnStartup: prefs.restoreLastFolderOnStartup,
+    restoreLastFolderOnStartup: normalized.restoreLastFolderOnStartup,
     editorFontSize,
     editorTabSize,
-    editorLineNumbers: prefs.editorLineNumbers ?? true,
-    editorLineWrap: prefs.editorLineWrap ?? true,
+    editorLineNumbers: normalized.editorLineNumbers ?? true,
+    editorLineWrap: normalized.editorLineWrap ?? true,
     exportPdfTheme,
     exportPdfPageSize,
-    recentFolders: prefs.recentFolders,
+    recentFolders: normalized.recentFolders,
     tabs: state.tabs.map((tab) =>
       tab.path === null ? { ...tab, viewMode: defaultViewMode } : tab,
     ),
@@ -122,8 +152,9 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
 
 export async function loadPreferences(): Promise<AppPreferences> {
   const prefs = await getPreferences().catch(() => DEFAULT_PREFERENCES);
-  applyPreferencesToStore(prefs);
-  return prefs;
+  const normalized = normalizePreferences(prefs);
+  applyPreferencesToStore(normalized);
+  return normalized;
 }
 
 let persistTimeout: ReturnType<typeof setTimeout> | undefined;
@@ -158,7 +189,8 @@ export function syncRecentFoldersFromPreferences(prefs: AppPreferences) {
 
 export function resetGeneralSettings(): void {
   useAppStore.setState((state) => ({
-    theme: DEFAULT_PREFERENCES.theme as Theme,
+    colorScheme: DEFAULT_PREFERENCES.colorScheme as ColorScheme,
+    theme: DEFAULT_PREFERENCES.theme as AppTheme,
     syncScroll: DEFAULT_PREFERENCES.syncScroll,
     sidebarCollapsed: DEFAULT_PREFERENCES.sidebarCollapsed,
     sidebarWidth: DEFAULT_PREFERENCES.sidebarWidth,

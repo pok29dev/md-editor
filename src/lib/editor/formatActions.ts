@@ -30,6 +30,19 @@ export type FormatActionId =
   | "bulletList"
   | "numberedList"
   | "taskList"
+  | "blockquote"
+  | "horizontalRule"
+  | "terminalBlock"
+  | "titleCase"
+  | "uppercase"
+  | "lowercase"
+  | "alignLeft"
+  | "alignCenter"
+  | "alignRight"
+  | "dateTime"
+  | "emoji"
+  | "symbol"
+  | "reference"
   | "image";
 
 export interface FormatContext {
@@ -37,12 +50,18 @@ export interface FormatContext {
   imagePath?: string;
   linkText?: string;
   imageAlt?: string;
+  emojiShortcode?: string;
+  symbolText?: string;
+  referenceNumber?: number;
+  referenceUrl?: string;
+  referenceTitle?: string;
 }
 
 const HEADING_PREFIX_PATTERN = /^#{1,6}\s+/;
 const BULLET_LIST_PATTERN = /^[-*+]\s+/;
 const NUMBERED_LIST_PATTERN = /^\d+\.\s+/;
 const TASK_LIST_PATTERN = /^-\s+\[[ xX]\]\s+/;
+const BLOCKQUOTE_PATTERN = /^>\s+/;
 
 const WRAP_MARKERS: Partial<
   Record<FormatActionId, { before: string; after: string; placeholder?: string }>
@@ -371,6 +390,14 @@ function insertCodeBlock(view: EditorView): void {
   insertBlock(view, "```\n\n```", 4);
 }
 
+function insertTerminalBlock(view: EditorView): void {
+  insertBlock(view, "```shell\n\n```", 8);
+}
+
+function insertHorizontalRule(view: EditorView): void {
+  insertBlock(view, "---\n", 0);
+}
+
 function insertMathBlock(view: EditorView): void {
   insertBlock(view, "$$\n\n$$", 3);
 }
@@ -408,6 +435,125 @@ function insertFootnote(view: EditorView): void {
 
 function insertPlainLink(view: EditorView): void {
   insertLink(view, "https://");
+}
+
+function replaceSelection(view: EditorView, insert: string): void {
+  const { from, to } = view.state.selection.main;
+  view.dispatch({
+    changes: { from, to, insert },
+    selection: EditorSelection.single(from + insert.length),
+  });
+  view.focus();
+}
+
+function transformSelection(
+  view: EditorView,
+  transform: (text: string) => string,
+): void {
+  const { from, to } = view.state.selection.main;
+  const selected = view.state.sliceDoc(from, to);
+  if (from === to) {
+    const line = view.state.doc.lineAt(from);
+    const transformed = transform(line.text);
+    view.dispatch({
+      changes: { from: line.from, to: line.to, insert: transformed },
+      selection: EditorSelection.single(line.from + transformed.length),
+    });
+  } else {
+    replaceSelection(view, transform(selected));
+    return;
+  }
+  view.focus();
+}
+
+function toTitleCase(text: string): string {
+  return text.replace(/\w\S*/g, (word) =>
+    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+  );
+}
+
+function insertAlignmentBlock(
+  view: EditorView,
+  align: "left" | "center" | "right",
+): void {
+  const { from, to } = view.state.selection.main;
+  const selected = view.state.sliceDoc(from, to) || "text";
+  const block = `<div align="${align}">\n${selected}\n</div>\n`;
+  view.dispatch({
+    changes: { from, to, insert: block },
+    selection: EditorSelection.single(from + block.length),
+  });
+  view.focus();
+}
+
+function insertDateTime(view: EditorView): void {
+  const now = new Date();
+  const datePart = now.toLocaleDateString("en-CA");
+  const timePart = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+  const dayName = now.toLocaleDateString("en-US", { weekday: "long" });
+  replaceSelection(view, `${datePart} ${timePart} ${dayName}`);
+}
+
+function insertEmojiShortcode(view: EditorView, shortcode: string): void {
+  replaceSelection(view, `:${shortcode}:`);
+}
+
+function insertSymbolText(view: EditorView, symbol: string): void {
+  replaceSelection(view, symbol);
+}
+
+function getUsedReferenceNumbers(doc: string): Set<number> {
+  const used = new Set<number>();
+  const defPattern = /^\[(\d+)\]:\s+/gm;
+  let match: RegExpExecArray | null;
+  while ((match = defPattern.exec(doc)) !== null) {
+    used.add(Number(match[1]));
+  }
+  const inlinePattern = /\[(\d+)\](?!\s*:)/g;
+  while ((match = inlinePattern.exec(doc)) !== null) {
+    used.add(Number(match[1]));
+  }
+  return used;
+}
+
+function nextReferenceNumber(doc: string, preferred?: number): number {
+  const used = getUsedReferenceNumbers(doc);
+  let candidate = preferred ?? 1;
+  while (used.has(candidate)) candidate += 1;
+  return candidate;
+}
+
+function insertReference(
+  view: EditorView,
+  number: number,
+  url: string,
+  title?: string,
+): void {
+  const doc = view.state.doc.toString();
+  const finalNumber = nextReferenceNumber(doc, number);
+  const { from, to } = view.state.selection.main;
+  const selected = view.state.sliceDoc(from, to);
+  const inlineReference = `${selected}[${finalNumber}]`;
+  const safeTitle = title?.replace(/"/g, '\\"') ?? "";
+  const definition = `[${finalNumber}]: ${url}${safeTitle ? ` "${safeTitle}"` : ""}`;
+  const baseEnd = from + inlineReference.length;
+  let separator = "";
+  if (baseEnd > 0 && doc[baseEnd - 1] !== "\n") {
+    separator = "\n";
+  }
+
+  view.dispatch({
+    changes: [
+      { from, to, insert: inlineReference },
+      { from: doc.length, insert: `${separator}${definition}\n` },
+    ],
+    selection: EditorSelection.single(baseEnd),
+  });
+  view.focus();
 }
 
 export function applyFormatAction(
@@ -452,6 +598,12 @@ export function applyFormatAction(
     case "codeBlock":
       insertCodeBlock(view);
       return true;
+    case "terminalBlock":
+      insertTerminalBlock(view);
+      return true;
+    case "horizontalRule":
+      insertHorizontalRule(view);
+      return true;
     case "mathBlock":
       insertMathBlock(view);
       return true;
@@ -482,9 +634,55 @@ export function applyFormatAction(
         NUMBERED_LIST_PATTERN,
       ]);
       return true;
+    case "blockquote":
+      toggleLinePrefix(view, "> ", BLOCKQUOTE_PATTERN, [
+        HEADING_PREFIX_PATTERN,
+        BULLET_LIST_PATTERN,
+        NUMBERED_LIST_PATTERN,
+        TASK_LIST_PATTERN,
+      ]);
+      return true;
     case "image":
       if (!context.imagePath) return false;
       insertImage(view, context.imagePath, context.imageAlt);
+      return true;
+    case "titleCase":
+      transformSelection(view, toTitleCase);
+      return true;
+    case "uppercase":
+      transformSelection(view, (text) => text.toUpperCase());
+      return true;
+    case "lowercase":
+      transformSelection(view, (text) => text.toLowerCase());
+      return true;
+    case "alignLeft":
+      insertAlignmentBlock(view, "left");
+      return true;
+    case "alignCenter":
+      insertAlignmentBlock(view, "center");
+      return true;
+    case "alignRight":
+      insertAlignmentBlock(view, "right");
+      return true;
+    case "dateTime":
+      insertDateTime(view);
+      return true;
+    case "emoji":
+      if (!context.emojiShortcode) return false;
+      insertEmojiShortcode(view, context.emojiShortcode);
+      return true;
+    case "symbol":
+      if (!context.symbolText) return false;
+      insertSymbolText(view, context.symbolText);
+      return true;
+    case "reference":
+      if (!context.referenceUrl) return false;
+      insertReference(
+        view,
+        context.referenceNumber ?? 1,
+        context.referenceUrl,
+        context.referenceTitle,
+      );
       return true;
     default: {
       const calloutType = CALLOUT_ACTIONS[actionId];
@@ -503,5 +701,8 @@ export function canApplyFormatAction(
 ): boolean {
   if (actionId === "image") return Boolean(context.imagePath);
   if (actionId === "linkPrompt") return Boolean(context.url);
+  if (actionId === "emoji") return Boolean(context.emojiShortcode);
+  if (actionId === "symbol") return Boolean(context.symbolText);
+  if (actionId === "reference") return Boolean(context.referenceUrl);
   return true;
 }
