@@ -66,7 +66,7 @@ fn default_color_scheme() -> String {
 }
 
 fn default_app_theme() -> String {
-    "apple".to_string()
+    "default".to_string()
 }
 
 fn default_sidebar_width() -> u32 {

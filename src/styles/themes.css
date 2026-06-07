@@ -4,6 +4,6 @@
   --sidebar-width: 240px;
 }
 
-@import "./themes/apple.css";
-@import "./themes/ibm.css";
+@import "./themes/default.css";
+@import "./themes/blue.css";
 @import "./themes/warm.css";

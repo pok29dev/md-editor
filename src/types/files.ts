@@ -20,7 +20,7 @@ export interface FileContent {
 export interface AppPreferences {
   /** Light/dark appearance: system | light | dark */
   colorScheme: string;
-  /** Color + icon system: apple | ibm | warm */
+  /** Color + icon system: default | blue | warm */
   theme: string;
   sidebarWidth: number;
   sidebarCollapsed: boolean;

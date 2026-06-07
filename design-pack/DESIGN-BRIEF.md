@@ -17,7 +17,7 @@
 | Platform | macOS desktop (native traffic-light title bar overlay) |
 | Tech | React 19 + CSS variables (Tailwind มีแต่ไม่บังคับใน design ใหม่) |
 | Color scheme | System / Light / Dark — `data-color-scheme` บน `<html>` |
-| App theme | Apple / IBM / Warm — `data-app-theme` + token files |
+| App theme | Default / Blue / Warm — `data-app-theme` + token files |
 | Icons | **Lucide** สำหรับ toolbar ทั้งหมด; tree icons ตาม app theme |
 | Editor | CodeMirror 6 (monospace) — ไม่เปลี่ยนเป็น WYSIWYG |
 | Preview | HTML render จาก Markdown — สไตล์ GitHub |
@@ -60,7 +60,7 @@
 
 ## Design Tokens
 
-ดูเต็มใน `styles/themes.css` + `styles/themes/{apple,ibm,warm}.css`
+ดูเต็มใน `styles/themes.css` + `styles/themes/{default,blue,warm}.css`
 
 ```css
 /* ตัวอย่าง — Apple light */
@@ -103,5 +103,5 @@ Keep: sidebar + tabs + split layout, CodeMirror, GitHub preview, native macOS me
 expanded editor toolbar groups, Lucide icon toolbar.
 
 Style: modern macOS desktop app — content-first, subtle chrome, accent only on active states.
-Themes: color scheme (light/dark/system) + app theme (apple/ibm/warm).
+Themes: color scheme (light/dark/system) + app theme (default/blue/warm).
 ```

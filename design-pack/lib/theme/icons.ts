@@ -1,14 +1,14 @@
 import type { AppTheme } from "./types";
-import * as appleTree from "../../components/icons/themes/apple/tree";
-import * as ibmTree from "../../components/icons/themes/ibm/tree";
+import * as defaultTree from "../../components/icons/themes/default/tree";
+import * as blueTree from "../../components/icons/themes/blue/tree";
 import * as warmTree from "../../components/icons/themes/warm/tree";
 import * as lucideToolbar from "../../components/icons/lucide/toolbar";
 import * as lucideFormat from "../../components/icons/lucide/format";
 import * as lucideColorScheme from "../../components/icons/lucide/colorScheme";
 
 const TREE_ICONS = {
-  apple: appleTree,
-  ibm: ibmTree,
+  default: defaultTree,
+  blue: blueTree,
   warm: warmTree,
 } as const;
 

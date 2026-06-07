@@ -122,7 +122,7 @@ interface EditorTab {
 |-------|----------|
 | `colorScheme` | `"light" \| "dark" \| "system"` |
 | `resolvedColorScheme` | Color scheme ที่ apply จริง |
-| `theme` | App theme: `"apple" \| "ibm" \| "warm"` |
+| `theme` | App theme: `"default" \| "blue" \| "warm"` |
 | `sidebarCollapsed` | ซ่อน sidebar |
 | `syncScroll` | เปิด sync scroll editor ↔ preview |
 | `tabs` / `activeTabId` | Multi-tab state |
@@ -205,7 +205,7 @@ interface EditorTab {
 | Lucide toolbar | `components/icons/lucide/toolbar.tsx` | Title bar, sidebar actions |
 | Lucide format | `components/icons/lucide/format.tsx` | Editor toolbar |
 | Lucide color scheme | `components/icons/lucide/colorScheme.tsx` | ColorSchemeToggle |
-| Theme tree | `components/icons/themes/{apple,ibm,warm}/tree.tsx` | File tree (ตาม app theme) |
+| Theme tree | `components/icons/themes/{default,blue,warm}/tree.tsx` | File tree (ตาม app theme) |
 | Panel | `components/icons/PanelIcons.tsx` | Sidebar toggle |
 
 Router: `lib/theme/icons.ts` — `getToolbarIcons`, `getFormatIcons`, `getColorSchemeIcons`, `getTreeIcons`
@@ -216,7 +216,7 @@ Router: `lib/theme/icons.ts` — `getToolbarIcons`, `getFormatIcons`, `getColorS
 |------|--------|
 | `styles/globals.css` | Reset, Tailwind, focus rings, reduced-motion |
 | `styles/themes.css` | Import app theme layers |
-| `styles/themes/{apple,ibm,warm}.css` | Tokens ต่อ color scheme + app theme |
+| `styles/themes/{default,blue,warm}.css` | Tokens ต่อ color scheme + app theme |
 | `styles/layout.css` | App shell, sidebar, tabs |
 | `styles/preview.css` | Markdown preview, alerts, skeleton |
 | `styles/editor-toolbar.css` | Formatting toolbar |

@@ -69,7 +69,7 @@ FileContent {
 ```rust
 AppPreferences {
     color_scheme: String,                 // "light" | "dark" | "system"
-    theme: String,                        // "apple" | "ibm" | "warm"
+    theme: String,                        // "default" | "blue" | "warm"
     sidebar_width: u32,                   // 180–400, default 240
     sidebar_collapsed: bool,
     sync_scroll: bool,

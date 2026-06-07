@@ -136,7 +136,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | คำ | ความหมาย | ค่า |
 |----|----------|-----|
 | **Color scheme** | โหมดสว่าง/มืด | `system` / `light` / `dark` |
-| **App theme** | ชุดสี + icon tree | `apple` / `ibm` / `warm` |
+| **App theme** | ชุดสี + icon tree | `default` / `blue` / `warm` |
 
 **Color scheme cycle:** System → Light → Dark (`ColorSchemeToggle` — Lucide Monitor/Moon/Sun)
 
@@ -145,7 +145,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | Storage | `preferences.colorScheme` + `preferences.theme` |
 | Apply | `data-color-scheme` + `data-app-theme` บน `<html>` |
 | System | `prefers-color-scheme` media query listener → `resolvedColorScheme` |
-| Variables | `styles/themes/{apple,ibm,warm}.css` — `--bg-primary`, `--accent`, etc. |
+| Variables | `styles/themes/{default,blue,warm}.css` — `--bg-primary`, `--accent`, etc. |
 | Toolbar icons | Lucide — ไม่เปลี่ยนตาม app theme |
 | Tree icons | ตาม app theme (`getTreeIcons`) |
 | Preview | github-markdown-css + override ใน `preview.css` |

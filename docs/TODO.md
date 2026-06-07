@@ -1,6 +1,6 @@
 # MD Editor — TODO List
 
-**Current version:** `2026.06.07-1`  
+**Current version:** `2026.06.07-2`  
 **Status:** MVP Complete + UI Redesign ✅
 
 ---

@@ -1,6 +1,6 @@
 # MD Editor — Testing Checklist
 
-**Version:** `2026.06.07-1`  
+**Version:** `2026.06.07-2`  
 **Last updated:** 2026-06-07
 
 ---

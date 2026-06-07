@@ -79,7 +79,7 @@ Use cases หลัก:
 - Save / Save As / Export HTML / Export PDF
 - Settings modal (General, Editor, Files, Export)
 - Formatting — expanded toolbar + native menus + shortcuts
-- Color scheme (system/light/dark) + app themes (apple/ibm/warm)
+- Color scheme (system/light/dark) + app themes (default/blue/warm)
 - Lucide icon toolbar, UI redesign (chrome, dialogs, empty states)
 - Sync scroll, view modes per tab
 - Find & Replace, Link/Reference/Emoji/Symbols dialogs

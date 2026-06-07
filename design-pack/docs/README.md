@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `2026.06.07-1` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `2026.06.07-2` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -31,7 +31,7 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
 - Modal with General, Editor, Files, Export tabs (`Cmd+,`)
 - **Color scheme** — System / Light / Dark (`ColorSchemeToggle`)
-- **App theme** — Apple / IBM / Warm (tokens + file tree icons)
+- **App theme** — Default / Blue / Warm (tokens + file tree icons)
 - Sync scroll, sidebar width/collapse, font size, line wrap, PDF export options
 - Preferences persisted to `{app_config_dir}/preferences.json`
 

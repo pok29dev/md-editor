@@ -1,6 +1,6 @@
 # Editor Toolbar — Markdown-Viewer Reference + Lucide Icons
 
-**Version:** 1.0 (md-editor `2026.06.07-1`)  
+**Version:** 1.0 (md-editor `2026.06.07-2`)  
 **Last updated:** 2026-06-07  
 **Purpose:** เอกสารอ้างอิง toolbar ของ [Markdown-Viewer](https://github.com/ThisIs-Developer/Markdown-Viewer) สำหรับ implement ใน md-editor โดยใช้ **lucide-react**
 
@@ -363,7 +363,7 @@ Maximize2, Search, CircleHelp, Info
 1. **Icon size:** ใช้ `size={16}` และ `strokeWidth={1.75}` ให้สอดคล้องกับ `lucide/format.tsx` ปัจจุบัน
 2. **Text buttons:** ปุ่ม `Aa`, `H1`, `L` ใน MV ใช้ class `text-tool` — ถ้าต้องการ parity ใช้ `<span>` label แทน icon ไม่ต้องมี Lucide
 3. **Reference icon:** MV ใช้ CSS `content: "[ ]"` — ทางเลือกใน md-editor คือ `Bookmark` หรือ text label `[ ]`
-4. **Theme icons:** `getFormatIcons()` คืน lucide ทุก theme แล้ว — ไม่ต้อง duplicate ใน apple/ibm/warm
+4. **Theme icons:** `getFormatIcons()` คืน lucide ทุก theme แล้ว — ไม่ต้อง duplicate ใน default/blue/warm
 5. **Find button:** อยู่ title bar ไม่ใช่ editor toolbar — ไม่ต้อง duplicate ใน `EditorToolbar`
 6. **New actions:** ก่อนเพิ่มปุ่ม ต้องเพิ่ม `FormatActionId` + handler ใน `formatActions.ts` ก่อน
 

@@ -289,7 +289,7 @@ interface EditorTab {
 
 interface AppPreferences {
   colorScheme: 'light' | 'dark' | 'system';
-  theme: 'apple' | 'ibm' | 'warm';
+  theme: 'default' | 'blue' | 'warm';
   sidebarWidth: number;
   sidebarCollapsed: boolean;
   syncScroll: boolean;

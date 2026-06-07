@@ -4,6 +4,8 @@ import { useEditorStore } from "../../stores/editorStore";
 import { runFormatAction } from "../../hooks/useMarkdownFormat";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { EMOJI_PRESETS, SYMBOL_PRESETS } from "../../lib/editor/pickerPresets";
+import { MarkdownHelpView } from "./MarkdownHelpView";
+import markdownHelpContent from "../../../markdown-help.md?raw";
 
 function DialogShell({
   open,
@@ -11,12 +13,14 @@ function DialogShell({
   onClose,
   children,
   wide = false,
+  help = false,
 }: {
   open: boolean;
   label: string;
   onClose: () => void;
   children: React.ReactNode;
   wide?: boolean;
+  help?: boolean;
 }) {
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, open);
@@ -39,7 +43,7 @@ function DialogShell({
     <div className="app-dialog-overlay" onClick={onClose}>
       <div
         ref={modalRef}
-        className={`app-dialog${wide ? " app-dialog--wide" : ""}`}
+        className={`app-dialog${wide ? " app-dialog--wide" : ""}${help ? " app-dialog--help" : ""}`}
         role="dialog"
         aria-label={label}
         aria-modal="true"
@@ -284,31 +288,19 @@ export function HelpDialog() {
   const setOpen = useEditorStore((s) => s.setHelpDialogOpen);
 
   return (
-    <DialogShell open={open} label="Editor help" onClose={() => setOpen(false)} wide>
+    <DialogShell
+      open={open}
+      label="Markdown syntax reference"
+      onClose={() => setOpen(false)}
+      wide
+      help
+    >
       <div className="app-dialog-header">
-        <span>Editor help</span>
+        <span>Markdown syntax reference</span>
         <button type="button" className="app-dialog-close" aria-label="Close" onClick={() => setOpen(false)}>×</button>
       </div>
-      <div className="toolbar-help-body">
-        <h3>Formatting</h3>
-        <ul>
-          <li>Use the toolbar to wrap selections with Markdown syntax.</li>
-          <li>Heading level applies to the current line or selected lines.</li>
-          <li>Lists, blockquotes, and callouts use line prefixes.</li>
-        </ul>
-        <h3>Keyboard shortcuts</h3>
-        <ul>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>B</kbd> — Bold</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>I</kbd> — Italic</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>K</kbd> — Insert link</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>`</kbd> — Inline code</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>L</kbd> — Task list</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>F</kbd> — Find &amp; replace</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Z</kbd> — Undo</li>
-          <li><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd> — Redo</li>
-        </ul>
-      </div>
-      <div className="app-dialog-actions">
+      {open && <MarkdownHelpView content={markdownHelpContent} />}
+      <div className="app-dialog-actions app-dialog-actions--help">
         <button type="button" className="app-dialog-btn app-dialog-btn--primary" onClick={() => setOpen(false)}>Close</button>
       </div>
     </DialogShell>

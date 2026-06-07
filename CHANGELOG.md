@@ -2,13 +2,25 @@
 
 รูปแบบ version: `yyyy.mm.dd-build`
 
+## [2026.06.07-2] — 2026-06-07
+
+### Added
+
+- **Markdown help** — Help dialog แสดง `markdown-help.md` ผ่าน preview pipeline (Mermaid, MathJax)
+- **Sidebar open folder** — ปุ่ม `FolderOpen` ใน sidebar title bar
+
+### Changed
+
+- **App theme names** — `apple` → `default`, `ibm` → `blue` (migrate preferences อัตโนมัติ)
+- Settings theme picker แสดง **Default** / **Blue** / **Warm Editor**
+
 ## [2026.06.07-1] — 2026-06-07
 
 ### Added
 
 - **UI redesign** — Chrome, workspace, overlays, a11y polish (Phases 1–5)
 - **Lucide icons** — title bar, editor toolbar, color scheme toggle, panel controls
-- **App themes** — Apple / IBM / Warm (`data-app-theme`) แยกจาก color scheme
+- **App themes** — Default / Blue / Warm (`data-app-theme`) แยกจาก color scheme
 - **Expanded editor toolbar** — 7 กลุ่ม (history, heading, inline, align, lists, insert, utilities) sync กับ native menu
 - **Native menus** — File, Edit, Insert, Format, Window, Help ครบ (`useAppMenu.ts`)
 - **File tree keyboard nav** — ↑↓ Enter, →← expand/collapse, Home/End

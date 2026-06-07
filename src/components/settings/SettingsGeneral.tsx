@@ -24,8 +24,8 @@ const APP_THEMES: {
   description: string;
   available: boolean;
 }[] = [
-  { value: "apple", label: "Apple", description: "Native macOS palette & icons", available: true },
-  { value: "ibm", label: "IBM", description: "Carbon-inspired, sharp & precise", available: true },
+  { value: "default", label: "Default", description: "Native macOS palette & icons", available: true },
+  { value: "blue", label: "Blue", description: "Carbon-inspired, sharp & precise", available: true },
   { value: "warm", label: "Warm Editor", description: "Soft editorial tones", available: true },
 ];
 
@@ -54,8 +54,8 @@ function ColorSchemePreview({ variant }: { variant: "system" | "light" | "dark" 
 
 function AppThemePreview({ variant }: { variant: AppTheme }) {
   const swatches: Record<AppTheme, { accent: string; bg: string }> = {
-    apple: { accent: "#007aff", bg: "#f8f8fa" },
-    ibm: { accent: "#0f62fe", bg: "#f4f4f4" },
+    default: { accent: "#007aff", bg: "#f8f8fa" },
+    blue: { accent: "#0f62fe", bg: "#f4f4f4" },
     warm: { accent: "#d97706", bg: "#faf6f0" },
   };
   const { accent, bg } = swatches[variant];

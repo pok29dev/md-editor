@@ -9,8 +9,8 @@ SRC="$ROOT/src"
 rm -rf "$PACK/docs" "$PACK/styles" "$PACK/components" "$PACK/hooks" "$PACK/lib"
 mkdir -p "$PACK/docs" "$PACK/styles/themes"
 mkdir -p "$PACK/components/layout" "$PACK/components/editor" "$PACK/components/settings"
-mkdir -p "$PACK/components/icons/lucide" "$PACK/components/icons/themes/apple"
-mkdir -p "$PACK/components/icons/themes/ibm" "$PACK/components/icons/themes/warm"
+mkdir -p "$PACK/components/icons/lucide" "$PACK/components/icons/themes/default"
+mkdir -p "$PACK/components/icons/themes/blue" "$PACK/components/icons/themes/warm"
 mkdir -p "$PACK/hooks" "$PACK/lib/theme" "$PACK/screenshots"
 
 # Docs
@@ -46,8 +46,8 @@ cp "$SRC/components/settings/"*.tsx "$PACK/components/settings/"
 # Icons — Lucide toolbar/format/colorScheme + theme tree + panel
 cp "$SRC/components/icons/"*.tsx "$PACK/components/icons/" 2>/dev/null || true
 cp "$SRC/components/icons/lucide/"*.tsx "$PACK/components/icons/lucide/"
-cp "$SRC/components/icons/themes/apple/"*.tsx "$PACK/components/icons/themes/apple/"
-cp "$SRC/components/icons/themes/ibm/"*.tsx "$PACK/components/icons/themes/ibm/"
+cp "$SRC/components/icons/themes/default/"*.tsx "$PACK/components/icons/themes/default/"
+cp "$SRC/components/icons/themes/blue/"*.tsx "$PACK/components/icons/themes/blue/"
 cp "$SRC/components/icons/themes/warm/"*.tsx "$PACK/components/icons/themes/warm/"
 
 # Hooks + theme router (reference for menu/toolbar wiring)
