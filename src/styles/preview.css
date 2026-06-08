@@ -24,6 +24,43 @@
   font-size: 14px;
 }
 
+/* Lists — Tailwind preflight sets list-style: none on ul/ol globally */
+.preview-content .markdown-body ul:not(.no-list) {
+  list-style-type: disc;
+}
+
+.preview-content .markdown-body ol:not(.no-list) {
+  list-style-type: decimal;
+}
+
+.preview-content .markdown-body ol ol,
+.preview-content .markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.preview-content .markdown-body ul ul ol,
+.preview-content .markdown-body ul ol ol,
+.preview-content .markdown-body ol ul ol,
+.preview-content .markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.preview-content .markdown-body ul ul:not(.no-list) {
+  list-style-type: circle;
+}
+
+.preview-content .markdown-body ul ul ul:not(.no-list) {
+  list-style-type: square;
+}
+
+.preview-content .markdown-body li {
+  display: list-item;
+}
+
+.preview-content .markdown-body .task-list-item {
+  list-style-type: none;
+}
+
 [data-color-scheme="dark"] .preview-content .markdown-body,
 :root:not([data-color-scheme="light"]) .preview-content .markdown-body {
   color-scheme: dark;
