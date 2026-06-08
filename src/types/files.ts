@@ -27,6 +27,7 @@ export interface AppPreferences {
   syncScroll: boolean;
   defaultViewMode: string;
   restoreLastFolderOnStartup: boolean;
+  folderTreeExpansion: string;
   editorFontSize: number;
   editorTabSize: number;
   editorLineNumbers: boolean;

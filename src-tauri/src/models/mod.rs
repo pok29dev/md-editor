@@ -44,6 +44,8 @@ pub struct AppPreferences {
     pub default_view_mode: String,
     #[serde(default = "default_true")]
     pub restore_last_folder_on_startup: bool,
+    #[serde(default = "default_folder_tree_expansion")]
+    pub folder_tree_expansion: String,
     #[serde(default = "default_editor_font_size")]
     pub editor_font_size: u32,
     #[serde(default = "default_editor_tab_size")]
@@ -81,6 +83,10 @@ fn default_view_mode() -> String {
     "split".to_string()
 }
 
+fn default_folder_tree_expansion() -> String {
+    "one_level".to_string()
+}
+
 fn default_editor_font_size() -> u32 {
     14
 }
@@ -107,6 +113,7 @@ impl Default for AppPreferences {
             sync_scroll: default_true(),
             default_view_mode: default_view_mode(),
             restore_last_folder_on_startup: default_true(),
+            folder_tree_expansion: default_folder_tree_expansion(),
             editor_font_size: default_editor_font_size(),
             editor_tab_size: default_editor_tab_size(),
             editor_line_numbers: default_true(),

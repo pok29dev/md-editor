@@ -12,6 +12,7 @@ import {
   persistPreferences,
   syncRecentFoldersFromPreferences,
 } from "../lib/tauri/preferences";
+import { isMarkdownPath } from "../lib/files/markdownExtensions";
 
 function basename(path: string): string {
   const parts = path.split(/[/\\]/);
@@ -45,11 +46,14 @@ export function useFileTree() {
     async (path: string) => {
       setLoading(true);
       setError(null);
+      setRootFolder(path);
+      setFileTree([]);
+      useAppStore.setState({ expandedPaths: {} });
       try {
         const tree = await scanFolder(path);
         setRootFolder(path);
         setFileTree(tree.nodes);
-        useAppStore.getState().expandAllFolders(tree.nodes);
+        useAppStore.getState().applyFolderExpansion(tree.nodes);
         const prefs = await addRecentFolder(path);
         syncRecentFoldersFromPreferences(prefs);
         await persistPreferences();
@@ -129,6 +133,27 @@ export function useFileTree() {
     }
   }, [loadFolder]);
 
+  const handleExternalMarkdownPaths = useCallback(
+    async (paths: string[]) => {
+      for (const path of paths) {
+        if (!isMarkdownPath(path)) continue;
+
+        await openFile(path);
+
+        const rootFolder = useAppStore.getState().rootFolder;
+        const parent = dirname(path);
+        if (!rootFolder || !isUnderRoot(path, rootFolder)) {
+          try {
+            await loadFolder(parent);
+          } catch {
+            // File opened; sidebar tree optional if parent has no markdown files
+          }
+        }
+      }
+    },
+    [loadFolder, openFile],
+  );
+
   return {
     openFolder,
     openMarkdownFile,
@@ -136,5 +161,6 @@ export function useFileTree() {
     refreshTree,
     openFile,
     restoreLastFolder,
+    handleExternalMarkdownPaths,
   };
 }

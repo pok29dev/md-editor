@@ -7,6 +7,7 @@ import { useEditorStore } from "../../stores/editorStore";
 import { ColorSchemeToggle } from "./ColorSchemeToggle";
 import { PdfExportOverlay } from "../export/PdfExportOverlay";
 import { getToolbarIcons } from "../../lib/theme/icons";
+import { handleWindowDrag } from "../../lib/tauri/windowDrag";
 import "../../styles/titlebar.css";
 
 const VIEW_MODES: { mode: ViewMode; label: string; title: string }[] = [
@@ -56,11 +57,14 @@ export function WindowTitleBar() {
     <header
       className={`window-titlebar ${overlay ? "window-titlebar--overlay" : ""}`}
     >
-      <div
-        className="window-titlebar-drag"
-        data-tauri-drag-region={overlay ? true : undefined}
-        aria-hidden
-      />
+      {overlay && (
+        <div
+          className="window-titlebar-drag window-titlebar-drag--leading"
+          data-tauri-drag-region
+          onMouseDown={handleWindowDrag}
+          aria-hidden
+        />
+      )}
 
       <div className="window-titlebar-tools">
         <div
@@ -145,11 +149,14 @@ export function WindowTitleBar() {
         </div>
       </div>
 
-      <div
-        className="window-titlebar-drag"
-        data-tauri-drag-region={overlay ? true : undefined}
-        aria-hidden
-      />
+      {overlay && (
+        <div
+          className="window-titlebar-drag window-titlebar-drag--trailing"
+          data-tauri-drag-region
+          onMouseDown={handleWindowDrag}
+          aria-hidden
+        />
+      )}
 
       <div className="window-titlebar-trailing">
         <ColorSchemeToggle variant="window" />

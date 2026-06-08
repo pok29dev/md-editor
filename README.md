@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `2026.06.07-2` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `2026.06.08-1` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -109,7 +109,7 @@ Format shortcuts apply when the editor is focused and no modal is open.
 ## Version Format
 
 `yyyy.mm.dd-build` — UI version in `VERSION` / `src/version.ts`  
-Cargo/Tauri semver: `2026.6.7`
+Cargo/Tauri semver: `2026.6.8`
 
 ## Tech Stack
 

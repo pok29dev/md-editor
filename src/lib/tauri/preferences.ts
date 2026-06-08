@@ -26,6 +26,11 @@ import {
   normalizeAppTheme,
   normalizeColorScheme,
 } from "../theme/defaults";
+import {
+  expandedPathsForMode,
+  FOLDER_TREE_EXPANSION_DEFAULT,
+  normalizeFolderTreeExpansion,
+} from "../files/treeExpansion";
 import { getPreferences, savePreferences } from "./commands";
 
 export {
@@ -44,6 +49,7 @@ export const DEFAULT_PREFERENCES: AppPreferences = {
   syncScroll: true,
   defaultViewMode: "split",
   restoreLastFolderOnStartup: true,
+  folderTreeExpansion: FOLDER_TREE_EXPANSION_DEFAULT,
   editorFontSize: EDITOR_FONT_SIZE_DEFAULT,
   editorTabSize: EDITOR_TAB_SIZE_DEFAULT,
   editorLineNumbers: true,
@@ -78,6 +84,9 @@ export function normalizePreferences(
   merged.theme = normalizeAppTheme(
     isAppTheme(merged.theme) ? merged.theme : DEFAULT_APP_THEME,
   );
+  merged.folderTreeExpansion = normalizeFolderTreeExpansion(
+    merged.folderTreeExpansion,
+  );
 
   return merged;
 }
@@ -95,6 +104,7 @@ export function buildPreferencesFromState(
     syncScroll: state.syncScroll,
     defaultViewMode: state.defaultViewMode,
     restoreLastFolderOnStartup: state.restoreLastFolderOnStartup,
+    folderTreeExpansion: state.folderTreeExpansion,
     editorFontSize: state.editorFontSize,
     editorTabSize: state.editorTabSize,
     editorLineNumbers: state.editorLineNumbers,
@@ -135,6 +145,9 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
     sidebarWidth,
     defaultViewMode,
     restoreLastFolderOnStartup: normalized.restoreLastFolderOnStartup,
+    folderTreeExpansion: normalizeFolderTreeExpansion(
+      normalized.folderTreeExpansion,
+    ),
     editorFontSize,
     editorTabSize,
     editorLineNumbers: normalized.editorLineNumbers ?? true,
@@ -216,8 +229,18 @@ export function resetEditorSettings(): void {
 }
 
 export function resetFilesSettings(): void {
-  useAppStore.setState({
-    restoreLastFolderOnStartup: DEFAULT_PREFERENCES.restoreLastFolderOnStartup,
+  useAppStore.setState((state) => {
+    const folderTreeExpansion = normalizeFolderTreeExpansion(
+      DEFAULT_PREFERENCES.folderTreeExpansion,
+    );
+    return {
+      restoreLastFolderOnStartup: DEFAULT_PREFERENCES.restoreLastFolderOnStartup,
+      folderTreeExpansion,
+      expandedPaths:
+        state.rootFolder && state.fileTree.length > 0
+          ? expandedPathsForMode(state.fileTree, folderTreeExpansion)
+          : state.expandedPaths,
+    };
   });
   void flushPersistPreferences();
 }

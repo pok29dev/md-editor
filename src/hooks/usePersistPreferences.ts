@@ -14,6 +14,7 @@ function preferencesChanged(
     state.sidebarWidth === prev.sidebarWidth &&
     state.defaultViewMode === prev.defaultViewMode &&
     state.restoreLastFolderOnStartup === prev.restoreLastFolderOnStartup &&
+    state.folderTreeExpansion === prev.folderTreeExpansion &&
     state.editorFontSize === prev.editorFontSize &&
     state.editorTabSize === prev.editorTabSize &&
     state.editorLineNumbers === prev.editorLineNumbers &&
@@ -30,6 +31,7 @@ function persistDelay(
   if (
     state.defaultViewMode !== prev.defaultViewMode ||
     state.restoreLastFolderOnStartup !== prev.restoreLastFolderOnStartup ||
+    state.folderTreeExpansion !== prev.folderTreeExpansion ||
     state.editorTabSize !== prev.editorTabSize ||
     state.editorLineNumbers !== prev.editorLineNumbers ||
     state.editorLineWrap !== prev.editorLineWrap ||

@@ -2,6 +2,19 @@
 
 รูปแบบ version: `yyyy.mm.dd-build`
 
+## [2026.06.08-1] — 2026-06-08
+
+### Added
+
+- **Open With (.md)** — ลงทะเบียน file association และเปิดไฟล์จาก OS (double-click / Open With)
+- **Settings → Files → Folder tree expansion** — เลือกขยาย tree แบบ one level หรือ all folders
+
+### Fixed
+
+- **Open folder** — ล้าง tree โฟลเดอร์เดิมก่อนโหลดโฟลเดอร์ใหม่
+- **Titlebar drag** — ลากหน้าต่างได้บน macOS (`startDragging` + drag zones)
+- **Folder toggle** — คลิกยุบ/ขยายโฟลเดอร์ทำงานถูกต้องหลังเปลี่ยน default expansion
+
 ## [2026.06.07-2] — 2026-06-07
 
 ### Added

@@ -1,4 +1,4 @@
-name: Release macOS (unsigned)
+name: Release All (unsigned)
 
 on:
   workflow_dispatch:
@@ -7,6 +7,9 @@ on:
         description: "Unsigned tag e.g. v.2026.06.08-1-unsigned. Leave empty to use package.json."
         required: false
         type: string
+  push:
+    tags:
+      - "v.*-unsigned"
 
 permissions:
   contents: write
@@ -15,7 +18,7 @@ env:
   CARGO_TERM_COLOR: always
 
 concurrency:
-  group: release-unsigned-${{ github.workflow }}-${{ github.ref }}
+  group: release-all-unsigned-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -94,7 +97,7 @@ jobs:
           echo "version_tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
           echo "tauri_version=$TAURI_VERSION" >> "$GITHUB_OUTPUT"
 
-  build-release:
+  build-macos:
     name: Build macOS universal (unsigned)
     needs: validate-version
     if: needs.validate-version.outputs.should_release == 'true'
@@ -123,6 +126,7 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: src-tauri -> target
+          shared-key: release-all-unsigned
 
       - name: Install frontend dependencies
         run: npm ci
@@ -130,7 +134,7 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
-      - name: Build and upload Tauri release assets
+      - name: Build and upload macOS release assets
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -138,11 +142,110 @@ jobs:
           tagName: ${{ needs.validate-version.outputs.version_tag }}
           releaseName: "MD Editor ${{ needs.validate-version.outputs.version_tag }}"
           releaseBody: |
-            Unsigned macOS universal release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
+            Unsigned all-platform release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
             - Tauri/Cargo version: ${{ needs.validate-version.outputs.tauri_version }}
-            - Ad-hoc signing (`signingIdentity: "-"`)
-            - Not notarized — first launch: right-click → Open
+            - macOS: universal binary, ad-hoc signing (`signingIdentity: "-"`), not notarized
+            - Windows: MSI + NSIS (unsigned)
+            - Linux: .deb + AppImage (when bundled)
+
+            **macOS first launch:** right-click → Open
           releaseDraft: true
           prerelease: false
           args: --target universal-apple-darwin
+
+  build-windows:
+    name: Build Windows x64 (unsigned)
+    needs: validate-version
+    if: needs.validate-version.outputs.should_release == 'true'
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          shared-key: release-all-unsigned
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Verify frontend build
+        run: npm run build
+
+      - name: Sync Windows MSI version
+        run: node scripts/sync-windows-msi-version.mjs
+
+      - name: Build and upload Windows release assets
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ needs.validate-version.outputs.version_tag }}
+          releaseName: "MD Editor ${{ needs.validate-version.outputs.version_tag }}"
+          releaseDraft: true
+          prerelease: false
+          args: ""
+
+  build-linux:
+    name: Build Linux x64 (unsigned)
+    needs: validate-version
+    if: needs.validate-version.outputs.should_release == 'true'
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          shared-key: release-all-unsigned
+
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Verify frontend build
+        run: npm run build
+
+      - name: Build and upload Linux release assets
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ needs.validate-version.outputs.version_tag }}
+          releaseName: "MD Editor ${{ needs.validate-version.outputs.version_tag }}"
+          releaseDraft: true
+          prerelease: false
+          args: ""

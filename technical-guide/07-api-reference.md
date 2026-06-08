@@ -173,7 +173,7 @@ interface AppPreferences {
 
 ```typescript
 // src/version.ts
-export const APP_VERSION = "2026.06.07-2";
+export const APP_VERSION = "2026.06.08-1";
 ```
 
 Format: `yyyy.mm.dd-build`

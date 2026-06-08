@@ -16,6 +16,8 @@ import { LinkDialog } from "../editor/LinkDialog";
 import { SettingsModal } from "../settings/SettingsModal";
 import { useAppMenu } from "../../hooks/useAppMenu";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
+import { invoke, isTauri } from "@tauri-apps/api/core";
+import { useOpenExternalFileEvents } from "../../hooks/useOpenExternalFiles";
 import { usePersistPreferences } from "../../hooks/usePersistPreferences";
 import { loadPreferences, applySidebarWidth } from "../../lib/tauri/preferences";
 
@@ -51,12 +53,19 @@ export function AppShell() {
   useKeyboardShortcuts();
   useSyncScroll();
   usePersistPreferences();
-  const { restoreLastFolder } = useFileTree();
+  const { restoreLastFolder, handleExternalMarkdownPaths } = useFileTree();
+  useOpenExternalFileEvents(handleExternalMarkdownPaths);
 
   useEffect(() => {
     void (async () => {
       await loadPreferences().catch(() => {});
       await restoreLastFolder();
+      if (isTauri()) {
+        const pending = await invoke<string[]>("get_pending_open_files");
+        if (pending.length > 0) {
+          await handleExternalMarkdownPaths(pending);
+        }
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

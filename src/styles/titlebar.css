@@ -12,22 +12,36 @@
 .window-titlebar--overlay {
   height: 52px;
   min-height: 52px;
-  padding-left: 78px;
+  padding: 0 4px 0 0;
   box-sizing: border-box;
 }
 
 .window-titlebar-drag {
-  flex: 1;
+  flex: 1 1 0;
   min-width: 24px;
   height: 100%;
   align-self: stretch;
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+
+.window-titlebar-drag--leading {
+  flex: 1 1 78px;
+  min-width: 78px;
+}
+
+.window-titlebar-drag--trailing {
+  flex: 1 1 24px;
 }
 
 .window-titlebar-tools {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex: 0 0 auto;
   flex-shrink: 0;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .window-titlebar .toolbar-divider {
@@ -50,6 +64,8 @@
   background: transparent;
   color: var(--text-secondary);
   flex-shrink: 0;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .window-titlebar .toolbar-icon-btn:hover:not(:disabled) {
@@ -72,6 +88,8 @@
   background: var(--bg-primary);
   padding: 2px;
   gap: 1px;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .window-titlebar .view-mode-segmented .segment-btn {
@@ -101,8 +119,9 @@
   align-items: center;
   gap: 2px;
   flex-shrink: 0;
-  margin-left: auto;
   padding-right: 4px;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .window-titlebar-settings-btn {
@@ -121,6 +140,8 @@
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-secondary);
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
 }
 
 .window-titlebar-color-scheme-toggle:hover {

@@ -15,6 +15,12 @@ import {
   type ExportPdfTheme,
 } from "../lib/markdown/exportSettings";
 import type { TreeNode } from "../types/files";
+import {
+  expandedPathsForMode,
+  FOLDER_TREE_EXPANSION_DEFAULT,
+  normalizeFolderTreeExpansion,
+  type FolderTreeExpansion,
+} from "../lib/files/treeExpansion";
 import { pathsEqual } from "../lib/paths";
 import {
   DEFAULT_APP_THEME,
@@ -31,6 +37,7 @@ import type {
 export type ViewMode = "split" | "editor" | "preview";
 export type { AppTheme, ColorScheme, ResolvedColorScheme };
 export type { ExportPdfPageSize, ExportPdfTheme } from "../lib/markdown/exportSettings";
+export type { FolderTreeExpansion } from "../lib/files/treeExpansion";
 
 export interface EditorTab {
   id: string;
@@ -50,6 +57,7 @@ interface AppState {
   syncScroll: boolean;
   defaultViewMode: ViewMode;
   restoreLastFolderOnStartup: boolean;
+  folderTreeExpansion: FolderTreeExpansion;
   editorFontSize: number;
   editorTabSize: 2 | 4;
   editorLineNumbers: boolean;
@@ -75,6 +83,7 @@ interface AppState {
   setSyncScroll: (enabled: boolean) => void;
   setDefaultViewMode: (mode: ViewMode) => void;
   setRestoreLastFolderOnStartup: (enabled: boolean) => void;
+  setFolderTreeExpansion: (mode: FolderTreeExpansion) => void;
   setEditorFontSize: (size: number) => void;
   setEditorTabSize: (size: 2 | 4) => void;
   setEditorLineNumbers: (enabled: boolean) => void;
@@ -88,8 +97,8 @@ interface AppState {
   setFileTree: (nodes: TreeNode[]) => void;
   setFileTreeLoading: (loading: boolean) => void;
   setFileTreeError: (error: string | null) => void;
-  toggleFolder: (path: string) => void;
-  expandAllFolders: (nodes: TreeNode[]) => void;
+  toggleFolder: (path: string, expanded: boolean) => void;
+  applyFolderExpansion: (nodes: TreeNode[]) => void;
   addTab: (tab?: Partial<EditorTab>) => void;
   closeTab: (id: string) => void;
   setActiveTab: (id: string) => void;
@@ -118,20 +127,6 @@ function createTab(
   };
 }
 
-function collectFolderPaths(nodes: TreeNode[]): Record<string, boolean> {
-  const paths: Record<string, boolean> = {};
-  const walk = (list: TreeNode[]) => {
-    for (const node of list) {
-      if (node.type === "folder") {
-        paths[node.path] = true;
-        if (node.children) walk(node.children);
-      }
-    }
-  };
-  walk(nodes);
-  return paths;
-}
-
 export const useAppStore = create<AppState>((set, get) => ({
   colorScheme: DEFAULT_COLOR_SCHEME,
   resolvedColorScheme: "light",
@@ -141,6 +136,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   syncScroll: true,
   defaultViewMode: "split",
   restoreLastFolderOnStartup: true,
+  folderTreeExpansion: FOLDER_TREE_EXPANSION_DEFAULT,
   editorFontSize: EDITOR_FONT_SIZE_DEFAULT,
   editorTabSize: EDITOR_TAB_SIZE_DEFAULT,
   editorLineNumbers: true,
@@ -183,6 +179,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     })),
   setRestoreLastFolderOnStartup: (restoreLastFolderOnStartup) =>
     set({ restoreLastFolderOnStartup }),
+  setFolderTreeExpansion: (folderTreeExpansion) =>
+    set((s) => {
+      const mode = normalizeFolderTreeExpansion(folderTreeExpansion);
+      return {
+        folderTreeExpansion: mode,
+        expandedPaths:
+          s.rootFolder && s.fileTree.length > 0
+            ? expandedPathsForMode(s.fileTree, mode)
+            : s.expandedPaths,
+      };
+    }),
   setEditorFontSize: (editorFontSize) =>
     set({ editorFontSize: clampEditorFontSize(editorFontSize) }),
   setEditorTabSize: (editorTabSize) =>
@@ -209,16 +216,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   setFileTreeLoading: (fileTreeLoading) => set({ fileTreeLoading }),
   setFileTreeError: (fileTreeError) => set({ fileTreeError }),
 
-  toggleFolder: (path) =>
+  toggleFolder: (path, expanded) =>
     set((s) => ({
       expandedPaths: {
         ...s.expandedPaths,
-        [path]: !s.expandedPaths[path],
+        [path]: !expanded,
       },
     })),
 
-  expandAllFolders: (nodes) =>
-    set({ expandedPaths: collectFolderPaths(nodes) }),
+  applyFolderExpansion: (nodes) => {
+    const mode = get().folderTreeExpansion;
+    set({ expandedPaths: expandedPathsForMode(nodes, mode) });
+  },
 
   findTabByPath: (path) =>
     get().tabs.find((t) => pathsEqual(t.path, path)),

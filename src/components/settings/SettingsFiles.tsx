@@ -1,6 +1,14 @@
-import { useAppStore } from "../../stores/appStore";
+import { useAppStore, type FolderTreeExpansion } from "../../stores/appStore";
 import { clearRecentFolders, resetFilesSettings } from "../../lib/tauri/preferences";
 import { SettingsResetButton } from "./SettingsResetButton";
+
+const FOLDER_EXPANSION_OPTIONS: {
+  value: FolderTreeExpansion;
+  label: string;
+}[] = [
+  { value: "one_level", label: "One level" },
+  { value: "all", label: "All folders" },
+];
 
 function folderLabel(path: string): string {
   const parts = path.split(/[/\\]/);
@@ -16,6 +24,8 @@ export function SettingsFiles() {
   const setRestoreLastFolderOnStartup = useAppStore(
     (s) => s.setRestoreLastFolderOnStartup,
   );
+  const folderTreeExpansion = useAppStore((s) => s.folderTreeExpansion);
+  const setFolderTreeExpansion = useAppStore((s) => s.setFolderTreeExpansion);
 
   return (
     <section className="settings-section">
@@ -33,6 +43,27 @@ export function SettingsFiles() {
         />
         <span className="settings-hint">
           Automatically reopen the last workspace when the app launches
+        </span>
+      </label>
+
+      <label className="settings-field">
+        <span className="settings-label">Folder tree expansion</span>
+        <select
+          className="settings-select"
+          value={folderTreeExpansion}
+          onChange={(e) =>
+            setFolderTreeExpansion(e.target.value as FolderTreeExpansion)
+          }
+        >
+          {FOLDER_EXPANSION_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <span className="settings-hint">
+          When opening a folder, expand only top-level folders or expand the
+          entire tree
         </span>
       </label>
 
@@ -71,7 +102,7 @@ export function SettingsFiles() {
 
       <SettingsResetButton
         onReset={resetFilesSettings}
-        label="Reset startup option to default"
+        label="Reset file options to default"
       />
 
       <style>{`
@@ -108,6 +139,16 @@ export function SettingsFiles() {
         }
         .settings-toggle .settings-hint {
           flex: 1 1 100%;
+        }
+        .settings-select {
+          width: 100%;
+          max-width: 280px;
+          padding: 8px 10px;
+          border: 1px solid var(--border);
+          border-radius: 6px;
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+          font-size: 13px;
         }
         .settings-path {
           margin: 0;

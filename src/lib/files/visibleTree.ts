@@ -13,7 +13,7 @@ export function isFolderExpanded(
   depth: number,
   expandedPaths: Record<string, boolean>,
 ): boolean {
-  return expandedPaths[path] ?? depth < 2;
+  return expandedPaths[path] ?? depth < 1;
 }
 
 export function flattenVisibleTree(
