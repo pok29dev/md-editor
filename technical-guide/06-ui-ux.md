@@ -6,9 +6,10 @@
 ┌─ WindowTitleBar (macOS overlay) ────────────────────────────────┐
 │  [Split|Edit|Preview]  Find  Sync  Export HTML        [Theme]   │
 ├─ SidebarTitleBar ─┬─ TabBar ─────────────────────────────────────┤
-│  📁 folder  ↻  ✕  │  README.md •  notes.md  [+]  [☰ sidebar]   │
+│  📁 folder name    │  README.md •  notes.md  [+]  [☰ sidebar]   │
 ├─ Sidebar ──────────┼─ Editor Pane ────────│ Preview Pane ───────┤
-│  FileTree          │  EditorToolbar        │  GitHub-style HTML   │
+│  [📂][▼][▲][↻][◀] │  EditorToolbar        │  PreviewFontControls │
+│  FileTree          │  CodeMirror           │  GitHub-style HTML   │
 │                    │  CodeMirror           │                      │
 ├────────────────────┴───────────────────────┴─────────────────────┤
 │ StatusBar: path • words • chars • Modified/Saved                 │
@@ -41,8 +42,10 @@ Implementation: `react-resizable-panels` ใน `AppShell.tsx` — ซ่อน 
 | File tree | แสดงเฉพาะ `.md` / `.markdown` |
 | Active file | Highlight path ที่ตรง active tab |
 | Expand/collapse | คลิกโฟลเดอร์, state เก็บใน `expandedPaths` |
-| Open folder | ปุ่ม FolderOpen ใน SidebarTitleBar — `⌘⇧O` |
-| Refresh | ปุ่ม ↻ ใน SidebarTitleBar — re-scan folder (เมื่อมีโฟลเดอร์เปิด) |
+| Expand/collapse all | ปุ่มใน `SidebarToolbar` — `expandAllFolders` / `collapseAllFolders` |
+| Open folder | ปุ่ม FolderOpen ใน `SidebarToolbar` — `⌘⇧O` |
+| Refresh | ปุ่ม ↻ ใน `SidebarToolbar` — re-scan folder (เมื่อมีโฟลเดอร์เปิด) |
+| Toolbar bar | แถบแยกใต้ชื่อโฟลเดอร์ (ใน sidebar column), สูง 44px เท่า editor/preview toolbar |
 | Empty state | ข้อความแนะนำ "Open a folder" |
 
 **หมายเหตุ:** Drag-resize sidebar แบบ live ยังเป็น **Post-MVP** — ปรับได้จาก Settings slider
@@ -121,11 +124,16 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | Feature | รายละเอียด |
 |---------|------------|
 | Style | GitHub Markdown CSS |
+| Content width | `.markdown-body` กว้างสูงสุด **700px** (ไม่รวม padding ของ `.preview-content`) |
+| Font size | Default **16px** (`--preview-font-size`); ปรับด้วย `PreviewFontControls` (`-` / scale / `+` / reset) |
+| Font scale display | เปอร์เซ็นต์เทียบ default (16px = 100); ช่วง 12–28px; persist `previewFontSize` |
+| Export | ไม่ใช้ค่า preview font — PDF/HTML ใช้สไตล์ export ของตัวเอง |
+| Toolbar | `PreviewFontControls` สูง 44px (`--workspace-toolbar-height`) |
 | Theme | ตาม `resolvedTheme` (`data-color-mode` บน `.markdown-body`) |
 | Live update | Debounce 100–240ms ตามขนาดเอกสาร |
 | Loading | Skeleton shimmer สำหรับเอกสารใหญ่ |
 | Sync scroll | Toggle ใน title bar — ratio-based scroll |
-| Empty state | "Preview will appear here" |
+| Empty state | "No preview" |
 | Mermaid | Render async หลัง DOM commit |
 | Math | MathJax typeset async |
 

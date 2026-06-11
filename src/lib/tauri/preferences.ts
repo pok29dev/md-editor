@@ -13,6 +13,10 @@ import {
   normalizeEditorTabSize,
 } from "../editor/settings";
 import {
+  clampPreviewFontSize,
+  PREVIEW_FONT_SIZE_DEFAULT,
+} from "../preview/settings";
+import {
   EXPORT_PDF_PAGE_SIZE_DEFAULT,
   EXPORT_PDF_THEME_DEFAULT,
   normalizeExportPdfPageSize,
@@ -51,6 +55,7 @@ export const DEFAULT_PREFERENCES: AppPreferences = {
   restoreLastFolderOnStartup: true,
   folderTreeExpansion: FOLDER_TREE_EXPANSION_DEFAULT,
   editorFontSize: EDITOR_FONT_SIZE_DEFAULT,
+  previewFontSize: PREVIEW_FONT_SIZE_DEFAULT,
   editorTabSize: EDITOR_TAB_SIZE_DEFAULT,
   editorLineNumbers: true,
   editorLineWrap: true,
@@ -106,6 +111,7 @@ export function buildPreferencesFromState(
     restoreLastFolderOnStartup: state.restoreLastFolderOnStartup,
     folderTreeExpansion: state.folderTreeExpansion,
     editorFontSize: state.editorFontSize,
+    previewFontSize: state.previewFontSize,
     editorTabSize: state.editorTabSize,
     editorLineNumbers: state.editorLineNumbers,
     editorLineWrap: state.editorLineWrap,
@@ -126,6 +132,9 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
   const sidebarWidth = clampSidebarWidth(normalized.sidebarWidth);
   const editorFontSize = clampEditorFontSize(
     normalized.editorFontSize ?? EDITOR_FONT_SIZE_DEFAULT,
+  );
+  const previewFontSize = clampPreviewFontSize(
+    normalized.previewFontSize ?? PREVIEW_FONT_SIZE_DEFAULT,
   );
   const editorTabSize = normalizeEditorTabSize(
     normalized.editorTabSize ?? EDITOR_TAB_SIZE_DEFAULT,
@@ -149,6 +158,7 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
       normalized.folderTreeExpansion,
     ),
     editorFontSize,
+    previewFontSize,
     editorTabSize,
     editorLineNumbers: normalized.editorLineNumbers ?? true,
     editorLineWrap: normalized.editorLineWrap ?? true,

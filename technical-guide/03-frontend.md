@@ -7,14 +7,15 @@ App
 └── AppShell
     ├── WindowTitleBar      (view mode, find, sync, overflow, color scheme, settings)
     ├── layout-title-row
-    │   ├── SidebarTitleBar (folder name, open folder, refresh, collapse)
+    │   ├── SidebarTitleBar (folder name only)
     │   └── TabBar          (tabs, new tab, sidebar toggle)
     ├── layout-content-row
     │   ├── Sidebar
-    │   │   └── FileTree    (recursive, keyboard nav)
+    │   │   ├── SidebarToolbar (open folder, expand/collapse all, refresh, hide)
+    │   │   └── FileTree       (recursive, keyboard nav)
     ├── main-workspace
     │       ├── EditorPane → EditorToolbar (7 groups) + MarkdownEditor
-    │       └── PreviewPane → MarkdownPreview
+    │       └── PreviewPane → PreviewFontControls + MarkdownPreview
     ├── StatusBar
     ├── FindReplace         (modal overlay)
     ├── LinkDialog          (modal overlay)
@@ -27,12 +28,14 @@ App
 |-----------|------|--------|
 | `AppShell` | `components/layout/AppShell.tsx` | Root layout, เรียก hooks หลัก, จัด split panels |
 | `WindowTitleBar` | `.../WindowTitleBar.tsx` | macOS overlay title bar + toolbar actions |
-| `SidebarTitleBar` | `.../SidebarTitleBar.tsx` | ชื่อโฟลเดอร์, open folder, refresh tree |
-| `Sidebar` | `.../Sidebar.tsx` | Container file tree, loading/error/empty states |
+| `SidebarTitleBar` | `.../SidebarTitleBar.tsx` | ชื่อโฟลเดอร์ (แถวเดียวกับ Tab bar) |
+| `SidebarToolbar` | `.../SidebarToolbar.tsx` | ปุ่ม open folder, expand/collapse all, refresh, hide sidebar |
+| `Sidebar` | `.../Sidebar.tsx` | `SidebarToolbar` + file tree, loading/error/empty states |
 | `FileTree` | `.../FileTree.tsx` | Tree recursive, keyboard nav, indent guides |
 | `TabBar` | `.../TabBar.tsx` | Multi-tab, dirty indicator (`•`), close |
 | `EditorPane` | `.../EditorPane.tsx` | Wrapper `EditorToolbar` + `MarkdownEditor` ของ active tab |
 | `PreviewPane` | `.../PreviewPane.tsx` | Wrapper `MarkdownPreview` |
+| `PreviewFontControls` | `.../PreviewFontControls.tsx` | ปรับขนาดฟอนต์ preview (`-` / scale / `+` / reset) |
 | `StatusBar` | `.../StatusBar.tsx` | Path, word/char count, Modified/Saved |
 | `ColorSchemeToggle` | `.../ColorSchemeToggle.tsx` | Cycle color scheme: system → light → dark |
 

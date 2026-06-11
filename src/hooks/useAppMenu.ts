@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { isTauri } from "@tauri-apps/api/core";
 import { Menu, Submenu } from "@tauri-apps/api/menu";
-import { APP_VERSION } from "../version";
+import { APP_COPYRIGHT, APP_VERSION } from "../version";
 import { useAppStore } from "../stores/appStore";
 import { useFileActions } from "./useFileActions";
 import { useFileTree } from "./useFileTree";
@@ -90,7 +90,7 @@ export function useAppMenu() {
               About: {
                 name: "MD Editor",
                 version: APP_VERSION,
-                copyright: "© 2026 mrpokx5",
+                copyright: `© ${APP_COPYRIGHT}`,
               },
             },
           },

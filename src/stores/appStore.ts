@@ -7,6 +7,10 @@ import {
   normalizeEditorTabSize,
 } from "../lib/editor/settings";
 import {
+  clampPreviewFontSize,
+  PREVIEW_FONT_SIZE_DEFAULT,
+} from "../lib/preview/settings";
+import {
   EXPORT_PDF_PAGE_SIZE_DEFAULT,
   EXPORT_PDF_THEME_DEFAULT,
   normalizeExportPdfPageSize,
@@ -16,6 +20,8 @@ import {
 } from "../lib/markdown/exportSettings";
 import type { TreeNode } from "../types/files";
 import {
+  collapseAllFolderPaths,
+  collectAllFolderPaths,
   expandedPathsForMode,
   FOLDER_TREE_EXPANSION_DEFAULT,
   normalizeFolderTreeExpansion,
@@ -59,6 +65,7 @@ interface AppState {
   restoreLastFolderOnStartup: boolean;
   folderTreeExpansion: FolderTreeExpansion;
   editorFontSize: number;
+  previewFontSize: number;
   editorTabSize: 2 | 4;
   editorLineNumbers: boolean;
   editorLineWrap: boolean;
@@ -85,6 +92,8 @@ interface AppState {
   setRestoreLastFolderOnStartup: (enabled: boolean) => void;
   setFolderTreeExpansion: (mode: FolderTreeExpansion) => void;
   setEditorFontSize: (size: number) => void;
+  setPreviewFontSize: (size: number) => void;
+  resetPreviewFontSize: () => void;
   setEditorTabSize: (size: 2 | 4) => void;
   setEditorLineNumbers: (enabled: boolean) => void;
   setEditorLineWrap: (enabled: boolean) => void;
@@ -98,6 +107,8 @@ interface AppState {
   setFileTreeLoading: (loading: boolean) => void;
   setFileTreeError: (error: string | null) => void;
   toggleFolder: (path: string, expanded: boolean) => void;
+  expandAllFolders: () => void;
+  collapseAllFolders: () => void;
   applyFolderExpansion: (nodes: TreeNode[]) => void;
   addTab: (tab?: Partial<EditorTab>) => void;
   closeTab: (id: string) => void;
@@ -138,6 +149,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   restoreLastFolderOnStartup: true,
   folderTreeExpansion: FOLDER_TREE_EXPANSION_DEFAULT,
   editorFontSize: EDITOR_FONT_SIZE_DEFAULT,
+  previewFontSize: PREVIEW_FONT_SIZE_DEFAULT,
   editorTabSize: EDITOR_TAB_SIZE_DEFAULT,
   editorLineNumbers: true,
   editorLineWrap: true,
@@ -192,6 +204,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     }),
   setEditorFontSize: (editorFontSize) =>
     set({ editorFontSize: clampEditorFontSize(editorFontSize) }),
+  setPreviewFontSize: (previewFontSize) =>
+    set({ previewFontSize: clampPreviewFontSize(previewFontSize) }),
+  resetPreviewFontSize: () =>
+    set({ previewFontSize: PREVIEW_FONT_SIZE_DEFAULT }),
   setEditorTabSize: (editorTabSize) =>
     set({ editorTabSize: normalizeEditorTabSize(editorTabSize) }),
   setEditorLineNumbers: (editorLineNumbers) => set({ editorLineNumbers }),
@@ -222,6 +238,16 @@ export const useAppStore = create<AppState>((set, get) => ({
         ...s.expandedPaths,
         [path]: !expanded,
       },
+    })),
+
+  expandAllFolders: () =>
+    set((s) => ({
+      expandedPaths: collectAllFolderPaths(s.fileTree),
+    })),
+
+  collapseAllFolders: () =>
+    set((s) => ({
+      expandedPaths: collapseAllFolderPaths(s.fileTree),
     })),
 
   applyFolderExpansion: (nodes) => {

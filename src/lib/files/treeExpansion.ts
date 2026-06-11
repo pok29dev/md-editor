@@ -42,3 +42,17 @@ export function expandedPathsForMode(
     ? collectAllFolderPaths(nodes)
     : collectRootFolderPaths(nodes);
 }
+
+export function collapseAllFolderPaths(nodes: TreeNode[]): Record<string, boolean> {
+  const paths: Record<string, boolean> = {};
+  const walk = (list: TreeNode[]) => {
+    for (const node of list) {
+      if (node.type === "folder") {
+        paths[node.path] = false;
+        if (node.children) walk(node.children);
+      }
+    }
+  };
+  walk(nodes);
+  return paths;
+}

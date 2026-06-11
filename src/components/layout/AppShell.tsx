@@ -21,6 +21,17 @@ import { useOpenExternalFileEvents } from "../../hooks/useOpenExternalFiles";
 import { usePersistPreferences } from "../../hooks/usePersistPreferences";
 import { loadPreferences, applySidebarWidth } from "../../lib/tauri/preferences";
 
+function usePreviewDisplayEffect() {
+  const previewFontSize = useAppStore((s) => s.previewFontSize);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--preview-font-size",
+      `${previewFontSize}px`,
+    );
+  }, [previewFontSize]);
+}
+
 function useAppearanceEffect() {
   const colorScheme = useAppStore((s) => s.colorScheme);
   const theme = useAppStore((s) => s.theme);
@@ -49,6 +60,7 @@ function useAppearanceEffect() {
 
 export function AppShell() {
   useAppearanceEffect();
+  usePreviewDisplayEffect();
   useAppMenu();
   useKeyboardShortcuts();
   useSyncScroll();

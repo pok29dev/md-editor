@@ -29,6 +29,7 @@ export interface AppPreferences {
   restoreLastFolderOnStartup: boolean;
   folderTreeExpansion: string;
   editorFontSize: number;
+  previewFontSize: number;
   editorTabSize: number;
   editorLineNumbers: boolean;
   editorLineWrap: boolean;

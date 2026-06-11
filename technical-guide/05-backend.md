@@ -76,6 +76,7 @@ AppPreferences {
     default_view_mode: String,            // "split" | "editor" | "preview"
     restore_last_folder_on_startup: bool,
     editor_font_size: u32,                // 12–20, default 14
+    preview_font_size: u32,               // 12–28, default 16 (display only)
     editor_tab_size: u32,                 // 2 | 4
     editor_line_numbers: bool,
     editor_line_wrap: bool,

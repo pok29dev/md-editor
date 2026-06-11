@@ -48,6 +48,8 @@ pub struct AppPreferences {
     pub folder_tree_expansion: String,
     #[serde(default = "default_editor_font_size")]
     pub editor_font_size: u32,
+    #[serde(default = "default_preview_font_size")]
+    pub preview_font_size: u32,
     #[serde(default = "default_editor_tab_size")]
     pub editor_tab_size: u32,
     #[serde(default = "default_true")]
@@ -91,6 +93,10 @@ fn default_editor_font_size() -> u32 {
     14
 }
 
+fn default_preview_font_size() -> u32 {
+    16
+}
+
 fn default_editor_tab_size() -> u32 {
     2
 }
@@ -115,6 +121,7 @@ impl Default for AppPreferences {
             restore_last_folder_on_startup: default_true(),
             folder_tree_expansion: default_folder_tree_expansion(),
             editor_font_size: default_editor_font_size(),
+            preview_font_size: default_preview_font_size(),
             editor_tab_size: default_editor_tab_size(),
             editor_line_numbers: default_true(),
             editor_line_wrap: default_true(),

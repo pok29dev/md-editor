@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { usePreview } from "../../hooks/usePreview";
 import { useEditorStore } from "../../stores/editorStore";
+import { PreviewFontControls } from "./PreviewFontControls";
 
 interface MarkdownPreviewProps {
   content: string;
@@ -18,13 +19,16 @@ export function MarkdownPreview({ content, tabId }: MarkdownPreviewProps) {
   }, [setPreviewScrollEl]);
 
   return (
-    <div
-      ref={paneRef}
-      className="preview-pane"
-      aria-busy={isRefreshing}
-      data-render-state={isRefreshing ? "refreshing" : "ready"}
-    >
-      <div ref={containerRef} className="preview-content" />
+    <div className="preview-pane-shell">
+      <PreviewFontControls />
+      <div
+        ref={paneRef}
+        className="preview-pane"
+        aria-busy={isRefreshing}
+        data-render-state={isRefreshing ? "refreshing" : "ready"}
+      >
+        <div ref={containerRef} className="preview-content" />
+      </div>
     </div>
   );
 }

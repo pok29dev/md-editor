@@ -47,6 +47,16 @@ content (string)
 | `previewPatch.ts` | DOM patch, skeleton, scroll restore |
 | `previewWorker.ts` | Web Worker entry |
 | `previewWorkerClient.ts` | Worker lifecycle + thresholds |
+| `lib/preview/settings.ts` | Preview display constants (`PREVIEW_FONT_SIZE_*`, `PREVIEW_CONTENT_WIDTH_PX`) |
+| `PreviewFontControls.tsx` | UI ปรับฟอนต์ preview (display only) |
+
+## 4.2.1 Preview Display (ไม่กระทบ export)
+
+| ค่า | Default | ที่เก็บ |
+|-----|---------|--------|
+| Font size | 16px (scale 100) | `previewFontSize` ใน preferences + `--preview-font-size` |
+| Content max-width | 700px | `preview.css` บน `.markdown-body` |
+| Toolbar height | 44px | `--workspace-toolbar-height` (shared กับ editor/sidebar toolbar) |
 
 ## 4.3 marked Extensions
 

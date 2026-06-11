@@ -1,8 +1,24 @@
 # Changelog
 
-รูปแบบ version: `yyyy.mm.dd-build`
+รูปแบบ version: `yy.m.d.build` (e.g. `26.6.11.1`)
 
-## [2026.06.08-1] — 2026-06-08
+## [26.6.11.1] — 2026-06-11
+
+### Added
+
+- **Preview font size** — toolbar `-` / scale / `+` / reset (default 16px = 100%); persist ใน preferences; ไม่กระทบ export
+- **Sidebar folder actions** — ปุ่ม expand all / collapse all ใน `SidebarToolbar`
+- **`SidebarToolbar`** — แถบเครื่องมือแยกใต้ชื่อโฟลเดอร์ (ใน sidebar content column)
+
+### Changed
+
+- **Version format** — `yy.m.d.build` (e.g. `26.6.11.1`); release tags `v.26.6.11.1`
+- **Copyright** — `pok29dev` (About menu, `APP_COPYRIGHT`, Cargo authors)
+- **Preview layout** — ความกว้างเนื้อหา 700px (ไม่รวม padding); ฟอนต์ผ่าน `--preview-font-size`
+- **Sidebar header** — ชื่อโฟลเดอร์แถวเดียวกับ Tab bar; toolbar ย้ายลง sidebar column
+- **Toolbar height** — sidebar / editor / preview ใช้ `--workspace-toolbar-height` (44px)
+
+## [26.6.8.1] — 2026-06-08
 
 ### Added
 

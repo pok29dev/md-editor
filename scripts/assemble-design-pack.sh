@@ -52,6 +52,7 @@ cp "$SRC/components/icons/themes/warm/"*.tsx "$PACK/components/icons/themes/warm
 
 # Hooks + theme router (reference for menu/toolbar wiring)
 cp "$SRC/hooks/useAppMenu.ts" "$PACK/hooks/"
+cp "$SRC/version.ts" "$PACK/version.ts"
 cp "$SRC/hooks/useFormatMenuActions.ts" "$PACK/hooks/"
 cp "$SRC/lib/theme/icons.ts" "$PACK/lib/theme/"
 cp "$SRC/lib/theme/types.ts" "$PACK/lib/theme/"

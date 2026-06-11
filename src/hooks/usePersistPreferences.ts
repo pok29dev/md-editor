@@ -16,6 +16,7 @@ function preferencesChanged(
     state.restoreLastFolderOnStartup === prev.restoreLastFolderOnStartup &&
     state.folderTreeExpansion === prev.folderTreeExpansion &&
     state.editorFontSize === prev.editorFontSize &&
+    state.previewFontSize === prev.previewFontSize &&
     state.editorTabSize === prev.editorTabSize &&
     state.editorLineNumbers === prev.editorLineNumbers &&
     state.editorLineWrap === prev.editorLineWrap &&

@@ -1,6 +1,7 @@
 import { useAppStore } from "../../stores/appStore";
 import { useFileTree } from "../../hooks/useFileTree";
 import { FileTree } from "./FileTree";
+import { SidebarToolbar } from "./SidebarToolbar";
 
 export function Sidebar() {
   const rootFolder = useAppStore((s) => s.rootFolder);
@@ -11,6 +12,7 @@ export function Sidebar() {
 
   return (
     <aside className="sidebar">
+      <SidebarToolbar />
       <div className="sidebar-content">
         {fileTreeLoading && (
           <p className="sidebar-status">Loading...</p>

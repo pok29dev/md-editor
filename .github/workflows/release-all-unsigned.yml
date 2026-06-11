@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Unsigned tag e.g. v.2026.06.08-1-unsigned. Leave empty to use package.json."
+        description: "Unsigned tag e.g. v.26.6.11.1-unsigned. Leave empty to use package.json."
         required: false
         type: string
   push:

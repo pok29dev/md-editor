@@ -1,4 +1,6 @@
 import {
+  ChevronsDown,
+  ChevronsUp,
   Ellipsis,
   FolderOpen,
   RefreshCw,
@@ -31,3 +33,5 @@ export const MoreIcon = lucideIcon(Ellipsis);
 export const SettingsIcon = lucideIcon(Settings);
 export const OpenFolderIcon = lucideIcon(FolderOpen, 14);
 export const RefreshIcon = lucideIcon(RefreshCw, 14);
+export const ExpandAllFoldersIcon = lucideIcon(ChevronsDown, 14);
+export const CollapseAllFoldersIcon = lucideIcon(ChevronsUp, 14);

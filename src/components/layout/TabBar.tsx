@@ -60,11 +60,11 @@ export function TabBar() {
           display: flex;
           align-items: stretch;
           flex: 1;
+          width: 100%;
           min-width: 0;
+          min-height: 36px;
           background: var(--bg-tertiary);
           overflow-x: auto;
-          min-height: 36px;
-          border-bottom: 1px solid var(--border-subtle);
         }
         .tab-bar-sidebar-toggle {
           display: inline-flex;
