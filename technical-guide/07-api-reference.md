@@ -173,7 +173,7 @@ interface AppPreferences {
 
 ```typescript
 // src/version.ts
-export const APP_VERSION = "26.6.11.1";
+export const APP_VERSION = "26.6.11.2";
 export const APP_COPYRIGHT = "pok29dev";
 ```
 

@@ -49,6 +49,7 @@ content (string)
 | `previewWorkerClient.ts` | Worker lifecycle + thresholds |
 | `lib/preview/settings.ts` | Preview display constants (`PREVIEW_FONT_SIZE_*`, `PREVIEW_CONTENT_WIDTH_PX`) |
 | `PreviewFontControls.tsx` | UI ปรับฟอนต์ preview (display only) |
+| `styles/preview-markdown-dark.css` | โทนมืดสำหรับ table / code / hljs เมื่อ `data-color-scheme="dark"` |
 
 ## 4.2.1 Preview Display (ไม่กระทบ export)
 
@@ -57,6 +58,8 @@ content (string)
 | Font size | 16px (scale 100) | `previewFontSize` ใน preferences + `--preview-font-size` |
 | Content max-width | 700px | `preview.css` บน `.markdown-body` |
 | Toolbar height | 44px | `--workspace-toolbar-height` (shared กับ editor/sidebar toolbar) |
+
+**Dark mode:** `github-markdown-css` สลับโทนผ่าน `prefers-color-scheme` เท่านั้น — แอปใช้ `data-color-scheme` บน `<html>` ดังนั้น `preview-markdown-dark.css` กำหนด CSS variables โทน GitHub Dark + `hljs` สี GitHub Dark สำหรับ table, `code`, `pre`, blockquote
 
 ## 4.3 marked Extensions
 

@@ -222,6 +222,7 @@ Router: `lib/theme/icons.ts` — `getToolbarIcons`, `getFormatIcons`, `getColorS
 | `styles/themes/{default,blue,warm}.css` | Tokens ต่อ color scheme + app theme |
 | `styles/layout.css` | App shell, sidebar, tabs |
 | `styles/preview.css` | Markdown preview, alerts, skeleton |
+| `styles/preview-markdown-dark.css` | GitHub Markdown + hljs dark overrides สำหรับ `data-color-scheme="dark"` |
 | `styles/editor-toolbar.css` | Formatting toolbar |
 | `styles/titlebar.css` | macOS title bar overlay |
 | `styles/dialogs.css` | Find, Link, shared modal styles |

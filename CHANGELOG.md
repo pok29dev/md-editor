@@ -1,6 +1,12 @@
 # Changelog
 
-รูปแบบ version: `yy.m.d.build` (e.g. `26.6.11.1`)
+รูปแบบ version: `yy.m.d.build` (e.g. `26.6.11.2`)
+
+## [26.6.11.2] — 2026-06-11
+
+### Fixed
+
+- **Preview dark mode** — table, inline code, code blocks (`pre`), และ syntax highlight ไม่แสดงพื้นขาวเมื่อแอปอยู่โหมดมืด (`preview-markdown-dark.css` ผูกกับ `data-color-scheme="dark"`)
 
 ## [26.6.11.1] — 2026-06-11
 

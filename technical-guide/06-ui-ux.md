@@ -129,7 +129,8 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | Font scale display | เปอร์เซ็นต์เทียบ default (16px = 100); ช่วง 12–28px; persist `previewFontSize` |
 | Export | ไม่ใช้ค่า preview font — PDF/HTML ใช้สไตล์ export ของตัวเอง |
 | Toolbar | `PreviewFontControls` สูง 44px (`--workspace-toolbar-height`) |
-| Theme | ตาม `resolvedTheme` (`data-color-mode` บน `.markdown-body`) |
+| Theme | ตาม `resolvedColorScheme` (`data-color-mode` บน `.markdown-body`; `data-color-scheme` บน `<html>`) |
+| Dark surfaces | `preview-markdown-dark.css` — table rows, inline code, `pre`, hljs ใช้พื้นโทนมืด (ไม่พึ่ง `prefers-color-scheme` อย่างเดียว) |
 | Live update | Debounce 100–240ms ตามขนาดเอกสาร |
 | Loading | Skeleton shimmer สำหรับเอกสารใหญ่ |
 | Sync scroll | Toggle ใน title bar — ratio-based scroll |

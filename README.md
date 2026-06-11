@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.11.1` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.11.2` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -108,8 +108,8 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 ## Version Format
 
-`yy.m.d.build` (e.g. `26.6.11.1`) — canonical version in `VERSION` / `package.json` / `src/version.ts`  
-Release tags: `v.26.6.11.1` (unsigned: `v.26.6.11.1-unsigned`)  
+`yy.m.d.build` (e.g. `26.6.11.2`) — canonical version in `VERSION` / `package.json` / `src/version.ts`  
+Release tags: `v.26.6.11.2` (unsigned: `v.26.6.11.2-unsigned`)  
 Cargo/Tauri semver: `26.6.11` (3-part; build in `VERSION` 4th segment)
 
 ## Tech Stack
