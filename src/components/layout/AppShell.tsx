@@ -20,6 +20,7 @@ import { invoke, isTauri } from "@tauri-apps/api/core";
 import { useOpenExternalFileEvents } from "../../hooks/useOpenExternalFiles";
 import { usePersistPreferences } from "../../hooks/usePersistPreferences";
 import { loadPreferences, applySidebarWidth } from "../../lib/tauri/preferences";
+import { shouldSkipStartupWorkspaceRestore } from "../../lib/tauri/workspaceWindow";
 
 function usePreviewDisplayEffect() {
   const previewFontSize = useAppStore((s) => s.previewFontSize);
@@ -71,11 +72,14 @@ export function AppShell() {
   useEffect(() => {
     void (async () => {
       await loadPreferences().catch(() => {});
-      await restoreLastFolder();
-      if (isTauri()) {
-        const pending = await invoke<string[]>("get_pending_open_files");
-        if (pending.length > 0) {
-          await handleExternalMarkdownPaths(pending);
+      const skipWorkspaceRestore = shouldSkipStartupWorkspaceRestore();
+      if (!skipWorkspaceRestore) {
+        await restoreLastFolder();
+        if (isTauri()) {
+          const pending = await invoke<string[]>("get_pending_open_files");
+          if (pending.length > 0) {
+            await handleExternalMarkdownPaths(pending);
+          }
         }
       }
     })();

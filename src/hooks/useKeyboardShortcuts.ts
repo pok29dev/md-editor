@@ -9,6 +9,7 @@ import { runFormatAction } from "./useMarkdownFormat";
 import { useTabActions } from "./useTabActions";
 import { useFileActions } from "./useFileActions";
 import { useFileTree } from "./useFileTree";
+import { createNewWorkspaceWindow } from "../lib/tauri/workspaceWindow";
 
 const VIEW_MODES: ViewMode[] = ["split", "editor", "preview"];
 
@@ -92,6 +93,12 @@ export function useKeyboardShortcuts() {
           runFormatAction("comment");
           return;
         }
+      }
+
+      if (key === "n" && shift && !alt) {
+        e.preventDefault();
+        void createNewWorkspaceWindow();
+        return;
       }
 
       if (key === "o") {

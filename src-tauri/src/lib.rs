@@ -29,22 +29,38 @@ fn path_from_cli_arg(arg: &str) -> Option<PathBuf> {
     Some(PathBuf::from(arg))
 }
 
+fn focused_webview_window(app: &AppHandle) -> Option<tauri::WebviewWindow> {
+    app.webview_windows()
+        .into_values()
+        .find(|window| window.is_focused().unwrap_or(false))
+}
+
 fn queue_open_files(app: &AppHandle, paths: Vec<String>) {
     if paths.is_empty() {
         return;
     }
 
-    {
-        let state = app.state::<PendingOpenFiles>();
-        let mut pending = state.0.lock().unwrap();
-        pending.extend(paths.clone());
+    if let Some(focused) = focused_webview_window(app) {
+        let _ = focused.emit("open-file", &paths);
+        return;
     }
 
-    let _ = app.emit("open-file", paths);
+    if let Some(main) = app.get_webview_window("main") {
+        let _ = main.emit("open-file", &paths);
+        return;
+    }
+
+    let state = app.state::<PendingOpenFiles>();
+    let mut pending = state.0.lock().unwrap();
+    pending.extend(paths);
 }
 
 #[tauri::command]
-fn get_pending_open_files(app: tauri::AppHandle) -> Vec<String> {
+fn get_pending_open_files(window: tauri::WebviewWindow, app: tauri::AppHandle) -> Vec<String> {
+    if window.label() != "main" {
+        return Vec::new();
+    }
+
     let state = app.state::<PendingOpenFiles>();
     let mut pending = state.0.lock().unwrap();
     std::mem::take(&mut *pending)

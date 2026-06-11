@@ -24,6 +24,9 @@ docs/
 *.sln
 *.sw?
 
+# Generated Tauri release config (4-part bundle version from VERSION)
+src-tauri/tauri.release.conf.json
+
 # App icon sources (generated icons in src-tauri/icons/ are committed)
 app-icon.png
 app-icon-square.png

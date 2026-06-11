@@ -35,7 +35,14 @@ import {
   FOLDER_TREE_EXPANSION_DEFAULT,
   normalizeFolderTreeExpansion,
 } from "../files/treeExpansion";
+import { isTauri } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getPreferences, savePreferences } from "./commands";
+
+function isPrimaryWorkspaceWindow(): boolean {
+  if (!isTauri()) return true;
+  return getCurrentWindow().label === "main";
+}
 
 export {
   SIDEBAR_WIDTH_DEFAULT as DEFAULT_SIDEBAR_WIDTH,
@@ -118,7 +125,9 @@ export function buildPreferencesFromState(
     exportPdfTheme: state.exportPdfTheme,
     exportPdfPageSize: state.exportPdfPageSize,
     recentFolders: state.recentFolders,
-    lastOpenFolder: state.rootFolder ?? existing?.lastOpenFolder ?? null,
+    lastOpenFolder: isPrimaryWorkspaceWindow()
+      ? (state.rootFolder ?? existing?.lastOpenFolder ?? null)
+      : (existing?.lastOpenFolder ?? null),
   };
 }
 

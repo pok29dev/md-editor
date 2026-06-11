@@ -41,12 +41,15 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
+      - name: Sync bundle version (4-part)
+        run: node scripts/sync-tauri-bundle-version.mjs
+
       - name: Build Tauri app (unsigned)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          args: --target universal-apple-darwin
+          args: --target universal-apple-darwin --config src-tauri/tauri.release.conf.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

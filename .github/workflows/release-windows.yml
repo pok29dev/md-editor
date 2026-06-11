@@ -134,8 +134,8 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
-      - name: Sync Windows MSI version
-        run: node scripts/sync-windows-msi-version.mjs
+      - name: Sync bundle version (4-part)
+        run: node scripts/sync-tauri-bundle-version.mjs
 
       - name: Build and upload Tauri release assets
         uses: tauri-apps/tauri-action@v0
@@ -148,7 +148,8 @@ jobs:
             Windows release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
             - Tauri/Cargo version: ${{ needs.validate-version.outputs.tauri_version }}
+            - Bundle artifact version: ${{ needs.validate-version.outputs.version }}
             - MSI and NSIS installer
           releaseDraft: true
           prerelease: false
-          args: ""
+          args: --config src-tauri/tauri.release.conf.json

@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.11.2` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.11.3` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -10,6 +10,7 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
 - File tree sidebar with **Open folder** button, refresh, keyboard navigation
 - Open Folder / Open File, recent folders
+- **Multi-window workspaces** — New Window (`⌘⇧N`) แยกโฟลเดอร์/แท็บต่อหน้าต่าง
 - Multi-tab editing with dirty indicator and unsaved-change prompts
 - Save, Save As, Export HTML, Export PDF
 
@@ -73,6 +74,7 @@ Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-8)
 
 | Shortcut | Action |
 |----------|--------|
+| `Cmd/Ctrl + Shift + N` | New Window (workspace ใหม่) |
 | `Cmd/Ctrl + O` | Open File |
 | `Cmd/Ctrl + Shift + O` | Open Folder |
 | `Cmd/Ctrl + S` | Save |
@@ -108,8 +110,8 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 ## Version Format
 
-`yy.m.d.build` (e.g. `26.6.11.2`) — canonical version in `VERSION` / `package.json` / `src/version.ts`  
-Release tags: `v.26.6.11.2` (unsigned: `v.26.6.11.2-unsigned`)  
+`yy.m.d.build` (e.g. `26.6.11.3`) — canonical version in `VERSION` / `package.json` / `src/version.ts`  
+Release tags: `v.26.6.11.3` (unsigned: `v.26.6.11.3-unsigned`)  
 Cargo/Tauri semver: `26.6.11` (3-part; build in `VERSION` 4th segment)
 
 ## Tech Stack

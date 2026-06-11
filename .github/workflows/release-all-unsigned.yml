@@ -134,6 +134,9 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
+      - name: Sync bundle version (4-part)
+        run: node scripts/sync-tauri-bundle-version.mjs
+
       - name: Build and upload macOS release assets
         uses: tauri-apps/tauri-action@v0
         env:
@@ -145,6 +148,7 @@ jobs:
             Unsigned all-platform release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
             - Tauri/Cargo version: ${{ needs.validate-version.outputs.tauri_version }}
+            - Bundle artifact version: ${{ needs.validate-version.outputs.version }}
             - macOS: universal binary, ad-hoc signing (`signingIdentity: "-"`), not notarized
             - Windows: MSI + NSIS (unsigned)
             - Linux: .deb + AppImage (when bundled)
@@ -152,7 +156,7 @@ jobs:
             **macOS first launch:** right-click → Open
           releaseDraft: true
           prerelease: false
-          args: --target universal-apple-darwin
+          args: --target universal-apple-darwin --config src-tauri/tauri.release.conf.json
 
   build-windows:
     name: Build Windows x64 (unsigned)
@@ -185,8 +189,8 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
-      - name: Sync Windows MSI version
-        run: node scripts/sync-windows-msi-version.mjs
+      - name: Sync bundle version (4-part)
+        run: node scripts/sync-tauri-bundle-version.mjs
 
       - name: Build and upload Windows release assets
         uses: tauri-apps/tauri-action@v0
@@ -197,7 +201,7 @@ jobs:
           releaseName: "MD Editor ${{ needs.validate-version.outputs.version_tag }}"
           releaseDraft: true
           prerelease: false
-          args: ""
+          args: --config src-tauri/tauri.release.conf.json
 
   build-linux:
     name: Build Linux x64 (unsigned)
@@ -239,6 +243,9 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
+      - name: Sync bundle version (4-part)
+        run: node scripts/sync-tauri-bundle-version.mjs
+
       - name: Build and upload Linux release assets
         uses: tauri-apps/tauri-action@v0
         env:
@@ -248,4 +255,4 @@ jobs:
           releaseName: "MD Editor ${{ needs.validate-version.outputs.version_tag }}"
           releaseDraft: true
           prerelease: false
-          args: ""
+          args: --config src-tauri/tauri.release.conf.json

@@ -41,12 +41,18 @@ pub fn save_preferences(app: tauri::AppHandle, prefs: AppPreferences) -> Result<
 }
 
 #[tauri::command]
-pub fn add_recent_folder(app: tauri::AppHandle, path: String) -> Result<AppPreferences, String> {
+pub fn add_recent_folder(
+    app: tauri::AppHandle,
+    window: tauri::WebviewWindow,
+    path: String,
+) -> Result<AppPreferences, String> {
     let mut prefs = load_preferences(&app)?;
     prefs.recent_folders.retain(|p| p != &path);
     prefs.recent_folders.insert(0, path.clone());
     prefs.recent_folders.truncate(MAX_RECENT);
-    prefs.last_open_folder = Some(path);
+    if window.label() == "main" {
+        prefs.last_open_folder = Some(path);
+    }
     store_preferences(&app, &prefs)?;
     Ok(prefs)
 }

@@ -1,6 +1,18 @@
 # Changelog
 
-รูปแบบ version: `yy.m.d.build` (e.g. `26.6.11.2`)
+รูปแบบ version: `yy.m.d.build` (e.g. `26.6.11.3`)
+
+## [26.6.11.3] — 2026-06-11
+
+### Added
+
+- **Multi-window workspaces** — File → New Window (`⌘⇧N` / Ctrl+Shift+N); แต่ละหน้าต่างเป็น workspace แยก (โฟลเดอร์ + แท็บอิสระ); หน้าต่างใหม่เริ่มจาก Welcome ไม่ restore โฟลเดอร์ล่าสุด
+- **Release bundle version sync** — `scripts/sync-tauri-bundle-version.mjs` สร้าง `tauri.release.conf.json` ให้ชื่อไฟล์ artifact ใช้เวอร์ชัน 4 ส่วนจาก `VERSION`
+
+### Changed
+
+- **Open-file routing** — เปิดไฟล์จาก OS ส่งไปหน้าต่างที่ focus; `lastOpenFolder` อัปเดตจากหน้าต่าง `main` เท่านั้น
+- **CI release workflows** — sync bundle version ก่อน build; ส่ง `--config src-tauri/tauri.release.conf.json`
 
 ## [26.6.11.2] — 2026-06-11
 

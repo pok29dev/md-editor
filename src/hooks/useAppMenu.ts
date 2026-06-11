@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { isTauri } from "@tauri-apps/api/core";
 import { Menu, Submenu } from "@tauri-apps/api/menu";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { createNewWorkspaceWindow } from "../lib/tauri/workspaceWindow";
 import { APP_COPYRIGHT, APP_VERSION } from "../version";
 import { useAppStore } from "../stores/appStore";
 import { useFileActions } from "./useFileActions";
@@ -82,6 +84,8 @@ export function useAppMenu() {
     let cancelled = false;
 
     void (async () => {
+      if (getCurrentWindow().label !== "main") return;
+
       const appSubmenu = await Submenu.new({
         text: APP_MENU_LABEL,
         items: [
@@ -117,6 +121,15 @@ export function useAppMenu() {
       const fileSubmenu = await Submenu.new({
         text: "File",
         items: [
+          {
+            id: "file-new-window",
+            text: "New Window",
+            accelerator: "CmdOrCtrl+Shift+N",
+            action: () => {
+              void createNewWorkspaceWindow();
+            },
+          },
+          { item: "Separator" },
           {
             id: "file-open",
             text: "Open File...",

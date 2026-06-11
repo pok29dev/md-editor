@@ -105,11 +105,20 @@ AppPreferences {
 
 | Setting | ค่า |
 |---------|-----|
+| Primary window label | `main` |
 | Default size | 1280 × 800 |
 | Min size | 800 × 500 |
 | Title bar (macOS) | Overlay style |
 | Dev URL | `http://localhost:1420` |
 | Frontend dist | `../dist` |
+
+### Multi-window workspaces
+
+- หน้าต่างเพิ่มสร้างจาก frontend ผ่าน `WebviewWindow` (`src/lib/tauri/workspaceWindow.ts`) — URL `?workspace=new`
+- แต่ละ webview มี Zustand state แยก (`rootFolder`, `tabs`, …); preferences ส่วน global (theme, font) ใช้ `preferences.json` ร่วมกัน
+- `lastOpenFolder` อัปเดตจากหน้าต่าง `main` เท่านั้น (`add_recent_folder` + `buildPreferencesFromState`)
+- เปิดไฟล์จาก OS (`open-file` event) ส่งไปหน้าต่างที่ focus (`src-tauri/src/lib.rs`)
+- Capabilities: `windows: ["*"]`, `core:webview:allow-create-webview-window`
 
 ## 5.6 Frontend ↔ Rust Type Mapping
 
