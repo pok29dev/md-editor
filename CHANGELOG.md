@@ -1,18 +1,25 @@
 # Changelog
 
-รูปแบบ version: `yy.m.d.build` (e.g. `26.6.11.3`)
+รูปแบบ version: `yy.mdd.build` semver (e.g. `26.611.1` = 2026-06-11 build 1) · tag `v.26.611.1`
+
+## [26.611.1] — 2026-06-11
+
+### Changed
+
+- **Version format** — จาก `yy.m.d.build` (4 ส่วน) เป็น **`yy.mdd.build` semver 3 ส่วน** (เช่น `26.611.1`); ใช้กับ Tauri/Cargo/bundle ชื่อไฟล์ได้โดยตรง ไม่ต้อง override config
+- **CI** — ลบ `sync-tauri-bundle-version.mjs` และ `assetNamePattern`; ใช้ `scripts/validate-version.mjs` ตรวจความสอดคล้องทุกแหล่ง
 
 ## [26.6.11.3] — 2026-06-11
 
 ### Added
 
 - **Multi-window workspaces** — File → New Window (`⌘⇧N` / Ctrl+Shift+N); แต่ละหน้าต่างเป็น workspace แยก (โฟลเดอร์ + แท็บอิสระ); หน้าต่างใหม่เริ่มจาก Welcome ไม่ restore โฟลเดอร์ล่าสุด
-- **Release bundle version sync** — `scripts/sync-tauri-bundle-version.mjs` สร้าง `tauri.release.conf.json` ให้ชื่อไฟล์ artifact ใช้เวอร์ชัน 4 ส่วนจาก `VERSION`
+- **Release bundle version sync** — `scripts/sync-tauri-bundle-version.mjs` ตั้งค่า Windows WiX (4 ส่วน); ชื่อไฟล์ release ใช้ `assetNamePattern` ใน workflow
 
 ### Changed
 
 - **Open-file routing** — เปิดไฟล์จาก OS ส่งไปหน้าต่างที่ focus; `lastOpenFolder` อัปเดตจากหน้าต่าง `main` เท่านั้น
-- **CI release workflows** — sync bundle version ก่อน build; ส่ง `--config src-tauri/tauri.release.conf.json`
+- **CI release workflows** — sync Windows WiX config ก่อน build; `assetNamePattern` ตั้งชื่อ asset บน GitHub เป็น 4 ส่วน
 
 ## [26.6.11.2] — 2026-06-11
 

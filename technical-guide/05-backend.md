@@ -120,6 +120,11 @@ AppPreferences {
 - เปิดไฟล์จาก OS (`open-file` event) ส่งไปหน้าต่างที่ focus (`src-tauri/src/lib.rs`)
 - Capabilities: `windows: ["*"]`, `core:webview:allow-create-webview-window`
 
+### Version (`yy.mdd.build`)
+
+- Semver 3 ส่วน เช่น `26.611.1` (ปี 26, 11 มิ.ย., build 1) — ใช้ร่วมกับ Cargo, Tauri, ชื่อ bundle
+- ตรวจสอบ: `npm run validate:version` (`scripts/validate-version.mjs`)
+
 ## 5.6 Frontend ↔ Rust Type Mapping
 
 | Rust (`models/mod.rs`) | TypeScript (`types/files.ts`) |

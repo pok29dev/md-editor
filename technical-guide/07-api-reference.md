@@ -173,8 +173,8 @@ interface AppPreferences {
 
 ```typescript
 // src/version.ts
-export const APP_VERSION = "26.6.11.3";
+export const APP_VERSION = "26.611.1";
 export const APP_COPYRIGHT = "pok29dev";
 ```
 
-Format: `yy.m.d.build` (e.g. `26.6.11.1`)
+Format: `yy.mdd.build` semver (e.g. `26.611.1` = 2026-06-11 build 1). Release tag: `v.26.611.1`

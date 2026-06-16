@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release tag e.g. v.26.6.11.1. Leave empty to use package.json."
+        description: "Release tag e.g. v.26.611.1. Leave empty to use package.json."
         required: false
         type: string
   push:
@@ -29,7 +29,6 @@ jobs:
       should_release: ${{ steps.version.outputs.should_release }}
       version: ${{ steps.version.outputs.version }}
       version_tag: ${{ steps.version.outputs.version_tag }}
-      tauri_version: ${{ steps.version.outputs.tauri_version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,20 +41,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          node scripts/validate-version.mjs
           PKG_VERSION="$(node -p "require('./package.json').version")"
-          FILE_VERSION="$(cat VERSION)"
-          TAURI_VERSION="$(node -p "require('./src-tauri/tauri.conf.json').version")"
-          CARGO_VERSION="$(node -e "const fs = require('fs'); const text = fs.readFileSync('src-tauri/Cargo.toml', 'utf8'); const match = text.match(/^version = \"([^\"]+)\"/m); process.stdout.write(match ? match[1] : '')")"
-
-          if [[ "$FILE_VERSION" != "$PKG_VERSION" ]]; then
-            echo "::error::VERSION file ($FILE_VERSION) does not match package.json ($PKG_VERSION)"
-            exit 1
-          fi
-
-          if [[ "$TAURI_VERSION" != "$CARGO_VERSION" ]]; then
-            echo "::error::Tauri/Cargo version mismatch: tauri=$TAURI_VERSION cargo=$CARGO_VERSION"
-            exit 1
-          fi
 
           EXPECTED_TAG="v.$PKG_VERSION"
 
@@ -64,7 +51,6 @@ jobs:
             echo "should_release=false" >> "$GITHUB_OUTPUT"
             echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
             echo "version_tag=" >> "$GITHUB_OUTPUT"
-            echo "tauri_version=$TAURI_VERSION" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -102,7 +88,6 @@ jobs:
           echo "should_release=$SHOULD_RELEASE" >> "$GITHUB_OUTPUT"
           echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
           echo "version_tag=$VERSION_TAG" >> "$GITHUB_OUTPUT"
-          echo "tauri_version=$TAURI_VERSION" >> "$GITHUB_OUTPUT"
 
   build-release:
     name: Build Linux x64
@@ -143,9 +128,6 @@ jobs:
       - name: Verify frontend build
         run: npm run build
 
-      - name: Sync bundle version (4-part)
-        run: node scripts/sync-tauri-bundle-version.mjs
-
       - name: Build and upload Tauri release assets
         uses: tauri-apps/tauri-action@v0
         env:
@@ -156,9 +138,8 @@ jobs:
           releaseBody: |
             Linux release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
-            - Tauri/Cargo version: ${{ needs.validate-version.outputs.tauri_version }}
-            - Bundle artifact version: ${{ needs.validate-version.outputs.version }}
+            - App version: ${{ needs.validate-version.outputs.version }} (yy.mdd.build)
             - .deb and AppImage (when bundled)
           releaseDraft: true
           prerelease: false
-          args: --config src-tauri/tauri.release.conf.json
+          args: ""

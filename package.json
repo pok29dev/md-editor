@@ -1,15 +1,14 @@
 {
   "name": "md-editor",
   "private": true,
-  "version": "26.6.11.3",
+  "version": "26.611.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "sync:bundle-version": "node scripts/sync-tauri-bundle-version.mjs",
-    "sync:windows-msi-version": "node scripts/sync-tauri-bundle-version.mjs",
+    "validate:version": "node scripts/validate-version.mjs",
     "design-pack": "bash scripts/assemble-design-pack.sh"
   },
   "dependencies": {
