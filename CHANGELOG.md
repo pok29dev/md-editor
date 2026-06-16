@@ -1,6 +1,19 @@
 # Changelog
 
-รูปแบบ version: `yy.mdd.build` semver (e.g. `26.611.1` = 2026-06-11 build 1) · tag `v.26.611.1`
+รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.1601` = 2026-06-16 build 1) · tag `v.26.6.1601`
+
+## [26.6.1601] — 2026-06-16
+
+### Changed
+
+- Version bump to 2026-06-16 (`26.6.1601`)
+
+## [26.6.1102] — 2026-06-11
+
+### Changed
+
+- **Version format** — จาก `yy.mdd.build` เป็น **`yy.m.ddbb`** (`26.6.1101`); minor = เดือน (≤12), patch = วัน×100+build; ผ่าน Windows MSI (minor ≤ 255)
+- มาตรฐานโปรเจกต: `docs/VERSION-FORMAT.md`, `.cursor/rules/version-format.mdc`
 
 ## [26.611.1] — 2026-06-11
 

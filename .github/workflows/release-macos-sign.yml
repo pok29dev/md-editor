@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release tag e.g. v.26.611.1. Leave empty to use package.json."
+        description: "Release tag e.g. v.26.6.1601. Leave empty to use package.json."
         required: false
         type: string
   push:
@@ -198,7 +198,7 @@ jobs:
           releaseBody: |
             Signed macOS universal release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
-            - App version: ${{ needs.validate-version.outputs.version }} (yy.mdd.build)
+            - App version: ${{ needs.validate-version.outputs.version }} (yy.m.ddbb)
             - Signed with Developer ID Application certificate
             - Notarized when Apple API secrets are configured
           releaseDraft: true

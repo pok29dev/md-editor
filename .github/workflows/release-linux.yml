@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Release tag e.g. v.26.611.1. Leave empty to use package.json."
+        description: "Release tag e.g. v.26.6.1601. Leave empty to use package.json."
         required: false
         type: string
   push:
@@ -138,7 +138,7 @@ jobs:
           releaseBody: |
             Linux release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
-            - App version: ${{ needs.validate-version.outputs.version }} (yy.mdd.build)
+            - App version: ${{ needs.validate-version.outputs.version }} (yy.m.ddbb)
             - .deb and AppImage (when bundled)
           releaseDraft: true
           prerelease: false

@@ -1,0 +1,54 @@
+---
+description: Project version format yy.m.ddbb (semver, Windows MSI safe)
+alwaysApply: true
+---
+
+# Version format — `yy.m.ddbb`
+
+Use this format for **all releases** in this repo and when bootstrapping **new projects** from this template.
+
+## Structure (semver 3-part)
+
+| Segment | Meaning | Range |
+|---------|---------|-------|
+| `yy` | 2-digit year | 0–99 |
+| `m` | month | 1–12 |
+| `ddbb` | patch = `day * 100 + build` | day 1–31, build 1–99 |
+
+**Example:** `26.6.1101` = 2026-06-11, build 1  
+**Release tag:** `v.26.6.1101` (unsigned: `v.26.6.1101-unsigned`)
+
+## Decode patch (`ddbb`)
+
+```
+day   = floor(patch / 100)
+build = patch % 100
+```
+
+## Why not `yy.mdd.build`?
+
+`mdd` in the minor segment (e.g. `611`) exceeds **Windows MSI minor ≤ 255**.  
+`yy.m.ddbb` keeps minor ≤ 12 and works with Tauri/Cargo/MSI without overrides.
+
+## Files to keep in sync
+
+- `VERSION`
+- `package.json` / `package-lock.json`
+- `src/version.ts` (`APP_VERSION`)
+- `src-tauri/Cargo.toml` / `Cargo.lock`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/tauri.windows.conf.json` (WiX, when present)
+- `design-pack/version.ts` (if design-pack is used)
+
+## Bump rules
+
+- Same calendar day, new release → increment **build** only: `26.6.1101` → `26.6.1102`
+- New day → reset build to 1: `26.6.1201` (Jun 12, build 1)
+
+## Validation
+
+```bash
+npm run validate:version
+```
+
+Spec: `docs/VERSION-FORMAT.md` · implementation: `scripts/lib/version-format.mjs`

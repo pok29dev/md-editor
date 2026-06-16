@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.611.1` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.1601` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -106,17 +106,19 @@ Format shortcuts apply when the editor is focused and no modal is open.
 | [docs/settings-plan.md](./docs/settings-plan.md) | Settings MVP plan |
 | [technical-guide/](./technical-guide/) | Architecture & implementation guides |
 | [design-pack/DESIGN-BRIEF.md](./design-pack/DESIGN-BRIEF.md) | UI redesign brief + design pack |
+| [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md) | มาตรฐานเวอร์ชัน `yy.m.ddbb` |
 | [CHANGELOG.md](./CHANGELOG.md) | Release history |
 
 ## Version Format
 
-`yy.mdd.build` semver (e.g. `26.611.1` = year 26, Jun 11, build 1) — ใช้ตรงกันทุกที่:
+`yy.m.ddbb` semver (e.g. `26.6.1101` = year 26, Jun 11, build 1) — ใช้ตรงกันทุกที่:
 
 - `VERSION` / `package.json` / `src/version.ts`
 - `src-tauri/Cargo.toml` / `tauri.conf.json`
-- Release tags: `v.26.611.1` (unsigned: `v.26.611.1-unsigned`)
-- Bundle filenames: `MD Editor_26.611.1_...`
+- Release tags: `v.26.6.1601` (unsigned: `v.26.6.1601-unsigned`)
+- Bundle filenames: `MD Editor_26.6.1601_...`
 
+รายละเอียด: [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md)  
 ตรวจความสอดคล้อง: `npm run validate:version`
 
 ## Tech Stack

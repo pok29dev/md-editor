@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Unsigned tag e.g. v.26.611.1-unsigned. Leave empty to use package.json."
+        description: "Unsigned tag e.g. v.26.6.1601-unsigned. Leave empty to use package.json."
         required: false
         type: string
 
@@ -126,7 +126,7 @@ jobs:
           releaseBody: |
             Unsigned macOS universal release for MD Editor ${{ needs.validate-version.outputs.version_tag }}.
 
-            - App version: ${{ needs.validate-version.outputs.version }} (yy.mdd.build)
+            - App version: ${{ needs.validate-version.outputs.version }} (yy.m.ddbb)
             - Ad-hoc signing (`signingIdentity: "-"`)
             - Not notarized — first launch: right-click → Open
           releaseDraft: true

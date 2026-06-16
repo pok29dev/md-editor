@@ -120,10 +120,11 @@ AppPreferences {
 - เปิดไฟล์จาก OS (`open-file` event) ส่งไปหน้าต่างที่ focus (`src-tauri/src/lib.rs`)
 - Capabilities: `windows: ["*"]`, `core:webview:allow-create-webview-window`
 
-### Version (`yy.mdd.build`)
+### Version (`yy.m.ddbb`)
 
-- Semver 3 ส่วน เช่น `26.611.1` (ปี 26, 11 มิ.ย., build 1) — ใช้ร่วมกับ Cargo, Tauri, ชื่อ bundle
-- ตรวจสอบ: `npm run validate:version` (`scripts/validate-version.mjs`)
+- Semver 3 ส่วน เช่น `26.6.1101` (ปี 26, มิ.ย. 11, build 1) — patch = วัน×100+build; minor = เดือน (≤12, ปลอดภัยบน Windows MSI)
+- ตรวจสอบ: `npm run validate:version` (`scripts/lib/version-format.mjs`)
+- สเปก: `docs/VERSION-FORMAT.md`
 
 ## 5.6 Frontend ↔ Rust Type Mapping
 

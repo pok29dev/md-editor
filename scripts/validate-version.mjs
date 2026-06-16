@@ -24,7 +24,7 @@ const cargo = cargoVersion();
 
 for (const value of [fileVersion, pkgVersion, tauriVersion, cargo]) {
   if (!isValidAppVersion(value)) {
-    console.error(`::error::Invalid yy.mdd.build version: "${value}"`);
+    console.error(`::error::Invalid yy.m.ddbb version: "${value}"`);
     process.exit(1);
   }
 }
@@ -43,4 +43,4 @@ if (pkgVersion !== tauriVersion || pkgVersion !== cargo) {
   process.exit(1);
 }
 
-console.log(`Version OK: ${pkgVersion} (yy.mdd.build)`);
+console.log(`Version OK: ${pkgVersion} (yy.m.ddbb)`);
