@@ -1,6 +1,17 @@
 # Changelog
 
-รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.1601` = 2026-06-16 build 1) · tag `v.26.6.1601`
+รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.1701` = 2026-06-17 build 1) · tag `v.26.6.1701`
+
+## [26.6.1701] — 2026-06-17
+
+### Added
+
+- **Close All Tabs** — คลิกขวาที่แท็บ → Close All Tabs; ถามยืนยันแท็บที่มี unsaved changes แล้วรีเซ็ตเป็นแท็บ Welcome เดียว
+- **Close Other Tabs** — คลิกขวาที่แท็บ → ปิดแท็บอื่นทั้งหมด เหลือแท็บที่คลิกขวา
+
+### Fixed
+
+- **Save / Save As หลายหน้าต่าง** — แต่ละ webview ผูก native menu ของตัวเอง (ลบ guard `main` ใน `useAppMenu`) เพื่อให้บันทึกไปที่แท็บ active ของหน้าต่างนั้น
 
 ## [26.6.1601] — 2026-06-16
 

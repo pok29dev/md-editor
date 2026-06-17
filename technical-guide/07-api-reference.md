@@ -109,7 +109,8 @@ interface RenderResult {
 | `openFileInTab` | `(path, content, title?) => void` | Open/switch tab |
 | `updateTabContent` | `(tabId, content) => void` | Update + dirty |
 | `markTabSaved` | `(tabId) => void` | Clear dirty |
-| `closeTab` | `(tabId) => void` | Remove tab |
+| `closeTab` | `(tabId) => void` | Remove tab (คงอย่างน้อย 1 แท็บ) |
+| `closeAllTabs` | `() => void` | รีเซ็ตเป็นแท็บ Welcome เดียว |
 | `setFileTree` | `(nodes) => void` | Update tree |
 | `toggleFolder` | `(path) => void` | Expand/collapse |
 
@@ -173,7 +174,7 @@ interface AppPreferences {
 
 ```typescript
 // src/version.ts
-export const APP_VERSION = "26.6.1601";
+export const APP_VERSION = "26.6.1701";
 export const APP_COPYRIGHT = "pok29dev";
 ```
 

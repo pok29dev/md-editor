@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { isTauri } from "@tauri-apps/api/core";
 import { Menu, Submenu } from "@tauri-apps/api/menu";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { createNewWorkspaceWindow } from "../lib/tauri/workspaceWindow";
 import { APP_COPYRIGHT, APP_VERSION } from "../version";
 import { useAppStore } from "../stores/appStore";
@@ -84,8 +83,6 @@ export function useAppMenu() {
     let cancelled = false;
 
     void (async () => {
-      if (getCurrentWindow().label !== "main") return;
-
       const appSubmenu = await Submenu.new({
         text: APP_MENU_LABEL,
         items: [

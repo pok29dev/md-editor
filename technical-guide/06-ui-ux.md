@@ -80,6 +80,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | Tab label | ชื่อไฟล์จาก path |
 | Dirty indicator | `•` นำหน้าชื่อเมื่อ `isDirty` |
 | Close | คลิก × — ถามก่อนถ้ามี unsaved changes |
+| Context menu | คลิกขวา → **Close All Tabs** — ถามยืนยันแท็บ dirty แล้วรีเซ็ตเป็น Welcome |
 | New tab | ปุ่ม `+` — เปิด file dialog |
 | Sidebar toggle | ปุ่ม ☰ |
 
@@ -180,6 +181,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | `Cmd/Ctrl + Shift + S` | Save As |
 | `Cmd/Ctrl + F` | Find & Replace |
 | `Cmd/Ctrl + W` | Close tab |
+| Right-click tab | Close All Tabs |
 | `Cmd/Ctrl + 1` | Split view |
 | `Cmd/Ctrl + 2` | Editor only |
 | `Cmd/Ctrl + 3` | Preview only |

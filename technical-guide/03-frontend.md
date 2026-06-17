@@ -32,7 +32,7 @@ App
 | `SidebarToolbar` | `.../SidebarToolbar.tsx` | ปุ่ม open folder, expand/collapse all, refresh, hide sidebar |
 | `Sidebar` | `.../Sidebar.tsx` | `SidebarToolbar` + file tree, loading/error/empty states |
 | `FileTree` | `.../FileTree.tsx` | Tree recursive, keyboard nav, indent guides |
-| `TabBar` | `.../TabBar.tsx` | Multi-tab, dirty indicator (`•`), close |
+| `TabBar` | `.../TabBar.tsx` | Multi-tab, dirty indicator (`•`), close, context menu Close All |
 | `EditorPane` | `.../EditorPane.tsx` | Wrapper `EditorToolbar` + `MarkdownEditor` ของ active tab |
 | `PreviewPane` | `.../PreviewPane.tsx` | Wrapper `MarkdownPreview` |
 | `PreviewFontControls` | `.../PreviewFontControls.tsx` | ปรับขนาดฟอนต์ preview (`-` / scale / `+` / reset) |
@@ -159,10 +159,10 @@ interface EditorTab {
 | `usePreview` | `hooks/usePreview.ts` | Debounce, worker, DOM patch, Mermaid/MathJax |
 | `useFileTree` | `hooks/useFileTree.ts` | Open folder/file, refresh, restore last folder |
 | `useFileActions` | `hooks/useFileActions.ts` | Save, Save As, Export HTML |
-| `useTabActions` | `hooks/useTabActions.ts` | Close tab + unsaved warning |
+| `useTabActions` | `hooks/useTabActions.ts` | Close tab / Close All Tabs + unsaved warning |
 | `useSyncScroll` | `hooks/useSyncScroll.ts` | Bidirectional scroll ratio sync |
 | `useKeyboardShortcuts` | `hooks/useKeyboardShortcuts.ts` | Global shortcuts, format shortcuts, quit confirmation |
-| `useAppMenu` | `hooks/useAppMenu.ts` | Native macOS menu (File, Edit, Insert, Format, Window, Help) |
+| `useAppMenu` | `hooks/useAppMenu.ts` | Native macOS menu ต่อ webview (File, Edit, Insert, Format, Window, Help) |
 | `useMarkdownFormat` | `hooks/useMarkdownFormat.ts` | Toolbar format actions |
 | `useEditorToolbarState` | `hooks/useEditorToolbarState.ts` | Heading + active toolbar state |
 | `useFormatMenuActions` | `hooks/useFormatMenuActions.ts` | Menu → format actions |

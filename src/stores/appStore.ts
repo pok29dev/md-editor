@@ -112,6 +112,8 @@ interface AppState {
   applyFolderExpansion: (nodes: TreeNode[]) => void;
   addTab: (tab?: Partial<EditorTab>) => void;
   closeTab: (id: string) => void;
+  closeAllTabs: () => void;
+  closeOtherTabs: (keepId: string) => void;
   setActiveTab: (id: string) => void;
   updateTabContent: (id: string, content: string) => void;
   openFileInTab: (file: { path: string; title: string; content: string }) => void;
@@ -276,6 +278,23 @@ export const useAppStore = create<AppState>((set, get) => ({
           next[0]?.id
         : activeTabId;
     set({ tabs: next, activeTabId: nextActive ?? null });
+  },
+
+  closeAllTabs: () => {
+    const tab = createTab(
+      {
+        title: "Welcome",
+        content: "# Welcome to MD Editor\n\nOpen a folder to get started.",
+      },
+      get().defaultViewMode,
+    );
+    set({ tabs: [tab], activeTabId: tab.id });
+  },
+
+  closeOtherTabs: (keepId) => {
+    const kept = get().tabs.find((t) => t.id === keepId);
+    if (!kept) return;
+    set({ tabs: [kept], activeTabId: keepId });
   },
 
   setActiveTab: (id) => set({ activeTabId: id }),

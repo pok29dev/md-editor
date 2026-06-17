@@ -1,7 +1,7 @@
 {
   "name": "md-editor",
   "private": true,
-  "version": "26.6.1601",
+  "version": "26.6.1701",
   "type": "module",
   "scripts": {
     "dev": "vite",

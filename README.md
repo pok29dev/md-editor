@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.1601` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.1701` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -12,6 +12,8 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 - Open Folder / Open File, recent folders
 - **Multi-window workspaces** — New Window (`⌘⇧N`) แยกโฟลเดอร์/แท็บต่อหน้าต่าง
 - Multi-tab editing with dirty indicator and unsaved-change prompts
+- **Close All Tabs** — คลิกขวาที่แท็บ → Close All Tabs (ถามยืนยันแท็บที่ยังไม่บันทึก)
+- **Close Other Tabs** — คลิกขวาที่แท็บ → ปิดแท็บอื่นทั้งหมด เหลือแท็บที่คลิกขวา
 - Save, Save As, Export HTML, Export PDF
 
 ### Editor & preview
@@ -81,6 +83,7 @@ Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-8)
 | `Cmd/Ctrl + Shift + S` | Save As |
 | `Cmd/Ctrl + F` | Find & Replace |
 | `Cmd/Ctrl + W` | Close tab |
+| Right-click tab | Close All Tabs |
 | `Cmd/Ctrl + ,` | Settings |
 | `Cmd/Ctrl + 1/2/3` | Split / Editor / Preview |
 | `Cmd/Ctrl + \` | Toggle sidebar |
@@ -115,8 +118,8 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 - `VERSION` / `package.json` / `src/version.ts`
 - `src-tauri/Cargo.toml` / `tauri.conf.json`
-- Release tags: `v.26.6.1601` (unsigned: `v.26.6.1601-unsigned`)
-- Bundle filenames: `MD Editor_26.6.1601_...`
+- Release tags: `v.26.6.1701` (unsigned: `v.26.6.1701-unsigned`)
+- Bundle filenames: `MD Editor_26.6.1701_...`
 
 รายละเอียด: [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md)  
 ตรวจความสอดคล้อง: `npm run validate:version`
