@@ -5,7 +5,8 @@ import type {
   FileContent,
   FolderTree,
 } from "../../types/files";
-import { MARKDOWN_DIALOG_FILTERS } from "./dialogFilters";
+import { EDITABLE_DIALOG_FILTERS, saveDialogFiltersForKind } from "./dialogFilters";
+import type { FileKind } from "../files/fileKind";
 
 export async function pickFolder(): Promise<string | null> {
   const selected = await open({
@@ -17,29 +18,44 @@ export async function pickFolder(): Promise<string | null> {
   return selected;
 }
 
-export async function pickOpenMarkdown(
+export async function pickOpenEditableFile(
   defaultPath?: string | null,
 ): Promise<string | null> {
   const selected = await open({
     multiple: false,
     directory: false,
-    title: "Open Markdown File",
+    title: "Open File",
     defaultPath: defaultPath ?? undefined,
-    filters: MARKDOWN_DIALOG_FILTERS,
+    filters: EDITABLE_DIALOG_FILTERS,
   });
   if (selected === null || Array.isArray(selected)) return null;
   return selected;
 }
 
-export async function pickSaveMarkdown(
+/** @deprecated Use pickOpenEditableFile */
+export async function pickOpenMarkdown(
+  defaultPath?: string | null,
+): Promise<string | null> {
+  return pickOpenEditableFile(defaultPath);
+}
+
+export async function pickSaveFile(
   defaultName = "untitled.md",
+  kind: FileKind = "markdown",
 ): Promise<string | null> {
   const path = await save({
     defaultPath: defaultName,
-    filters: MARKDOWN_DIALOG_FILTERS,
-    title: "Save Markdown",
+    filters: saveDialogFiltersForKind(kind),
+    title: "Save File",
   });
   return path;
+}
+
+/** @deprecated Use pickSaveFile */
+export async function pickSaveMarkdown(
+  defaultName = "untitled.md",
+): Promise<string | null> {
+  return pickSaveFile(defaultName, "markdown");
 }
 
 export async function pickSaveHtml(

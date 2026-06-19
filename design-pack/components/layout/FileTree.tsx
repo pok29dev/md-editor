@@ -45,7 +45,7 @@ function TreeItem({
   const isActive =
     node.type === "file" && pathsEqual(activeTab?.path, node.path);
   const isFocused = focusPath === node.path;
-  const isExpanded = expandedPaths[node.path] ?? depth < 2;
+  const isExpanded = expandedPaths[node.path] ?? depth < 1;
 
   useEffect(() => {
     if (isFocused) {
@@ -68,7 +68,7 @@ function TreeItem({
           tabIndex={isFocused ? 0 : -1}
           onClick={() => {
             onSetFocusPath?.(node.path);
-            toggleFolder(node.path);
+            toggleFolder(node.path, isExpanded);
           }}
         >
           <span className="tree-chevron">
@@ -197,13 +197,13 @@ export function FileTree({
         case "ArrowRight":
           event.preventDefault();
           if (current.type === "folder" && !current.isExpanded) {
-            toggleFolder(current.path);
+            toggleFolder(current.path, current.isExpanded);
           }
           break;
         case "ArrowLeft":
           event.preventDefault();
           if (current.type === "folder" && current.isExpanded) {
-            toggleFolder(current.path);
+            toggleFolder(current.path, current.isExpanded);
           } else {
             const parent = parentFolderPath(visibleItems, index);
             if (parent) setFocusPathLocal(parent);
@@ -213,7 +213,7 @@ export function FileTree({
         case " ":
           event.preventDefault();
           if (current.type === "folder") {
-            toggleFolder(current.path);
+            toggleFolder(current.path, current.isExpanded);
           } else {
             onOpenFile(current.path);
           }

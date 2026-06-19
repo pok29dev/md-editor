@@ -63,6 +63,7 @@ npm run tauri build
 npm run tauri dev
 # Open Folder → examples/sample-docs
 # เปิด markdown-features-test.md
+# เปิด config.json / config.yaml — ทดสอบ syntax highlight, validate, format (⌘⇧F)
 ```
 
 Checklist: [docs/TESTING.md](../docs/TESTING.md)
@@ -110,6 +111,8 @@ npm run build   # ต้อง pass tsc + vite โดยไม่มี error
 | Encoding ใน status bar | §4.1 | มีใน `FileContent` แต่ไม่แสดง UI |
 | Export HTML + Mermaid/Math | S-04 | Static HTML only |
 | Open Folder = Cmd+O | Spec | จริง: Cmd+O = Open File, Cmd+Shift+O = Open Folder |
+| JSON/YAML preview | spec-json-yaml | Editor-only; ไม่มี preview pipeline |
+| JSON Schema validation | spec-json-yaml | Syntax check เท่านั้น |
 | design-pack screenshots | Brief | บางรูปยังไม่ regenerate หลัง UI redesign |
 
 ## 8.9 Post-MVP Roadmap

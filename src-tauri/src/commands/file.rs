@@ -4,25 +4,27 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::time::UNIX_EPOCH;
 
-const MD_EXTENSIONS: &[&str] = &["md", "markdown"];
+const SUPPORTED_EXTENSIONS: &[&str] = &[
+    "md", "markdown", "mdown", "mkd", "mdx", "json", "yaml", "yml",
+];
 
-fn is_markdown_file(path: &Path) -> bool {
+fn is_supported_file(path: &Path) -> bool {
     path.extension()
         .and_then(|e| e.to_str())
-        .map(|e| MD_EXTENSIONS.contains(&e.to_ascii_lowercase().as_str()))
+        .map(|e| SUPPORTED_EXTENSIONS.contains(&e.to_ascii_lowercase().as_str()))
         .unwrap_or(false)
 }
 
-fn dir_has_markdown(dir: &Path) -> Result<bool, String> {
+fn dir_has_supported_files(dir: &Path) -> Result<bool, String> {
     let entries = fs::read_dir(dir).map_err(|e| e.to_string())?;
     for entry in entries {
         let entry = entry.map_err(|e| e.to_string())?;
         let path = entry.path();
         if path.is_dir() {
-            if dir_has_markdown(&path)? {
+            if dir_has_supported_files(&path)? {
                 return Ok(true);
             }
-        } else if is_markdown_file(&path) {
+        } else if is_supported_file(&path) {
             return Ok(true);
         }
     }
@@ -55,7 +57,7 @@ fn build_tree(dir: &Path, root: &Path) -> Result<Vec<TreeNode>, String> {
             .to_string();
 
         if path.is_dir() {
-            if dir_has_markdown(&path)? {
+            if dir_has_supported_files(&path)? {
                 let children = build_tree(&path, root)?;
                 nodes.push(TreeNode {
                     name,
@@ -64,7 +66,7 @@ fn build_tree(dir: &Path, root: &Path) -> Result<Vec<TreeNode>, String> {
                     children: Some(children),
                 });
             }
-        } else if is_markdown_file(&path) {
+        } else if is_supported_file(&path) {
             nodes.push(TreeNode {
                 name,
                 path: path.to_string_lossy().to_string(),

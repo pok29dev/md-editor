@@ -7,14 +7,15 @@ App
 └── AppShell
     ├── WindowTitleBar      (view mode, find, sync, overflow, color scheme, settings)
     ├── layout-title-row
-    │   ├── SidebarTitleBar (folder name, open folder, refresh, collapse)
+    │   ├── SidebarTitleBar (folder name only)
     │   └── TabBar          (tabs, new tab, sidebar toggle)
     ├── layout-content-row
     │   ├── Sidebar
-    │   │   └── FileTree    (recursive, keyboard nav)
+    │   │   ├── SidebarToolbar (open folder, expand/collapse all, refresh, hide)
+    │   │   └── FileTree       (recursive, keyboard nav)
     ├── main-workspace
-    │       ├── EditorPane → EditorToolbar (7 groups) + MarkdownEditor
-    │       └── PreviewPane → MarkdownPreview
+    │       ├── EditorPane → EditorToolbar (Markdown only) + MarkdownEditor
+    │       └── PreviewPane → MarkdownPreview (empty state สำหรับ JSON/YAML)
     ├── StatusBar
     ├── FindReplace         (modal overlay)
     ├── LinkDialog          (modal overlay)
@@ -27,13 +28,15 @@ App
 |-----------|------|--------|
 | `AppShell` | `components/layout/AppShell.tsx` | Root layout, เรียก hooks หลัก, จัด split panels |
 | `WindowTitleBar` | `.../WindowTitleBar.tsx` | macOS overlay title bar + toolbar actions |
-| `SidebarTitleBar` | `.../SidebarTitleBar.tsx` | ชื่อโฟลเดอร์, open folder, refresh tree |
-| `Sidebar` | `.../Sidebar.tsx` | Container file tree, loading/error/empty states |
+| `SidebarTitleBar` | `.../SidebarTitleBar.tsx` | ชื่อโฟลเดอร์ (แถวเดียวกับ Tab bar) |
+| `SidebarToolbar` | `.../SidebarToolbar.tsx` | ปุ่ม open folder, expand/collapse all, refresh, hide sidebar |
+| `Sidebar` | `.../Sidebar.tsx` | `SidebarToolbar` + file tree, loading/error/empty states |
 | `FileTree` | `.../FileTree.tsx` | Tree recursive, keyboard nav, indent guides |
-| `TabBar` | `.../TabBar.tsx` | Multi-tab, dirty indicator (`•`), close |
-| `EditorPane` | `.../EditorPane.tsx` | Wrapper `EditorToolbar` + `MarkdownEditor` ของ active tab |
-| `PreviewPane` | `.../PreviewPane.tsx` | Wrapper `MarkdownPreview` |
-| `StatusBar` | `.../StatusBar.tsx` | Path, word/char count, Modified/Saved |
+| `TabBar` | `.../TabBar.tsx` | Multi-tab, dirty indicator (`•`), close, context menu Close All |
+| `EditorPane` | `.../EditorPane.tsx` | Wrapper `EditorToolbar` (Markdown only) + `MarkdownEditor` |
+| `PreviewPane` | `.../PreviewPane.tsx` | Wrapper `MarkdownPreview`; empty state สำหรับ data files |
+| `PreviewFontControls` | `.../PreviewFontControls.tsx` | ปรับขนาดฟอนต์ preview (`-` / scale / `+` / reset) |
+| `StatusBar` | `.../StatusBar.tsx` | Path, word/char count, Modified/Saved, syntax error (JSON/YAML) |
 | `ColorSchemeToggle` | `.../ColorSchemeToggle.tsx` | Cycle color scheme: system → light → dark |
 
 ## 3.3 Editor Components
@@ -42,7 +45,7 @@ App
 
 **ไฟล์:** `components/editor/MarkdownEditor.tsx`
 
-- สร้าง `EditorView` ใหม่เมื่อ `resolvedTheme` เปลี่ยน
+- สร้าง `EditorView` ใหม่เมื่อ `resolvedTheme` หรือ `fileKind` เปลี่ยน
 - `key={activeTab.id}` ใน EditorPane — remount เมื่อเปลี่ยน tab
 - Sync content: store → editor (skip ถ้า store stale หลัง save)
 - Register `view` ใน `editorStore` สำหรับ Find/Save/Sync scroll
@@ -75,7 +78,29 @@ App
 - เปิดจาก toolbar, menu **Markdown Link**, หรือ `Cmd/Ctrl+K`
 - Submit เรียก `applyFormatAction("linkPrompt", { url, linkText })`
 
-## 3.4 Format Actions
+- ซ่อนเมื่อ `activeTab.fileKind !== "markdown"` (JSON/YAML ไม่มี format toolbar)
+
+### SettingsSyntaxCustomColors
+
+**ไฟล์:** `components/settings/SettingsSyntaxCustomColors.tsx`
+
+- แสดงเมื่อเลือก syntax scheme **Custom** ใน Settings → Editor
+- กำหนดสี 6 token (Keys, Strings, Numbers, Keywords, Comments, Punctuation) แยก Light/Dark
+- Persist ใน `editorSyntaxCustomColors` → `preferences.json`
+
+## 3.4 Structured Files (JSON/YAML)
+
+**ไฟล์:** `lib/files/fileKind.ts`, `validateStructured.ts`, `saveStructured.ts`
+
+| Module | หน้าที่ |
+|--------|--------|
+| `fileKind.ts` | `detectFileKind`, `isSupportedFilePath`, `supportsPreview` |
+| `validateStructured.ts` | `validateStructuredContent`, `formatStructuredContent` |
+| `saveStructured.ts` | `confirmSaveDespiteInvalidSyntax` ก่อน save |
+
+Data files เปิดด้วย `viewMode: "editor"`; `setViewMode` ปฏิเสธ split/preview
+
+## 3.5 Format Actions
 
 **ไฟล์:** `lib/editor/formatActions.ts`, `hooks/useMarkdownFormat.ts`
 
@@ -91,7 +116,7 @@ App
 
 **Toggle wrap:** cursor ในคำว่าง → ขยายเป็นคำก่อน wrap; กดซ้ำถอด delimiter (`**`, `*`, etc.)
 
-## 3.5 Preview Components
+## 3.6 Preview Components
 
 ### MarkdownPreview
 
@@ -101,7 +126,7 @@ App
 - Register `previewScrollEl` ใน `editorStore` สำหรับ sync scroll
 - Attributes: `aria-busy`, `data-render-state`
 
-## 3.6 Zustand Stores
+## 3.7 Zustand Stores
 
 ### appStore — `stores/appStore.ts`
 
@@ -115,6 +140,7 @@ interface EditorTab {
   content: string;
   isDirty: boolean;
   viewMode: "split" | "editor" | "preview";
+  fileKind: "markdown" | "json" | "yaml";
 }
 ```
 
@@ -129,6 +155,8 @@ interface EditorTab {
 | `rootFolder` | Path โฟลเดอร์ที่เปิด |
 | `fileTree` | `TreeNode[]` จาก Rust |
 | `expandedPaths` | สถานะ expand ของแต่ละโฟลเดอร์ |
+| `editorSyntaxColors` | `"github" \| "custom" \| "minimal"` — JSON/YAML syntax theme |
+| `editorSyntaxCustomColors` | Custom palette (light/dark × 6 tokens) |
 
 **Actions สำคัญ:**
 
@@ -149,56 +177,62 @@ interface EditorTab {
 | `findReplaceOpen` | สถานะ Find modal |
 | `linkDialogOpen` | สถานะ Link dialog |
 
-## 3.7 Hooks
+## 3.8 Hooks
 
 | Hook | ไฟล์ | หน้าที่ |
 |------|------|--------|
 | `usePreview` | `hooks/usePreview.ts` | Debounce, worker, DOM patch, Mermaid/MathJax |
 | `useFileTree` | `hooks/useFileTree.ts` | Open folder/file, refresh, restore last folder |
 | `useFileActions` | `hooks/useFileActions.ts` | Save, Save As, Export HTML |
-| `useTabActions` | `hooks/useTabActions.ts` | Close tab + unsaved warning |
+| `useTabActions` | `hooks/useTabActions.ts` | Close tab / Close All Tabs + unsaved warning |
 | `useSyncScroll` | `hooks/useSyncScroll.ts` | Bidirectional scroll ratio sync |
 | `useKeyboardShortcuts` | `hooks/useKeyboardShortcuts.ts` | Global shortcuts, format shortcuts, quit confirmation |
-| `useAppMenu` | `hooks/useAppMenu.ts` | Native macOS menu (File, Edit, Insert, Format, Window, Help) |
+| `useAppMenu` | `hooks/useAppMenu.ts` | Native macOS menu ต่อ webview (File, Edit, Insert, Format, Window, Help) |
 | `useMarkdownFormat` | `hooks/useMarkdownFormat.ts` | Toolbar format actions |
 | `useEditorToolbarState` | `hooks/useEditorToolbarState.ts` | Heading + active toolbar state |
 | `useFormatMenuActions` | `hooks/useFormatMenuActions.ts` | Menu → format actions |
 | `usePersistPreferences` | `hooks/usePersistPreferences.ts` | Debounced persist theme/sync/sidebar |
 | `useActiveViewMode` | `hooks/useActiveViewMode.ts` | Derive `viewMode` จาก active tab |
 
-## 3.8 CodeMirror Setup
+## 3.9 CodeMirror Setup
 
-**ไฟล์:** `lib/editor/extensions.ts`, `lib/editor/theme.ts`
+**ไฟล์:** `lib/editor/extensions.ts`, `lib/editor/theme.ts`, `lib/editor/syntaxColors.ts`
 
 | Extension | แหล่ง |
 |-----------|-------|
 | Line numbers | `@codemirror/view` |
 | Active line highlight | `@codemirror/view` |
 | Bracket matching | `@codemirror/language` |
-| Syntax highlighting | Custom: heading = **bold only** (ไม่มี underline) |
+| Markdown syntax | Custom: heading = **bold only** (ไม่มี underline) |
+| JSON/YAML syntax | `@codemirror/lang-json`, `@codemirror/lang-yaml` + `syntaxColors.ts` |
 | Selection match highlight | `@codemirror/search` |
 | History (undo/redo) | `@codemirror/commands` |
-| Markdown language | `@codemirror/lang-markdown` |
+| Language mode | `@codemirror/lang-markdown` หรือ JSON/YAML ตาม `fileKind` |
 | Line wrapping | `EditorView.lineWrapping` |
 | Theme | CSS variables via `createEditorTheme(isDark)` |
+
+`buildEditorExtensions(isDark, settings, fileKind)` — recreate editor เมื่อ `fileKind` เปลี่ยน
+
+**Syntax color schemes (JSON/YAML):** `github` (default), `custom` (user palette), `minimal`
 
 **Keymaps:**
 
 | Key | Action |
 |-----|--------|
 | `Mod-f` | Open Find |
+| `Mod-Shift-f` | Format JSON/YAML (data files) |
 | `Tab` | Indent (2 spaces) |
 | Default + history keymaps | Undo/redo, etc. |
 
-## 3.9 Tauri Frontend Layer
+## 3.10 Tauri Frontend Layer
 
 **ไฟล์:** `lib/tauri/commands.ts`, `lib/tauri/preferences.ts`, `lib/tauri/dialogFilters.ts`
 
-- `pickFolder`, `pickOpenMarkdown`, `pickSaveMarkdown`, `pickSaveHtml`
+- `pickFolder`, `pickOpenEditableFile`, `pickSaveFile`, `pickSaveHtml`
 - Wrappers สำหรับ `invoke()` ทุก Rust command
 - `refreshTree.ts` — re-scan folder หลัง save ภายนอก
 
-## 3.10 Icon System
+## 3.11 Icon System
 
 | ชุด | ที่มา | ใช้กับ |
 |-----|-------|--------|
@@ -210,7 +244,7 @@ interface EditorTab {
 
 Router: `lib/theme/icons.ts` — `getToolbarIcons`, `getFormatIcons`, `getColorSchemeIcons`, `getTreeIcons`
 
-## 3.11 Styling
+## 3.12 Styling
 
 | ไฟล์ | บทบาท |
 |------|--------|
@@ -219,6 +253,7 @@ Router: `lib/theme/icons.ts` — `getToolbarIcons`, `getFormatIcons`, `getColorS
 | `styles/themes/{default,blue,warm}.css` | Tokens ต่อ color scheme + app theme |
 | `styles/layout.css` | App shell, sidebar, tabs |
 | `styles/preview.css` | Markdown preview, alerts, skeleton |
+| `styles/preview-markdown-dark.css` | GitHub Markdown + hljs dark overrides สำหรับ `data-color-scheme="dark"` |
 | `styles/editor-toolbar.css` | Formatting toolbar |
 | `styles/titlebar.css` | macOS title bar overlay |
 | `styles/dialogs.css` | Find, Link, shared modal styles |

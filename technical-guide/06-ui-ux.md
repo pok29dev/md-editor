@@ -18,13 +18,15 @@
 
 ## 6.2 View Modes
 
-View mode เก็บ **per-tab** — แต่ละ tab สามารถมี mode ต่างกันได้
+View mode เก็บ **per-tab** — แต่ละ tab สามารถมี mode ต่างกันได้ (JSON/YAML บังคับ **Editor only**)
 
 | Mode | คำอธิบาย | Default size (split) |
 |------|----------|----------------------|
 | **Split** | Editor + Preview คู่กัน | 50% / 50% (min 20% each) |
 | **Editor** | ซ่อน preview | Editor 100% |
 | **Preview** | ซ่อน editor | Preview 100% |
+
+**Data files (JSON/YAML):** เปิดด้วย Editor only; ปุ่ม Split/Preview ใน title bar disabled
 
 **เปลี่ยน mode ได้จาก:**
 
@@ -39,7 +41,7 @@ Implementation: `react-resizable-panels` ใน `AppShell.tsx` — ซ่อน 
 |---------|----------|
 | Width | Slider ใน Settings **180–400px** (`--sidebar-width`) |
 | Collapse | ปุ่มใน TabBar หรือ `Cmd/Ctrl + \` |
-| File tree | แสดงเฉพาะ `.md` / `.markdown` |
+| File tree | แสดง `.md` / `.markdown` / `.mdown` / `.mkd` / `.mdx` / `.json` / `.yaml` / `.yml` |
 | Active file | Highlight path ที่ตรง active tab |
 | Expand/collapse | คลิกโฟลเดอร์, state เก็บใน `expandedPaths` |
 | Expand/collapse all | ปุ่มใน `SidebarToolbar` — `expandAllFolders` / `collapseAllFolders` |
@@ -57,7 +59,7 @@ Implementation: `react-resizable-panels` ใน `AppShell.tsx` — ซ่อน 
 | แท็บ | การตั้งค่า | Persist |
 |------|-----------|---------|
 | **General** | Theme, sync scroll, collapse sidebar, sidebar width, default view mode | `preferences.json` |
-| **Editor** | Font size, tab size, line numbers, line wrap | 同上 |
+| **Editor** | Font size, tab size, line numbers, line wrap, JSON/YAML syntax colors (GitHub/Custom/Minimal) | 同上 |
 | **Files** | Restore last folder, recent folders (read-only + Clear) | 同上 |
 | **Export** | PDF theme (app/light/dark), PDF page size (A4/Letter) | 同上 |
 
@@ -94,7 +96,9 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | Line wrap | Toggle ใน Settings |
 | Heading style | **Bold เท่านั้น** ไม่มี underline |
 | Selection | Native browser selection (ไม่ทับ active line) |
+| Editor toolbar | ซ่อนสำหรับ JSON/YAML; แสดงเฉพาะ Markdown tabs |
 | Find modal | Overlay กลางจอ, ไม่ block editor ด้านหลัง |
+| Format document | `Cmd/Ctrl + Shift + F` — pretty-print JSON/YAML |
 
 ### Editor Toolbar
 
@@ -170,6 +174,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 - Word count
 - Character count
 - **Modified** / **Saved** state
+- **Syntax error** — แสดงเมื่อ JSON/YAML invalid (data files)
 
 ## 6.10 Keyboard Shortcuts
 
@@ -194,6 +199,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | `Cmd/Ctrl + L` | Task list |
 | `Cmd/Ctrl + /` | HTML comment wrap |
 | `Cmd/Ctrl + Shift + K` | Code block |
+| `Cmd/Ctrl + Shift + F` | Format JSON/YAML (data files) |
 | `Cmd/Ctrl + Option + 1…6` | Heading 1–6 |
 
 ## 6.11 Native Menu (macOS)
@@ -217,6 +223,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | สถานการณ์ | Dialog |
 |-----------|--------|
 | ปิด tab ที่มี unsaved changes | `confirm()` — Save / Don't Save / Cancel |
+| Save JSON/YAML ที่ syntax invalid | `confirmSaveDespiteInvalidSyntax()` — ยืนยันก่อนบันทึก |
 | ปิดแอปที่มี unsaved tabs | `confirmQuitWithoutSaving()` |
 | Open/Save | Native Tauri file dialog |
 | Insert link | LinkDialog modal (URL + label) |

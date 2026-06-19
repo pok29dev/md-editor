@@ -4,7 +4,7 @@
 
 ## Product
 
-**MD Editor** — Desktop Markdown editor สำหรับ macOS (Tauri v2 + React)
+**MD Editor** — Desktop Markdown + JSON/YAML editor สำหรับ macOS (Tauri v2 + React)
 
 - Local-first, offline, ไม่มี analytics
 - อ้างอิง UX จาก **CodeRunner**: sidebar file tree + multi-tab + split editor/preview
@@ -39,12 +39,12 @@
 ### Components
 
 1. **WindowTitleBar** — view mode segmented, Find/Sync icons, overflow export menu, color scheme + settings
-2. **Sidebar** — collapsible file tree (.md only), keyboard nav
+2. **Sidebar** — collapsible file tree (`.md`, `.json`, `.yaml`, `.yml`), keyboard nav
 3. **TabBar** — multi-tab, dirty `•`, new tab, sidebar toggle
 4. **EditorToolbar** — 7 groups (history, heading, inline, align, lists, insert, utilities)
 5. **Editor + Preview** — resizable split (min 20% each)
 6. **StatusBar** — path, counts, save state (ไม่ใช้สีฟ้าเต็มแถบใน dark)
-7. **Modals** — Settings (4 tabs), Find & Replace, Link + dialogs อื่น
+7. **Modals** — Settings (4 tabs, รวม JSON/YAML syntax colors), Find & Replace, Link + dialogs อื่น
 8. **Native menu** — File, Edit, Insert, Format, Window, Help (`useAppMenu.ts`)
 
 ## Redesign Goals — ✅ เสร็จแล้ว

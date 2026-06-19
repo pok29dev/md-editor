@@ -1,6 +1,7 @@
 import { EditorState, Transaction } from "@codemirror/state";
 import { EditorView, type ViewUpdate } from "@codemirror/view";
 import { buildEditorExtensions } from "./extensions";
+import type { FileKind } from "../files/fileKind";
 import {
   editorSettingsKey,
   getEditorSettingsFromStore,
@@ -24,9 +25,13 @@ export function subscribeTabEditorUpdate(
   return () => updateHandlers.delete(handler);
 }
 
-function buildExtensions(isDark: boolean, settings: EditorSettings) {
+function buildExtensions(
+  isDark: boolean,
+  settings: EditorSettings,
+  fileKind: FileKind,
+) {
   return [
-    ...buildEditorExtensions(isDark, settings),
+    ...buildEditorExtensions(isDark, settings, fileKind),
     EditorView.updateListener.of((update) => {
       if (update.docChanged) {
         onChangeHandler(update.state.doc.toString());
@@ -74,6 +79,7 @@ export function attachTabEditor(
   content: string,
   isDark: boolean,
   settings: EditorSettings = getEditorSettingsFromStore(),
+  fileKind: FileKind = "markdown",
 ): EditorView {
   for (const [id, view] of tabViews) {
     if (id !== tabId && view.dom.parentNode === parent) {
@@ -81,7 +87,7 @@ export function attachTabEditor(
     }
   }
 
-  const settingsKey = editorSettingsKey(isDark, settings);
+  const settingsKey = editorSettingsKey(isDark, settings, fileKind);
   let view = tabViews.get(tabId);
 
   if (view && tabViewSettings.get(tabId) !== settingsKey) {
@@ -93,7 +99,7 @@ export function attachTabEditor(
     view = new EditorView({
       state: EditorState.create({
         doc: content,
-        extensions: buildExtensions(isDark, settings),
+        extensions: buildExtensions(isDark, settings, fileKind),
       }),
       parent,
     });
@@ -125,9 +131,10 @@ export function recreateTabEditor(
   content: string,
   isDark: boolean,
   settings: EditorSettings = getEditorSettingsFromStore(),
+  fileKind: FileKind = "markdown",
 ): EditorView {
   destroyTabEditorView(tabId);
-  return attachTabEditor(parent, tabId, content, isDark, settings);
+  return attachTabEditor(parent, tabId, content, isDark, settings, fileKind);
 }
 
 export function syncTabEditorContent(

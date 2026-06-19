@@ -2,6 +2,7 @@
 
 :root {
   --sidebar-width: 240px;
+  --workspace-toolbar-height: 44px;
 }
 
 @import "./themes/default.css";

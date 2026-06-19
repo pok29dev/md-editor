@@ -5,6 +5,7 @@ import { EditorToolbarDialogs } from "../editor/EditorToolbarDialogs";
 import { useAppStore } from "../../stores/appStore";
 import { useEditorStore } from "../../stores/editorStore";
 import { destroyOrphanTabEditors } from "../../lib/editor/tabEditorCache";
+import { supportsPreview } from "../../lib/files/fileKind";
 
 export function EditorPane() {
   const tabs = useAppStore((s) => s.tabs);
@@ -33,11 +34,12 @@ export function EditorPane() {
 
   return (
     <div className="editor-pane" data-direction={editorTextDirection}>
-      <EditorToolbar />
-      <EditorToolbarDialogs />
+      {supportsPreview(activeTab.fileKind) && <EditorToolbar />}
+      {supportsPreview(activeTab.fileKind) && <EditorToolbarDialogs />}
       <MarkdownEditor
         tabId={activeTab.id}
         content={activeTab.content}
+        fileKind={activeTab.fileKind}
         onChange={(content) => updateTabContent(activeTab.id, content)}
       />
     </div>

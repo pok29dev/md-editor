@@ -2,9 +2,15 @@ import { useAppStore } from "../../stores/appStore";
 import {
   EDITOR_FONT_SIZE_MAX,
   EDITOR_FONT_SIZE_MIN,
+  type EditorSyntaxColorScheme,
 } from "../../lib/editor/settings";
+import {
+  EDITOR_SYNTAX_COLOR_OPTIONS,
+  syntaxColorPreviewTokens,
+} from "../../lib/editor/syntaxColors";
 import { resetEditorSettings } from "../../lib/tauri/preferences";
 import { SettingsResetButton } from "./SettingsResetButton";
+import { SettingsSyntaxCustomColors } from "./SettingsSyntaxCustomColors";
 
 const TAB_SIZES = [
   { value: 2 as const, label: "2 spaces" },
@@ -16,10 +22,23 @@ export function SettingsEditor() {
   const editorTabSize = useAppStore((s) => s.editorTabSize);
   const editorLineNumbers = useAppStore((s) => s.editorLineNumbers);
   const editorLineWrap = useAppStore((s) => s.editorLineWrap);
+  const editorSyntaxColors = useAppStore((s) => s.editorSyntaxColors);
+  const editorSyntaxCustomColors = useAppStore((s) => s.editorSyntaxCustomColors);
+  const resolvedColorScheme = useAppStore((s) => s.resolvedColorScheme);
   const setEditorFontSize = useAppStore((s) => s.setEditorFontSize);
   const setEditorTabSize = useAppStore((s) => s.setEditorTabSize);
   const setEditorLineNumbers = useAppStore((s) => s.setEditorLineNumbers);
   const setEditorLineWrap = useAppStore((s) => s.setEditorLineWrap);
+  const setEditorSyntaxColors = useAppStore((s) => s.setEditorSyntaxColors);
+
+  const selectedSyntaxOption = EDITOR_SYNTAX_COLOR_OPTIONS.find(
+    (option) => option.value === editorSyntaxColors,
+  );
+  const previewTokens = syntaxColorPreviewTokens(
+    editorSyntaxColors,
+    resolvedColorScheme === "dark",
+    editorSyntaxCustomColors,
+  );
 
   return (
     <section className="settings-section">
@@ -63,6 +82,44 @@ export function SettingsEditor() {
         </select>
         <span className="settings-hint">Indent width when pressing Tab</span>
       </label>
+
+      <div className="settings-field">
+        <label className="settings-label" htmlFor="settings-editor-syntax-colors">
+          JSON/YAML syntax colors
+        </label>
+        <select
+          id="settings-editor-syntax-colors"
+          className="settings-select"
+          value={editorSyntaxColors}
+          onChange={(e) =>
+            setEditorSyntaxColors(e.target.value as EditorSyntaxColorScheme)
+          }
+        >
+          {EDITOR_SYNTAX_COLOR_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <span className="settings-hint">
+          {selectedSyntaxOption?.hint ??
+            "Syntax highlighting for JSON and YAML files"}
+        </span>
+        {previewTokens.length > 0 && (
+          <div className="syntax-color-preview" aria-hidden>
+            {previewTokens.map(({ label, color }) => (
+              <span key={label} className="syntax-color-chip">
+                <span
+                  className="syntax-color-swatch"
+                  style={{ backgroundColor: color }}
+                />
+                {label}
+              </span>
+            ))}
+          </div>
+        )}
+        <SettingsSyntaxCustomColors />
+      </div>
 
       <label className="settings-field settings-toggle">
         <span className="settings-label">Line numbers</span>
@@ -142,6 +199,27 @@ export function SettingsEditor() {
           width: 100%;
           max-width: 320px;
           accent-color: var(--accent);
+        }
+        .syntax-color-preview {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px 12px;
+          margin-top: 4px;
+        }
+        .syntax-color-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          color: var(--text-secondary);
+          font-family: "SF Mono", Menlo, Consolas, monospace;
+        }
+        .syntax-color-swatch {
+          width: 10px;
+          height: 10px;
+          border-radius: 2px;
+          border: 1px solid var(--border-subtle);
+          flex-shrink: 0;
         }
       `}</style>
     </section>

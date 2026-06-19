@@ -66,8 +66,8 @@ export function AppShell() {
   useKeyboardShortcuts();
   useSyncScroll();
   usePersistPreferences();
-  const { restoreLastFolder, handleExternalMarkdownPaths } = useFileTree();
-  useOpenExternalFileEvents(handleExternalMarkdownPaths);
+  const { restoreLastFolder, handleExternalFilePaths } = useFileTree();
+  useOpenExternalFileEvents(handleExternalFilePaths);
 
   useEffect(() => {
     void (async () => {
@@ -78,7 +78,7 @@ export function AppShell() {
         if (isTauri()) {
           const pending = await invoke<string[]>("get_pending_open_files");
           if (pending.length > 0) {
-            await handleExternalMarkdownPaths(pending);
+            await handleExternalFilePaths(pending);
           }
         }
       }

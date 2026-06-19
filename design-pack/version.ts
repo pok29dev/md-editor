@@ -1,3 +1,3 @@
-/** App version — format: yy.m.ddbb (e.g. 26.6.1701 = 2026-06-17 build 1) */
-export const APP_VERSION = "26.6.1701";
+/** App version — format: yy.m.ddbb (e.g. 26.6.1901 = 2026-06-19 build 1) */
+export const APP_VERSION = "26.6.1901";
 export const APP_COPYRIGHT = "pok29dev";

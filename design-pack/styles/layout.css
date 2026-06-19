@@ -16,18 +16,10 @@
 .layout-title-row {
   display: flex;
   flex-direction: row;
+  align-items: stretch;
   flex-shrink: 0;
   min-height: 36px;
   border-bottom: 1px solid var(--border-subtle);
-}
-
-.sidebar-title-slot {
-  flex: 0 0 var(--sidebar-width);
-  width: var(--sidebar-width);
-  max-width: var(--sidebar-width);
-  min-width: 0;
-  border-right: 1px solid var(--border-subtle);
-  overflow: hidden;
 }
 
 .main-title-slot {

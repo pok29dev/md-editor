@@ -10,6 +10,10 @@ import {
   clampEditorFontSize,
   EDITOR_FONT_SIZE_DEFAULT,
   EDITOR_TAB_SIZE_DEFAULT,
+  EDITOR_SYNTAX_COLORS_DEFAULT,
+  DEFAULT_EDITOR_SYNTAX_CUSTOM_COLORS,
+  normalizeEditorSyntaxColors,
+  normalizeEditorSyntaxCustomColors,
   normalizeEditorTabSize,
 } from "../editor/settings";
 import {
@@ -66,6 +70,8 @@ export const DEFAULT_PREFERENCES: AppPreferences = {
   editorTabSize: EDITOR_TAB_SIZE_DEFAULT,
   editorLineNumbers: true,
   editorLineWrap: true,
+  editorSyntaxColors: EDITOR_SYNTAX_COLORS_DEFAULT,
+  editorSyntaxCustomColors: DEFAULT_EDITOR_SYNTAX_CUSTOM_COLORS,
   exportPdfTheme: EXPORT_PDF_THEME_DEFAULT,
   exportPdfPageSize: EXPORT_PDF_PAGE_SIZE_DEFAULT,
   recentFolders: [],
@@ -122,6 +128,8 @@ export function buildPreferencesFromState(
     editorTabSize: state.editorTabSize,
     editorLineNumbers: state.editorLineNumbers,
     editorLineWrap: state.editorLineWrap,
+    editorSyntaxColors: state.editorSyntaxColors,
+    editorSyntaxCustomColors: state.editorSyntaxCustomColors,
     exportPdfTheme: state.exportPdfTheme,
     exportPdfPageSize: state.exportPdfPageSize,
     recentFolders: state.recentFolders,
@@ -171,6 +179,12 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
     editorTabSize,
     editorLineNumbers: normalized.editorLineNumbers ?? true,
     editorLineWrap: normalized.editorLineWrap ?? true,
+    editorSyntaxColors: normalizeEditorSyntaxColors(
+      normalized.editorSyntaxColors,
+    ),
+    editorSyntaxCustomColors: normalizeEditorSyntaxCustomColors(
+      normalized.editorSyntaxCustomColors,
+    ),
     exportPdfTheme,
     exportPdfPageSize,
     recentFolders: normalized.recentFolders,
@@ -243,6 +257,12 @@ export function resetEditorSettings(): void {
     editorTabSize: normalizeEditorTabSize(DEFAULT_PREFERENCES.editorTabSize),
     editorLineNumbers: DEFAULT_PREFERENCES.editorLineNumbers,
     editorLineWrap: DEFAULT_PREFERENCES.editorLineWrap,
+    editorSyntaxColors: normalizeEditorSyntaxColors(
+      DEFAULT_PREFERENCES.editorSyntaxColors,
+    ),
+    editorSyntaxCustomColors: normalizeEditorSyntaxCustomColors(
+      DEFAULT_PREFERENCES.editorSyntaxCustomColors,
+    ),
   });
   void flushPersistPreferences();
 }

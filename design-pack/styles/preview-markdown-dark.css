@@ -1,0 +1,168 @@
+/* App dark mode — github-markdown.css only switches via prefers-color-scheme */
+[data-color-scheme="dark"] .preview-content .markdown-body {
+  color-scheme: dark;
+  --fgColor-accent: #4493f8;
+  --bgColor-attention-muted: #bb800926;
+  --bgColor-default: #0d1117;
+  --bgColor-muted: #151b23;
+  --bgColor-neutral-muted: #656c7633;
+  --borderColor-accent-emphasis: #1f6feb;
+  --borderColor-attention-emphasis: #9e6a03;
+  --borderColor-danger-emphasis: #da3633;
+  --borderColor-default: #3d444d;
+  --borderColor-done-emphasis: #8957e5;
+  --borderColor-success-emphasis: #238636;
+  --color-prettylights-syntax-brackethighlighter-angle: #9198a1;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #f85149;
+  --color-prettylights-syntax-carriage-return-bg: #b62324;
+  --color-prettylights-syntax-carriage-return-text: #f0f6fc;
+  --color-prettylights-syntax-comment: #9198a1;
+  --color-prettylights-syntax-constant: #79c0ff;
+  --color-prettylights-syntax-constant-other-reference-link: #a5d6ff;
+  --color-prettylights-syntax-entity: #d2a8ff;
+  --color-prettylights-syntax-entity-tag: #7ee787;
+  --color-prettylights-syntax-keyword: #ff7b72;
+  --color-prettylights-syntax-markup-bold: #f0f6fc;
+  --color-prettylights-syntax-markup-changed-bg: #5a1e02;
+  --color-prettylights-syntax-markup-changed-text: #ffdfb6;
+  --color-prettylights-syntax-markup-deleted-bg: #67060c;
+  --color-prettylights-syntax-markup-deleted-text: #ffdcd7;
+  --color-prettylights-syntax-markup-heading: #1f6feb;
+  --color-prettylights-syntax-markup-ignored-bg: #1158c7;
+  --color-prettylights-syntax-markup-ignored-text: #f0f6fc;
+  --color-prettylights-syntax-markup-inserted-bg: #033a16;
+  --color-prettylights-syntax-markup-inserted-text: #aff5b4;
+  --color-prettylights-syntax-markup-italic: #f0f6fc;
+  --color-prettylights-syntax-markup-list: #f2cc60;
+  --color-prettylights-syntax-meta-diff-range: #d2a8ff;
+  --color-prettylights-syntax-storage-modifier-import: #f0f6fc;
+  --color-prettylights-syntax-string: #a5d6ff;
+  --color-prettylights-syntax-string-regexp: #7ee787;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #3d444d;
+  --color-prettylights-syntax-variable: #ffa657;
+  --fgColor-attention: #d29922;
+  --fgColor-danger: #f85149;
+  --fgColor-default: #f0f6fc;
+  --fgColor-done: #ab7df8;
+  --fgColor-muted: #9198a1;
+  --fgColor-success: #3fb950;
+  --borderColor-muted: #3d444db3;
+  --color-prettylights-syntax-invalid-illegal-bg: var(--bgColor-danger-muted);
+  --color-prettylights-syntax-invalid-illegal-text: var(--fgColor-danger);
+  --focus-outlineColor: var(--borderColor-accent-emphasis);
+  --borderColor-neutral-muted: var(--borderColor-muted);
+  color: var(--fgColor-default);
+}
+
+[data-color-scheme="dark"] .preview-content .markdown-body table tr {
+  background-color: var(--bgColor-default);
+}
+
+[data-color-scheme="dark"] .preview-content .markdown-body table tr:nth-child(2n) {
+  background-color: var(--bgColor-muted);
+}
+
+[data-color-scheme="dark"] .preview-content .markdown-body code,
+[data-color-scheme="dark"] .preview-content .markdown-body tt {
+  background-color: var(--bgColor-neutral-muted);
+  color: var(--fgColor-default);
+}
+
+[data-color-scheme="dark"] .preview-content .markdown-body pre,
+[data-color-scheme="dark"] .preview-content .markdown-body .highlight pre {
+  background-color: var(--bgColor-muted);
+  color: var(--fgColor-default);
+}
+
+/* highlight.js — github-dark scoped to app dark mode */
+[data-color-scheme="dark"] .preview-content .hljs {
+  color: #c9d1d9;
+  background: #151b23;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-doctag,
+[data-color-scheme="dark"] .preview-content .hljs-keyword,
+[data-color-scheme="dark"] .preview-content .hljs-meta .hljs-keyword,
+[data-color-scheme="dark"] .preview-content .hljs-template-tag,
+[data-color-scheme="dark"] .preview-content .hljs-template-variable,
+[data-color-scheme="dark"] .preview-content .hljs-type,
+[data-color-scheme="dark"] .preview-content .hljs-variable.language_ {
+  color: #ff7b72;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-title,
+[data-color-scheme="dark"] .preview-content .hljs-title.class_,
+[data-color-scheme="dark"] .preview-content .hljs-title.class_.inherited__,
+[data-color-scheme="dark"] .preview-content .hljs-title.function_ {
+  color: #d2a8ff;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-attr,
+[data-color-scheme="dark"] .preview-content .hljs-attribute,
+[data-color-scheme="dark"] .preview-content .hljs-literal,
+[data-color-scheme="dark"] .preview-content .hljs-meta,
+[data-color-scheme="dark"] .preview-content .hljs-number,
+[data-color-scheme="dark"] .preview-content .hljs-operator,
+[data-color-scheme="dark"] .preview-content .hljs-selector-attr,
+[data-color-scheme="dark"] .preview-content .hljs-selector-class,
+[data-color-scheme="dark"] .preview-content .hljs-selector-id,
+[data-color-scheme="dark"] .preview-content .hljs-variable {
+  color: #79c0ff;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-meta .hljs-string,
+[data-color-scheme="dark"] .preview-content .hljs-regexp,
+[data-color-scheme="dark"] .preview-content .hljs-string {
+  color: #a5d6ff;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-built_in,
+[data-color-scheme="dark"] .preview-content .hljs-symbol {
+  color: #ffa657;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-code,
+[data-color-scheme="dark"] .preview-content .hljs-comment,
+[data-color-scheme="dark"] .preview-content .hljs-formula {
+  color: #8b949e;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-name,
+[data-color-scheme="dark"] .preview-content .hljs-quote,
+[data-color-scheme="dark"] .preview-content .hljs-selector-pseudo,
+[data-color-scheme="dark"] .preview-content .hljs-selector-tag {
+  color: #7ee787;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-subst {
+  color: #c9d1d9;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-section {
+  color: #1f6feb;
+  font-weight: 700;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-bullet {
+  color: #f2cc60;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-emphasis {
+  color: #c9d1d9;
+  font-style: italic;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-strong {
+  color: #c9d1d9;
+  font-weight: 700;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-addition {
+  color: #aff5b4;
+  background-color: #033a16;
+}
+
+[data-color-scheme="dark"] .preview-content .hljs-deletion {
+  color: #ffdcd7;
+  background-color: #67060c;
+}

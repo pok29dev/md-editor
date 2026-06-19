@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useAppStore } from "../stores/appStore";
 import { schedulePersistPreferences } from "../lib/tauri/preferences";
+import { syntaxCustomColorsKey } from "../lib/editor/syntaxColors";
 
 function preferencesChanged(
   state: ReturnType<typeof useAppStore.getState>,
@@ -20,6 +21,9 @@ function preferencesChanged(
     state.editorTabSize === prev.editorTabSize &&
     state.editorLineNumbers === prev.editorLineNumbers &&
     state.editorLineWrap === prev.editorLineWrap &&
+    state.editorSyntaxColors === prev.editorSyntaxColors &&
+    syntaxCustomColorsKey(state.editorSyntaxCustomColors) ===
+      syntaxCustomColorsKey(prev.editorSyntaxCustomColors) &&
     state.exportPdfTheme === prev.exportPdfTheme &&
     state.exportPdfPageSize === prev.exportPdfPageSize
   );
@@ -36,6 +40,8 @@ function persistDelay(
     state.editorTabSize !== prev.editorTabSize ||
     state.editorLineNumbers !== prev.editorLineNumbers ||
     state.editorLineWrap !== prev.editorLineWrap ||
+    state.editorSyntaxColors !== prev.editorSyntaxColors ||
+    state.editorSyntaxCustomColors !== prev.editorSyntaxCustomColors ||
     state.exportPdfTheme !== prev.exportPdfTheme ||
     state.exportPdfPageSize !== prev.exportPdfPageSize
   ) {

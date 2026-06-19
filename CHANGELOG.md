@@ -1,6 +1,30 @@
 # Changelog
 
-รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.1701` = 2026-06-17 build 1) · tag `v.26.6.1701`
+รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.1901` = 2026-06-19 build 1) · tag `v.26.6.1901`
+
+## [26.6.1901] — 2026-06-19
+
+### Added
+
+- **JSON & YAML file support** — เปิด/แก้ไข/บันทึก `.json`, `.yaml`, `.yml` ใน sidebar, Open File, และ double-click จาก OS
+- **Structured file editor** — CodeMirror syntax highlighting (`@codemirror/lang-json`, `@codemirror/lang-yaml`); ซ่อน Markdown toolbar สำหรับ data files
+- **Syntax validation** — ตรวจ JSON/YAML แบบ real-time ใน status bar; Save/Save As ถามยืนยันเมื่อ syntax ไม่ถูกต้อง
+- **Format document** — `⌘⇧F` pretty-print JSON/YAML
+- **Syntax color themes** — Settings → Editor → JSON/YAML syntax colors: GitHub / **Custom** / Minimal
+- **Custom syntax palette** — กำหนดสี Keys, Strings, Numbers, Keywords, Comments, Punctuation แยก Light/Dark; persist ใน `preferences.json`
+- **Spec** — `docs/spec-json-yaml.md` สำหรับ JSON/YAML support
+- **Sample files** — `examples/sample-docs/config.json`, `config.yaml`
+
+### Changed
+
+- **View mode** — JSON/YAML เปิดแบบ editor-only; ปิด Split/Preview สำหรับ data files
+- **Open File dialog** — รองรับ Markdown, JSON, YAML, All Files
+- **Save As** — filter ตามชนิดไฟล์ของแท็บปัจจุบัน
+- **Sidebar empty state** — ข้อความรองรับ `.md`, `.json`, `.yaml`
+
+### Fixed
+
+- **Rust dev warnings** — จัดการ `path_from_cli_arg` และ unused `app` ใน `lib.rs` บน macOS (`#[cfg]` สำหรับ Windows/Linux CLI)
 
 ## [26.6.1701] — 2026-06-17
 

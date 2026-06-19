@@ -4,8 +4,16 @@ import {
   clampEditorFontSize,
   EDITOR_FONT_SIZE_DEFAULT,
   EDITOR_TAB_SIZE_DEFAULT,
+  EDITOR_SYNTAX_COLORS_DEFAULT,
+  DEFAULT_EDITOR_SYNTAX_CUSTOM_COLORS,
+  normalizeEditorSyntaxColors,
+  normalizeEditorSyntaxCustomColors,
   normalizeEditorTabSize,
+  type EditorSyntaxColorScheme,
+  type EditorSyntaxCustomColors,
+  type SyntaxColorToken,
 } from "../lib/editor/settings";
+import { updateSyntaxCustomPaletteToken } from "../lib/editor/syntaxCustomColors";
 import {
   clampPreviewFontSize,
   PREVIEW_FONT_SIZE_DEFAULT,
@@ -39,11 +47,14 @@ import type {
   ColorScheme,
   ResolvedColorScheme,
 } from "../lib/theme/types";
+import type { FileKind } from "../lib/files/fileKind";
+import { detectFileKind, supportsPreview } from "../lib/files/fileKind";
 
 export type ViewMode = "split" | "editor" | "preview";
 export type { AppTheme, ColorScheme, ResolvedColorScheme };
 export type { ExportPdfPageSize, ExportPdfTheme } from "../lib/markdown/exportSettings";
 export type { FolderTreeExpansion } from "../lib/files/treeExpansion";
+export type { EditorSyntaxColorScheme, EditorSyntaxCustomColors } from "../lib/editor/settings";
 
 export interface EditorTab {
   id: string;
@@ -52,6 +63,7 @@ export interface EditorTab {
   content: string;
   isDirty: boolean;
   viewMode: ViewMode;
+  fileKind: FileKind;
 }
 
 interface AppState {
@@ -69,6 +81,8 @@ interface AppState {
   editorTabSize: 2 | 4;
   editorLineNumbers: boolean;
   editorLineWrap: boolean;
+  editorSyntaxColors: EditorSyntaxColorScheme;
+  editorSyntaxCustomColors: EditorSyntaxCustomColors;
   exportPdfTheme: ExportPdfTheme;
   exportPdfPageSize: ExportPdfPageSize;
   recentFolders: string[];
@@ -97,6 +111,14 @@ interface AppState {
   setEditorTabSize: (size: 2 | 4) => void;
   setEditorLineNumbers: (enabled: boolean) => void;
   setEditorLineWrap: (enabled: boolean) => void;
+  setEditorSyntaxColors: (scheme: EditorSyntaxColorScheme) => void;
+  setEditorSyntaxCustomColors: (colors: EditorSyntaxCustomColors) => void;
+  setEditorSyntaxCustomColor: (
+    mode: "light" | "dark",
+    token: SyntaxColorToken,
+    value: string,
+  ) => void;
+  resetEditorSyntaxCustomColors: () => void;
   setExportPdfTheme: (theme: ExportPdfTheme) => void;
   setExportPdfPageSize: (pageSize: ExportPdfPageSize) => void;
   setRecentFolders: (folders: string[]) => void;
@@ -116,7 +138,12 @@ interface AppState {
   closeOtherTabs: (keepId: string) => void;
   setActiveTab: (id: string) => void;
   updateTabContent: (id: string, content: string) => void;
-  openFileInTab: (file: { path: string; title: string; content: string }) => void;
+  openFileInTab: (file: {
+    path: string;
+    title: string;
+    content: string;
+    fileKind?: FileKind;
+  }) => void;
   markTabSaved: (id: string) => void;
   updateTabAfterSave: (id: string, path: string) => void;
   findTabByPath: (path: string) => EditorTab | undefined;
@@ -129,13 +156,18 @@ function createTab(
   defaultViewMode: ViewMode = "split",
 ): EditorTab {
   tabCounter += 1;
+  const fileKind = partial?.fileKind ?? (partial?.path ? detectFileKind(partial.path) : "markdown");
+  const viewMode =
+    partial?.viewMode ??
+    (supportsPreview(fileKind) ? defaultViewMode : "editor");
   return {
     id: `tab-${tabCounter}`,
     path: null,
     title: "Untitled",
     content: "",
     isDirty: false,
-    viewMode: defaultViewMode,
+    viewMode,
+    fileKind,
     ...partial,
   };
 }
@@ -155,6 +187,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   editorTabSize: EDITOR_TAB_SIZE_DEFAULT,
   editorLineNumbers: true,
   editorLineWrap: true,
+  editorSyntaxColors: EDITOR_SYNTAX_COLORS_DEFAULT,
+  editorSyntaxCustomColors: DEFAULT_EDITOR_SYNTAX_CUSTOM_COLORS,
   exportPdfTheme: EXPORT_PDF_THEME_DEFAULT,
   exportPdfPageSize: EXPORT_PDF_PAGE_SIZE_DEFAULT,
   recentFolders: [],
@@ -214,6 +248,28 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ editorTabSize: normalizeEditorTabSize(editorTabSize) }),
   setEditorLineNumbers: (editorLineNumbers) => set({ editorLineNumbers }),
   setEditorLineWrap: (editorLineWrap) => set({ editorLineWrap }),
+  setEditorSyntaxColors: (editorSyntaxColors) =>
+    set({ editorSyntaxColors: normalizeEditorSyntaxColors(editorSyntaxColors) }),
+  setEditorSyntaxCustomColors: (editorSyntaxCustomColors) =>
+    set({
+      editorSyntaxCustomColors:
+        normalizeEditorSyntaxCustomColors(editorSyntaxCustomColors),
+    }),
+  setEditorSyntaxCustomColor: (mode, token, value) =>
+    set((state) => ({
+      editorSyntaxCustomColors: updateSyntaxCustomPaletteToken(
+        state.editorSyntaxCustomColors,
+        mode,
+        token,
+        value,
+      ),
+    })),
+  resetEditorSyntaxCustomColors: () =>
+    set({
+      editorSyntaxCustomColors: normalizeEditorSyntaxCustomColors(
+        DEFAULT_EDITOR_SYNTAX_CUSTOM_COLORS,
+      ),
+    }),
   setExportPdfTheme: (exportPdfTheme) =>
     set({ exportPdfTheme: normalizeExportPdfTheme(exportPdfTheme) }),
   setExportPdfPageSize: (exportPdfPageSize) =>
@@ -223,6 +279,10 @@ export const useAppStore = create<AppState>((set, get) => ({
   setViewMode: (viewMode) => {
     const { activeTabId, tabs } = get();
     if (!activeTabId) return;
+    const active = tabs.find((t) => t.id === activeTabId);
+    if (active && !supportsPreview(active.fileKind) && viewMode !== "editor") {
+      return;
+    }
     set({
       tabs: tabs.map((t) =>
         t.id === activeTabId ? { ...t, viewMode } : t,
@@ -306,15 +366,23 @@ export const useAppStore = create<AppState>((set, get) => ({
       ),
     })),
 
-  openFileInTab: ({ path, title, content }) => {
+  openFileInTab: ({ path, title, content, fileKind }) => {
     const existing = get().findTabByPath(path);
     if (existing) {
       set({ activeTabId: existing.id });
       return;
     }
 
+    const kind = fileKind ?? detectFileKind(path);
     const tab = createTab(
-      { path, title, content, isDirty: false },
+      {
+        path,
+        title,
+        content,
+        isDirty: false,
+        fileKind: kind,
+        viewMode: supportsPreview(kind) ? get().defaultViewMode : "editor",
+      },
       get().defaultViewMode,
     );
     set((s) => ({
@@ -331,10 +399,18 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   updateTabAfterSave: (id, path) => {
     const name = path.split(/[/\\]/).pop() ?? path;
+    const fileKind = detectFileKind(path);
     set((s) => ({
       tabs: s.tabs.map((t) =>
         t.id === id
-          ? { ...t, path, title: name, isDirty: false }
+          ? {
+              ...t,
+              path,
+              title: name,
+              isDirty: false,
+              fileKind,
+              viewMode: supportsPreview(fileKind) ? t.viewMode : "editor",
+            }
           : t,
       ),
       activeTabId: s.activeTabId ?? id,

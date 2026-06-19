@@ -1,0 +1,10 @@
+# Sample YAML config for MD Editor structured file support
+app:
+  name: MD Editor
+  features:
+    - markdown
+    - json
+    - yaml
+editor:
+  tabSize: 2
+  lineWrap: true

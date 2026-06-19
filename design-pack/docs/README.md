@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `2026.06.07-2` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.1901` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -10,8 +10,13 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
 - File tree sidebar with **Open folder** button, refresh, keyboard navigation
 - Open Folder / Open File, recent folders
+- **Multi-window workspaces** — New Window (`⌘⇧N`) แยกโฟลเดอร์/แท็บต่อหน้าต่าง
 - Multi-tab editing with dirty indicator and unsaved-change prompts
+- **Close All Tabs** — คลิกขวาที่แท็บ → Close All Tabs (ถามยืนยันแท็บที่ยังไม่บันทึก)
+- **Close Other Tabs** — คลิกขวาที่แท็บ → ปิดแท็บอื่นทั้งหมด เหลือแท็บที่คลิกขวา
 - Save, Save As, Export HTML, Export PDF
+- **JSON & YAML files** — เปิด/แก้ไข `.json`, `.yaml`, `.yml` ใน editor (syntax highlight, validate, format `⌘⇧F`)
+- **Syntax color themes** — GitHub / Custom / Minimal สำหรับ JSON/YAML (Settings → Editor)
 
 ### Editor & preview
 
@@ -73,12 +78,14 @@ Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-8)
 
 | Shortcut | Action |
 |----------|--------|
+| `Cmd/Ctrl + Shift + N` | New Window (workspace ใหม่) |
 | `Cmd/Ctrl + O` | Open File |
 | `Cmd/Ctrl + Shift + O` | Open Folder |
 | `Cmd/Ctrl + S` | Save |
 | `Cmd/Ctrl + Shift + S` | Save As |
 | `Cmd/Ctrl + F` | Find & Replace |
 | `Cmd/Ctrl + W` | Close tab |
+| Right-click tab | Close All Tabs |
 | `Cmd/Ctrl + ,` | Settings |
 | `Cmd/Ctrl + 1/2/3` | Split / Editor / Preview |
 | `Cmd/Ctrl + \` | Toggle sidebar |
@@ -104,12 +111,20 @@ Format shortcuts apply when the editor is focused and no modal is open.
 | [docs/settings-plan.md](./docs/settings-plan.md) | Settings MVP plan |
 | [technical-guide/](./technical-guide/) | Architecture & implementation guides |
 | [design-pack/DESIGN-BRIEF.md](./design-pack/DESIGN-BRIEF.md) | UI redesign brief + design pack |
+| [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md) | มาตรฐานเวอร์ชัน `yy.m.ddbb` |
 | [CHANGELOG.md](./CHANGELOG.md) | Release history |
 
 ## Version Format
 
-`yyyy.mm.dd-build` — UI version in `VERSION` / `src/version.ts`  
-Cargo/Tauri semver: `2026.6.7`
+`yy.m.ddbb` semver (e.g. `26.6.1101` = year 26, Jun 11, build 1) — ใช้ตรงกันทุกที่:
+
+- `VERSION` / `package.json` / `src/version.ts`
+- `src-tauri/Cargo.toml` / `tauri.conf.json`
+- Release tags: `v.26.6.1901` (unsigned: `v.26.6.1901-unsigned`)
+- Bundle filenames: `MD Editor_26.6.1901_...`
+
+รายละเอียด: [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md)  
+ตรวจความสอดคล้อง: `npm run validate:version`
 
 ## Tech Stack
 

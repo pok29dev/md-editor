@@ -1,5 +1,6 @@
 @import "github-markdown-css/github-markdown.css";
 @import "highlight.js/styles/github.min.css";
+@import "./preview-markdown-dark.css";
 
 .preview-pane {
   width: 100%;
@@ -7,37 +8,60 @@
   min-width: 0;
   overflow-y: auto;
   background: var(--preview-bg);
-  border-left: 1px solid var(--border-subtle);
 }
 
 .preview-content {
   box-sizing: border-box;
   width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
+  margin: 0;
   padding: 24px 32px 32px;
 }
 
 .preview-content .markdown-body {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
   background: transparent;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--preview-font-size, 16px);
 }
 
-[data-color-scheme="dark"] .preview-content .markdown-body,
-:root:not([data-color-scheme="light"]) .preview-content .markdown-body {
-  color-scheme: dark;
+/* Lists — Tailwind preflight sets list-style: none on ul/ol globally */
+.preview-content .markdown-body ul:not(.no-list) {
+  list-style-type: disc;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-color-scheme="light"]) .preview-content .markdown-body {
-    color-scheme: dark;
-  }
+.preview-content .markdown-body ol:not(.no-list) {
+  list-style-type: decimal;
 }
 
-[data-color-scheme="dark"] .preview-content .hljs,
-:root:not([data-color-scheme="light"]) .preview-content .hljs {
-  background: var(--bg-tertiary);
+.preview-content .markdown-body ol ol,
+.preview-content .markdown-body ul ol {
+  list-style-type: lower-roman;
+}
+
+.preview-content .markdown-body ul ul ol,
+.preview-content .markdown-body ul ol ol,
+.preview-content .markdown-body ol ul ol,
+.preview-content .markdown-body ol ol ol {
+  list-style-type: lower-alpha;
+}
+
+.preview-content .markdown-body ul ul:not(.no-list) {
+  list-style-type: circle;
+}
+
+.preview-content .markdown-body ul ul ul:not(.no-list) {
+  list-style-type: square;
+}
+
+.preview-content .markdown-body li {
+  display: list-item;
+}
+
+.preview-content .markdown-body .task-list-item {
+  list-style-type: none;
 }
 
 .preview-content .workspace-empty.preview-empty {
@@ -260,7 +284,7 @@
   background: transparent;
   padding: 0;
   overflow-x: auto;
-  font-size: 14px;
+  font-size: var(--preview-font-size, 16px);
   line-height: normal;
   border-radius: 0;
 }

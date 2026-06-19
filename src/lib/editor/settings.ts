@@ -1,10 +1,20 @@
 import { useAppStore } from "../../stores/appStore";
+import type { FileKind } from "../files/fileKind";
+import {
+  syntaxCustomColorsKey,
+  type EditorSyntaxColorScheme,
+  type EditorSyntaxCustomColors,
+} from "./syntaxColors";
+
+export type { EditorSyntaxColorScheme, EditorSyntaxCustomColors, SyntaxColorPalette, SyntaxColorToken } from "./syntaxColors";
 
 export interface EditorSettings {
   fontSize: number;
   tabSize: 2 | 4;
   lineNumbers: boolean;
   lineWrap: boolean;
+  syntaxColors: EditorSyntaxColorScheme;
+  syntaxCustomColors: EditorSyntaxCustomColors;
 }
 
 export const EDITOR_FONT_SIZE_MIN = 12;
@@ -30,12 +40,22 @@ export function getEditorSettingsFromStore(): EditorSettings {
     tabSize: state.editorTabSize,
     lineNumbers: state.editorLineNumbers,
     lineWrap: state.editorLineWrap,
+    syntaxColors: state.editorSyntaxColors,
+    syntaxCustomColors: state.editorSyntaxCustomColors,
   };
 }
 
 export function editorSettingsKey(
   isDark: boolean,
   settings: EditorSettings,
+  fileKind: FileKind = "markdown",
 ): string {
-  return `${isDark}:${settings.fontSize}:${settings.tabSize}:${settings.lineNumbers}:${settings.lineWrap}`;
+  return `${fileKind}:${isDark}:${settings.syntaxColors}:${syntaxCustomColorsKey(settings.syntaxCustomColors)}:${settings.fontSize}:${settings.tabSize}:${settings.lineNumbers}:${settings.lineWrap}`;
 }
+
+export {
+  EDITOR_SYNTAX_COLORS_DEFAULT,
+  DEFAULT_EDITOR_SYNTAX_CUSTOM_COLORS,
+  normalizeEditorSyntaxColors,
+  normalizeEditorSyntaxCustomColors,
+} from "./syntaxColors";

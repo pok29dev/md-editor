@@ -1,12 +1,8 @@
 import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+import { json } from "@codemirror/lang-json";
+import { yaml } from "@codemirror/lang-yaml";
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
-import {
-  bracketMatching,
-  HighlightStyle,
-  indentUnit,
-  syntaxHighlighting,
-} from "@codemirror/language";
-import { tags } from "@lezer/highlight";
+import { bracketMatching, indentUnit } from "@codemirror/language";
 import { highlightSelectionMatches } from "@codemirror/search";
 import {
   EditorView,
@@ -16,16 +12,26 @@ import {
   lineNumbers,
 } from "@codemirror/view";
 import { useEditorStore } from "../../stores/editorStore";
+import type { FileKind } from "../files/fileKind";
 import type { EditorSettings } from "./settings";
+import { buildSyntaxHighlightExtension } from "./syntaxColors";
 import { createEditorTheme } from "./theme";
 
-const editorHighlightStyle = HighlightStyle.define([
-  { tag: tags.heading, fontWeight: "bold" },
-]);
+function languageExtension(fileKind: FileKind) {
+  switch (fileKind) {
+    case "json":
+      return json();
+    case "yaml":
+      return yaml();
+    default:
+      return markdown({ base: markdownLanguage });
+  }
+}
 
 export function buildEditorExtensions(
   isDark: boolean,
   settings: EditorSettings,
+  fileKind: FileKind = "markdown",
 ) {
   const openFind = () => {
     useEditorStore.getState().setFindReplaceOpen(true);
@@ -35,13 +41,16 @@ export function buildEditorExtensions(
   const extensions = [
     highlightActiveLine(),
     bracketMatching(),
-    syntaxHighlighting(editorHighlightStyle, {
-      fallback: true,
-    }),
+    buildSyntaxHighlightExtension(
+      fileKind,
+      isDark,
+      settings.syntaxColors,
+      settings.syntaxCustomColors,
+    ),
     highlightSelectionMatches(),
     history(),
     indentUnit.of(" ".repeat(settings.tabSize)),
-    markdown({ base: markdownLanguage }),
+    languageExtension(fileKind),
     createEditorTheme(isDark, settings.fontSize),
     keymap.of([
       { key: "Mod-f", run: openFind },

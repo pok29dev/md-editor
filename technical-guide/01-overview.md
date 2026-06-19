@@ -2,11 +2,12 @@
 
 ## 1.1 ชื่อและวัตถุประสงค์
 
-**MD Editor** เป็นแอปพลิเคชัน desktop สำหรับ browse, แก้ไข และ preview ไฟล์ Markdown ในเครื่อง local
+**MD Editor** เป็นแอปพลิเคชัน desktop สำหรับ browse, แก้ไข และ preview ไฟล์ Markdown ในเครื่อง local — รองรับ **JSON และ YAML** สำหรับ config/data files
 
 Use cases หลัก:
 
 - แก้ไข README และเอกสารในโปรเจกต
+- แก้ไข `package.json`, `config.yaml` และไฟล์ config อื่น ๆ
 - เขียน draft บทความ / blog
 - จดโน้ตและดู preview แบบ GitHub style
 
@@ -54,7 +55,9 @@ Use cases หลัก:
 
 | Layer | Technology | บทบาท |
 |-------|------------|--------|
-| Editor | CodeMirror 6 | Markdown editing |
+| Editor | CodeMirror 6 | Markdown + JSON + YAML editing |
+| Structured validation | js-yaml + `JSON.parse` | YAML/JSON syntax check + format |
+| Syntax colors | CodeMirror `HighlightStyle` | GitHub / Custom / Minimal (JSON/YAML) |
 | Parser | marked 18 | GFM → HTML |
 | Highlight | highlight.js | Code blocks ใน preview |
 | Sanitize | DOMPurify | XSS prevention |
@@ -68,6 +71,7 @@ Use cases หลัก:
 - **UI pattern:** CodeRunner-style (sidebar + tabs + editor workspace)
 - **Markdown rendering:** อ้างอิงจาก [Markdown-Viewer](https://github.com/) — marked.js pipeline, GitHub alerts, footnotes, segmented worker
 - **Product spec:** [docs/specification.md](../docs/specification.md)
+- **JSON/YAML spec:** [docs/spec-json-yaml.md](../docs/spec-json-yaml.md)
 
 ## 1.6 ขอบเขต MVP
 
@@ -83,6 +87,8 @@ Use cases หลัก:
 - Lucide icon toolbar, UI redesign (chrome, dialogs, empty states)
 - Sync scroll, view modes per tab
 - Find & Replace, Link/Reference/Emoji/Symbols dialogs
+- **JSON & YAML** — open/edit/save `.json`, `.yaml`, `.yml`; syntax highlight, validate, format (`⌘⇧F`)
+- **Syntax color themes** — GitHub / Custom / Minimal สำหรับ structured files (Settings → Editor)
 
 **ยังไม่รวม (Post-MVP):**
 

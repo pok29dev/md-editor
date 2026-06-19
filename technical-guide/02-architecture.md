@@ -11,7 +11,7 @@
 │  Hooks + Zustand Stores (tabs, file tree, preferences)      │
 ├─────────────────────────────────────────────────────────────┤
 │                     Domain Layer                             │
-│  lib/markdown/*  lib/editor/*  lib/tauri/*                  │
+│  lib/markdown/*  lib/editor/*  lib/files/*  lib/tauri/*                  │
 ├─────────────────────────────────────────────────────────────┤
 │                     Infrastructure Layer                     │
 │  Tauri IPC  │  Web Worker  │  CodeMirror  │  marked.js      │
@@ -41,7 +41,8 @@ md-editor/
 │   ├── stores/                   # Zustand (appStore, editorStore)
 │   ├── lib/
 │   │   ├── markdown/             # Preview engine
-│   │   ├── editor/               # CodeMirror config
+│   │   ├── editor/               # CodeMirror config, syntax colors
+│   │   ├── files/                # fileKind, validation, save guard
 │   │   ├── tauri/                # IPC wrappers
 │   │   ├── dialogs/              # Unsaved changes
 │   │   └── paths.ts              # Cross-platform path utils
@@ -76,11 +77,25 @@ User → pickFolder() [dialog]
 ### เปิดไฟล์
 
 ```
-User คลิกใน FileTree
+User คลิกใน FileTree / Open File / double-click จาก OS
+     → isSupportedFilePath(path) [frontend]
      → invoke("read_file", path) [Rust, UTF-8/BOM]
      → FileContent { content, encoding, modified_at }
-     → appStore.openFileInTab()
-     → EditorPane + PreviewPane อ่าน activeTab.content
+     → detectFileKind(path) → EditorTab.fileKind
+     → appStore.openFileInTab() — Markdown: default view mode; JSON/YAML: editor-only
+     → EditorPane (+ PreviewPane ถ้า supportsPreview)
+```
+
+### แก้ไข JSON/YAML
+
+```
+CodeMirror onChange
+     → appStore.updateTabContent()
+     → validateStructuredContent() [status bar]
+     → ไม่มี Markdown preview pipeline
+
+Cmd+Shift+F → formatStructuredContent() → update tab + editor
+Cmd+S → confirmSaveDespiteInvalidSyntax() → write_file
 ```
 
 ### แก้ไขและ Preview

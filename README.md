@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.1701` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.1901` · **MVP Complete** (Settings + Formatting + UI Redesign)
 
 ## Features
 
@@ -15,6 +15,8 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 - **Close All Tabs** — คลิกขวาที่แท็บ → Close All Tabs (ถามยืนยันแท็บที่ยังไม่บันทึก)
 - **Close Other Tabs** — คลิกขวาที่แท็บ → ปิดแท็บอื่นทั้งหมด เหลือแท็บที่คลิกขวา
 - Save, Save As, Export HTML, Export PDF
+- **JSON & YAML files** — เปิด/แก้ไข `.json`, `.yaml`, `.yml` ใน editor (syntax highlight, validate, format `⌘⇧F`)
+- **Syntax color themes** — GitHub / Custom / Minimal สำหรับ JSON/YAML (Settings → Editor)
 
 ### Editor & preview
 
@@ -68,9 +70,10 @@ Output:
 npm run tauri dev
 # Sidebar → Open folder → examples/sample-docs
 # Open markdown-features-test.md for full feature regression
+# Open config.json / config.yaml for JSON/YAML editor tests
 ```
 
-Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-8)
+Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-10)
 
 ## Keyboard Shortcuts
 
@@ -94,6 +97,7 @@ Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-8)
 | `Cmd/Ctrl + L` | Task list |
 | `Cmd/Ctrl + /` | HTML comment |
 | `Cmd/Ctrl + Shift + K` | Code block |
+| `Cmd/Ctrl + Shift + F` | Format JSON/YAML |
 | `Cmd/Ctrl + Option + 1…6` | Heading 1–6 |
 
 Format shortcuts apply when the editor is focused and no modal is open.
@@ -102,6 +106,7 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 | Doc | Description |
 |-----|-------------|
+| [docs/spec-json-yaml.md](./docs/spec-json-yaml.md) | JSON/YAML file support spec |
 | [docs/specification.md](./docs/specification.md) | Product spec |
 | [docs/TESTING.md](./docs/TESTING.md) | Acceptance criteria (manual QA) |
 | [docs/editor-toolbar-lucide.md](./docs/editor-toolbar-lucide.md) | Lucide icon mapping สำหรับ toolbar |
@@ -118,8 +123,8 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 - `VERSION` / `package.json` / `src/version.ts`
 - `src-tauri/Cargo.toml` / `tauri.conf.json`
-- Release tags: `v.26.6.1701` (unsigned: `v.26.6.1701-unsigned`)
-- Bundle filenames: `MD Editor_26.6.1701_...`
+- Release tags: `v.26.6.1901` (unsigned: `v.26.6.1901-unsigned`)
+- Bundle filenames: `MD Editor_26.6.1901_...`
 
 รายละเอียด: [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md)  
 ตรวจความสอดคล้อง: `npm run validate:version`
@@ -127,7 +132,7 @@ Format shortcuts apply when the editor is focused and no modal is open.
 ## Tech Stack
 
 - Tauri v2, React 19, TypeScript, Vite, Zustand, **lucide-react**
-- CodeMirror 6, marked.js, highlight.js, DOMPurify, Mermaid, MathJax
+- CodeMirror 6 (`@codemirror/lang-markdown`, `lang-json`, `lang-yaml`), marked.js, highlight.js, DOMPurify, Mermaid, MathJax
 - Rust file I/O backend
 
 ## License

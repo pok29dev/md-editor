@@ -29,6 +29,24 @@ pub struct FileContent {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct EditorSyntaxColorPalette {
+    pub property: String,
+    pub string: String,
+    pub literal: String,
+    pub keyword: String,
+    pub comment: String,
+    pub punctuation: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EditorSyntaxCustomColors {
+    pub light: EditorSyntaxColorPalette,
+    pub dark: EditorSyntaxColorPalette,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AppPreferences {
     #[serde(default = "default_color_scheme")]
     pub color_scheme: String,
@@ -56,6 +74,10 @@ pub struct AppPreferences {
     pub editor_line_numbers: bool,
     #[serde(default = "default_true")]
     pub editor_line_wrap: bool,
+    #[serde(default = "default_editor_syntax_colors")]
+    pub editor_syntax_colors: String,
+    #[serde(default = "default_editor_syntax_custom_colors")]
+    pub editor_syntax_custom_colors: EditorSyntaxCustomColors,
     #[serde(default = "default_export_pdf_theme")]
     pub export_pdf_theme: String,
     #[serde(default = "default_export_pdf_page_size")]
@@ -101,6 +123,39 @@ fn default_editor_tab_size() -> u32 {
     2
 }
 
+fn default_editor_syntax_colors() -> String {
+    "github".to_string()
+}
+
+fn default_syntax_palette_light() -> EditorSyntaxColorPalette {
+    EditorSyntaxColorPalette {
+        property: "#005cc5".to_string(),
+        string: "#032f62".to_string(),
+        literal: "#005cc5".to_string(),
+        keyword: "#d73a49".to_string(),
+        comment: "#6a737d".to_string(),
+        punctuation: "#24292e".to_string(),
+    }
+}
+
+fn default_syntax_palette_dark() -> EditorSyntaxColorPalette {
+    EditorSyntaxColorPalette {
+        property: "#79c0ff".to_string(),
+        string: "#a5d6ff".to_string(),
+        literal: "#79c0ff".to_string(),
+        keyword: "#ff7b72".to_string(),
+        comment: "#8b949e".to_string(),
+        punctuation: "#c9d1d9".to_string(),
+    }
+}
+
+fn default_editor_syntax_custom_colors() -> EditorSyntaxCustomColors {
+    EditorSyntaxCustomColors {
+        light: default_syntax_palette_light(),
+        dark: default_syntax_palette_dark(),
+    }
+}
+
 fn default_export_pdf_theme() -> String {
     "app".to_string()
 }
@@ -125,6 +180,8 @@ impl Default for AppPreferences {
             editor_tab_size: default_editor_tab_size(),
             editor_line_numbers: default_true(),
             editor_line_wrap: default_true(),
+            editor_syntax_colors: default_editor_syntax_colors(),
+            editor_syntax_custom_colors: default_editor_syntax_custom_colors(),
             export_pdf_theme: default_export_pdf_theme(),
             export_pdf_page_size: default_export_pdf_page_size(),
             recent_folders: Vec::new(),

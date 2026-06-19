@@ -29,8 +29,10 @@ export function Sidebar() {
           </div>
         ) : fileTree.length === 0 && !fileTreeLoading ? (
           <div className="workspace-empty">
-            <p className="workspace-empty-title">No markdown files</p>
-            <p className="workspace-empty-hint">Add .md files to this folder</p>
+            <p className="workspace-empty-title">No supported files</p>
+            <p className="workspace-empty-hint">
+              Add .md, .json, or .yaml files to this folder
+            </p>
           </div>
         ) : (
           <FileTree nodes={fileTree} onOpenFile={openFile} />

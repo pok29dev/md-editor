@@ -1,8 +1,9 @@
 mod commands;
 mod models;
 
-use std::path::PathBuf;
 use std::sync::Mutex;
+#[cfg(any(windows, target_os = "linux"))]
+use std::path::PathBuf;
 use tauri::{AppHandle, Emitter, Manager};
 
 struct PendingOpenFiles(Mutex<Vec<String>>);
@@ -14,6 +15,7 @@ fn paths_from_urls(urls: Vec<tauri::Url>) -> Vec<String> {
         .collect()
 }
 
+#[cfg(any(windows, target_os = "linux"))]
 fn path_from_cli_arg(arg: &str) -> Option<PathBuf> {
     if arg.starts_with('-') {
         return None;
@@ -27,6 +29,17 @@ fn path_from_cli_arg(arg: &str) -> Option<PathBuf> {
     }
 
     Some(PathBuf::from(arg))
+}
+
+#[cfg(any(windows, target_os = "linux"))]
+fn queue_cli_open_files(app: &tauri::App) {
+    let files = std::env::args()
+        .skip(1)
+        .filter_map(|arg| path_from_cli_arg(&arg))
+        .map(|path| path.to_string_lossy().into_owned())
+        .collect::<Vec<_>>();
+
+    queue_open_files(&app.handle(), files);
 }
 
 fn focused_webview_window(app: &AppHandle) -> Option<tauri::WebviewWindow> {
@@ -76,15 +89,9 @@ pub fn run() {
         .manage(PendingOpenFiles(Mutex::new(vec![])))
         .setup(|app| {
             #[cfg(any(windows, target_os = "linux"))]
-            {
-                let files = std::env::args()
-                    .skip(1)
-                    .filter_map(|arg| path_from_cli_arg(&arg))
-                    .map(|path| path.to_string_lossy().into_owned())
-                    .collect::<Vec<_>>();
-
-                queue_open_files(&app.handle(), files);
-            }
+            queue_cli_open_files(app);
+            #[cfg(not(any(windows, target_os = "linux")))]
+            let _: &tauri::App = app;
 
             Ok(())
         })

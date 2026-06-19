@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { useAppStore } from "../../stores/appStore";
+import { supportsPreview } from "../../lib/files/fileKind";
+import { validateStructuredContent } from "../../lib/files/validateStructured";
 
 function countWords(text: string): number {
   const trimmed = text.trim();
@@ -17,6 +19,7 @@ export function StatusBar() {
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const content = activeTab?.content ?? "";
+  const fileKind = activeTab?.fileKind ?? "markdown";
 
   const { words, characters } = useMemo(
     () => ({
@@ -26,6 +29,13 @@ export function StatusBar() {
     [content],
   );
 
+  const validation = useMemo(() => {
+    if (!activeTab || supportsPreview(fileKind)) {
+      return null;
+    }
+    return validateStructuredContent(fileKind, content);
+  }, [activeTab, fileKind, content]);
+
   const isDirty = activeTab?.isDirty ?? false;
 
   return (
@@ -33,6 +43,14 @@ export function StatusBar() {
       <span className="status-item status-path">
         {activeTab?.path ?? activeTab?.title ?? "No file"}
       </span>
+      {validation && !validation.valid && (
+        <>
+          <span className="status-item status-sep" aria-hidden>·</span>
+          <span className="status-item status-error" title={validation.message ?? undefined}>
+            Syntax error
+          </span>
+        </>
+      )}
       <span className="status-spacer" />
       <span className="status-item">{formatCount(words)} words</span>
       <span className="status-item status-sep" aria-hidden>·</span>
@@ -67,6 +85,12 @@ export function StatusBar() {
         }
         .status-item {
           white-space: nowrap;
+        }
+        .status-error {
+          color: var(--status-modified);
+          max-width: 30%;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         .status-sep {
           color: var(--text-muted);

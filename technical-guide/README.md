@@ -2,9 +2,9 @@
 
 เอกสารทางเทคนิคสำหรับนักพัฒนาและผู้ดูแลโปรเจกต **MD Editor**
 
-**เวอร์ชันอ้างอิง:** `26.6.1701` (ดู `src/version.ts`)  
-**สถานะ:** MVP Complete + UI Redesign  
-**อัปเดตล่าสุด:** 2026-06-17
+**เวอร์ชันอ้างอิง:** `26.6.1901` (ดู `src/version.ts`)  
+**สถานะ:** MVP Complete + JSON/YAML + UI Redesign  
+**อัปเดตล่าสุด:** 2026-06-19
 
 ---
 
@@ -31,6 +31,7 @@
 | Development Plan | [docs/plan.md](../docs/plan.md) | แผนพัฒนา Phase 0–9 |
 | Settings Plan | [docs/settings-plan.md](../docs/settings-plan.md) | แผน implement Settings MVP |
 | Editor Toolbar Lucide | [docs/editor-toolbar-lucide.md](../docs/editor-toolbar-lucide.md) | Icon mapping อ้างอิง |
+| JSON/YAML spec | [docs/spec-json-yaml.md](../docs/spec-json-yaml.md) | Structured file support |
 | Testing Checklist | [docs/TESTING.md](../docs/TESTING.md) | Acceptance criteria |
 | Design Pack | [design-pack/DESIGN-BRIEF.md](../design-pack/DESIGN-BRIEF.md) | UI brief สำหรับ AI design tools |
 | Changelog | [CHANGELOG.md](../CHANGELOG.md) | ประวัติการเปลี่ยนแปลง |
@@ -43,7 +44,7 @@ MD Editor เป็น **desktop app แบบ local-first** ที่ใช้:
 
 - **Tauri v2 + Rust** — file I/O, preferences, native dialogs
 - **React 19 + TypeScript + Vite 7** — UI และ state
-- **CodeMirror 6** — text editor
+- **CodeMirror 6** — Markdown + JSON/YAML editor
 - **marked.js pipeline** — live preview (GFM, Mermaid, MathJax, footnotes, alerts)
 - **lucide-react** — icon สำหรับ toolbar ทั้งหมด
 

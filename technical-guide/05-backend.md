@@ -23,8 +23,8 @@ tauri_plugin_store::init()
 #### `scan_folder(path: String) -> FolderTree`
 
 - Scan recursive จาก root path
-- รวมเฉพาะไฟล์ `.md` และ `.markdown`
-- แสดงโฟลเดอร์ที่มี markdown อยู่ภายใน (empty folders ถูก filter)
+- รวมไฟล์: `.md`, `.markdown`, `.mdown`, `.mkd`, `.mdx`, `.json`, `.yaml`, `.yml`
+- แสดงโฟลเดอร์ที่มี supported file อยู่ภายใน (empty folders ถูก filter)
 - เรียง alphabetically
 
 **Return type:**
@@ -80,6 +80,8 @@ AppPreferences {
     editor_tab_size: u32,                 // 2 | 4
     editor_line_numbers: bool,
     editor_line_wrap: bool,
+    editor_syntax_colors: String,          // "github" | "custom" | "minimal"
+    editor_syntax_custom_colors: EditorSyntaxCustomColors,
     export_pdf_theme: String,             // "app" | "light" | "dark"
     export_pdf_page_size: String,         // "a4" | "letter"
     last_open_folder: Option<String>,

@@ -13,13 +13,16 @@ import {
   syncTabEditorContent,
 } from "../../lib/editor/tabEditorCache";
 
+import type { FileKind } from "../../lib/files/fileKind";
+
 interface MarkdownEditorProps {
   tabId: string;
   content: string;
+  fileKind: FileKind;
   onChange: (content: string) => void;
 }
 
-export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps) {
+export function MarkdownEditor({ tabId, content, fileKind, onChange }: MarkdownEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
   const mountKeyRef = useRef("");
@@ -28,6 +31,8 @@ export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps
   const editorTabSize = useAppStore((s) => s.editorTabSize);
   const editorLineNumbers = useAppStore((s) => s.editorLineNumbers);
   const editorLineWrap = useAppStore((s) => s.editorLineWrap);
+  const editorSyntaxColors = useAppStore((s) => s.editorSyntaxColors);
+  const editorSyntaxCustomColors = useAppStore((s) => s.editorSyntaxCustomColors);
   const setView = useEditorStore((s) => s.setView);
 
   onChangeRef.current = onChange;
@@ -47,13 +52,13 @@ export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps
 
       const isDark = resolvedColorScheme === "dark";
       const settings = getEditorSettingsFromStore();
-      const mountKey = editorSettingsKey(isDark, settings);
+      const mountKey = editorSettingsKey(isDark, settings, fileKind);
       const configChanged = mountKeyRef.current !== mountKey;
       mountKeyRef.current = mountKey;
 
       const view = configChanged
-        ? recreateTabEditor(parent, tabId, content, isDark, settings)
-        : attachTabEditor(parent, tabId, content, isDark, settings);
+        ? recreateTabEditor(parent, tabId, content, isDark, settings, fileKind)
+        : attachTabEditor(parent, tabId, content, isDark, settings, fileKind);
 
       setView(view);
       requestAnimationFrame(() => view.requestMeasure());
@@ -90,6 +95,9 @@ export function MarkdownEditor({ tabId, content, onChange }: MarkdownEditorProps
     editorTabSize,
     editorLineNumbers,
     editorLineWrap,
+    editorSyntaxColors,
+    editorSyntaxCustomColors,
+    fileKind,
     setView,
   ]);
 

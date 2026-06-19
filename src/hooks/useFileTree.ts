@@ -4,7 +4,7 @@ import {
   addRecentFolder,
   getPreferences,
   pickFolder,
-  pickOpenMarkdown,
+  pickOpenEditableFile,
   readFile,
   scanFolder,
 } from "../lib/tauri/commands";
@@ -12,7 +12,7 @@ import {
   persistPreferences,
   syncRecentFoldersFromPreferences,
 } from "../lib/tauri/preferences";
-import { isMarkdownPath } from "../lib/files/markdownExtensions";
+import { isSupportedFilePath } from "../lib/files/fileKind";
 
 function basename(path: string): string {
   const parts = path.split(/[/\\]/);
@@ -97,9 +97,9 @@ export function useFileTree() {
     [openFileInTab, setLoading, setError],
   );
 
-  const openMarkdownFile = useCallback(async () => {
+  const openEditableFile = useCallback(async () => {
     const rootFolder = useAppStore.getState().rootFolder;
-    const path = await pickOpenMarkdown(rootFolder);
+    const path = await pickOpenEditableFile(rootFolder);
     if (!path) return;
 
     await openFile(path);
@@ -109,7 +109,7 @@ export function useFileTree() {
       try {
         await loadFolder(parent);
       } catch {
-        // File opened; sidebar tree optional if parent has no markdown files
+        // File opened; sidebar tree optional if parent has no supported files
       }
     }
   }, [loadFolder, openFile]);
@@ -133,10 +133,10 @@ export function useFileTree() {
     }
   }, [loadFolder]);
 
-  const handleExternalMarkdownPaths = useCallback(
+  const handleExternalFilePaths = useCallback(
     async (paths: string[]) => {
       for (const path of paths) {
-        if (!isMarkdownPath(path)) continue;
+        if (!isSupportedFilePath(path)) continue;
 
         await openFile(path);
 
@@ -146,7 +146,7 @@ export function useFileTree() {
           try {
             await loadFolder(parent);
           } catch {
-            // File opened; sidebar tree optional if parent has no markdown files
+            // File opened; sidebar tree optional if parent has no supported files
           }
         }
       }
@@ -156,11 +156,15 @@ export function useFileTree() {
 
   return {
     openFolder,
-    openMarkdownFile,
+    openEditableFile,
+    /** @deprecated Use openEditableFile */
+    openMarkdownFile: openEditableFile,
     loadFolder,
     refreshTree,
     openFile,
     restoreLastFolder,
-    handleExternalMarkdownPaths,
+    handleExternalFilePaths,
+    /** @deprecated Use handleExternalFilePaths */
+    handleExternalMarkdownPaths: handleExternalFilePaths,
   };
 }

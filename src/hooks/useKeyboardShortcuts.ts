@@ -10,6 +10,7 @@ import { useTabActions } from "./useTabActions";
 import { useFileActions } from "./useFileActions";
 import { useFileTree } from "./useFileTree";
 import { createNewWorkspaceWindow } from "../lib/tauri/workspaceWindow";
+import { supportsPreview } from "../lib/files/fileKind";
 
 const VIEW_MODES: ViewMode[] = ["split", "editor", "preview"];
 
@@ -34,8 +35,8 @@ export function useKeyboardShortcuts() {
   const setFindReplaceOpen = useEditorStore((s) => s.setFindReplaceOpen);
   const setLinkDialogOpen = useEditorStore((s) => s.setLinkDialogOpen);
   const { tryCloseTab } = useTabActions();
-  const { save, saveAs } = useFileActions();
-  const { openFolder, openMarkdownFile } = useFileTree();
+  const { save, saveAs, formatDocument } = useFileActions();
+  const { openFolder, openEditableFile } = useFileTree();
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -104,8 +105,19 @@ export function useKeyboardShortcuts() {
       if (key === "o") {
         e.preventDefault();
         if (shift) openFolder();
-        else openMarkdownFile();
+        else openEditableFile();
         return;
+      }
+
+      if (key === "f" && shift && !alt) {
+        const activeTab = useAppStore
+          .getState()
+          .tabs.find((t) => t.id === useAppStore.getState().activeTabId);
+        if (activeTab && !supportsPreview(activeTab.fileKind)) {
+          e.preventDefault();
+          void formatDocument();
+          return;
+        }
       }
 
       if (key === "s") {
@@ -115,7 +127,7 @@ export function useKeyboardShortcuts() {
         return;
       }
 
-      if (key === "f") {
+      if (key === "f" && !shift && !alt) {
         e.preventDefault();
         setFindReplaceOpen(true);
         return;
@@ -142,7 +154,14 @@ export function useKeyboardShortcuts() {
       if (!alt && (key === "1" || key === "2" || key === "3")) {
         e.preventDefault();
         const idx = parseInt(key, 10) - 1;
-        setViewMode(VIEW_MODES[idx] ?? "split");
+        const mode = VIEW_MODES[idx] ?? "split";
+        const activeTab = useAppStore
+          .getState()
+          .tabs.find((t) => t.id === useAppStore.getState().activeTabId);
+        if (activeTab && !supportsPreview(activeTab.fileKind) && mode !== "editor") {
+          return;
+        }
+        setViewMode(mode);
       }
     };
 
@@ -158,8 +177,9 @@ export function useKeyboardShortcuts() {
     tryCloseTab,
     save,
     saveAs,
+    formatDocument,
     openFolder,
-    openMarkdownFile,
+    openEditableFile,
   ]);
 
   useEffect(() => {

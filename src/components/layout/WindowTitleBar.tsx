@@ -8,6 +8,7 @@ import { ColorSchemeToggle } from "./ColorSchemeToggle";
 import { PdfExportOverlay } from "../export/PdfExportOverlay";
 import { getToolbarIcons } from "../../lib/theme/icons";
 import { handleWindowDrag } from "../../lib/tauri/windowDrag";
+import { supportsPreview } from "../../lib/files/fileKind";
 import "../../styles/titlebar.css";
 
 const VIEW_MODES: { mode: ViewMode; label: string; title: string }[] = [
@@ -18,6 +19,10 @@ const VIEW_MODES: { mode: ViewMode; label: string; title: string }[] = [
 
 export function WindowTitleBar() {
   const viewMode = useActiveViewMode();
+  const tabs = useAppStore((s) => s.tabs);
+  const activeTabId = useAppStore((s) => s.activeTabId);
+  const activeTab = tabs.find((t) => t.id === activeTabId);
+  const previewAvailable = activeTab ? supportsPreview(activeTab.fileKind) : true;
   const syncScroll = useAppStore((s) => s.syncScroll);
   const appTheme = useAppStore((s) => s.theme);
   const setViewMode = useAppStore((s) => s.setViewMode);
@@ -72,18 +77,22 @@ export function WindowTitleBar() {
           role="group"
           aria-label="View mode"
         >
-          {VIEW_MODES.map(({ mode, label, title }) => (
+          {VIEW_MODES.map(({ mode, label, title }) => {
+            const disabled = !previewAvailable && mode !== "editor";
+            return (
             <button
               key={mode}
               type="button"
               className={`segment-btn ${viewMode === mode ? "active" : ""}`}
-              title={title}
+              title={disabled ? `${title} (not available for this file)` : title}
               aria-pressed={viewMode === mode}
+              disabled={disabled}
               onClick={() => setViewMode(mode)}
             >
               {label}
             </button>
-          ))}
+            );
+          })}
         </div>
 
         <div className="toolbar-divider" />

@@ -33,8 +33,8 @@
 | `savePreferences(prefs)` | Wrapper `save_preferences` |
 | `addRecentFolder(path)` | Wrapper `add_recent_folder` |
 | `pickFolder()` | Native open directory dialog |
-| `pickOpenMarkdown()` | Open `.md` file dialog |
-| `pickSaveMarkdown(defaultPath?)` | Save markdown dialog |
+| `pickOpenEditableFile(defaultPath?)` | Open Markdown / JSON / YAML / All Files |
+| `pickSaveFile(defaultName, fileKind)` | Save dialog filter ตามชนิดไฟล์ |
 | `pickSaveHtml(defaultPath?)` | Save HTML dialog |
 
 ## 7.3 Markdown API
@@ -94,9 +94,14 @@ interface RenderResult {
 
 | Function | ไฟล์ | คำอธิบาย |
 |----------|------|----------|
-| `buildEditorExtensions(isDark)` | `lib/editor/extensions.ts` | CodeMirror extension array |
+| `buildEditorExtensions(isDark, settings, fileKind)` | `lib/editor/extensions.ts` | CodeMirror extensions ตาม `fileKind` |
 | `createEditorTheme(isDark)` | `lib/editor/theme.ts` | EditorView.theme config |
 | `getEditorContent(view)` | `lib/editor/getEditorContent.ts` | อ่าน content จาก CM |
+| `validateStructuredContent(kind, content)` | `lib/files/validateStructured.ts` | ตรวจ JSON/YAML syntax |
+| `formatStructuredContent(kind, content)` | `lib/files/validateStructured.ts` | Pretty-print JSON/YAML |
+| `confirmSaveDespiteInvalidSyntax(kind, content)` | `lib/files/saveStructured.ts` | ยืนยัน save เมื่อ invalid |
+| `detectFileKind(path)` | `lib/files/fileKind.ts` | ระบุ `markdown` / `json` / `yaml` |
+| `supportsPreview(kind)` | `lib/files/fileKind.ts` | `true` เฉพาะ markdown |
 
 ## 7.5 Store Actions (appStore)
 
@@ -153,6 +158,7 @@ interface FileContent {
 }
 
 interface AppPreferences {
+  colorScheme: string;
   theme: string;
   sidebarWidth: number;
   sidebarCollapsed: boolean;
@@ -160,21 +166,44 @@ interface AppPreferences {
   defaultViewMode: string;
   restoreLastFolderOnStartup: boolean;
   editorFontSize: number;
+  previewFontSize: number;
   editorTabSize: number;
   editorLineNumbers: boolean;
   editorLineWrap: boolean;
+  editorSyntaxColors: string;
+  editorSyntaxCustomColors: EditorSyntaxCustomColors;
   exportPdfTheme: string;
   exportPdfPageSize: string;
   lastOpenFolder?: string;
   recentFolders: string[];
 }
+
+interface EditorSyntaxCustomColors {
+  light: SyntaxColorPalette;
+  dark: SyntaxColorPalette;
+}
+
+interface SyntaxColorPalette {
+  property: string;
+  string: string;
+  literal: string;
+  keyword: string;
+  comment: string;
+  punctuation: string;
+}
+```
+
+**File kind:**
+
+```typescript
+type FileKind = "markdown" | "json" | "yaml";
 ```
 
 ## 7.8 Version
 
 ```typescript
 // src/version.ts
-export const APP_VERSION = "26.6.1701";
+export const APP_VERSION = "26.6.1901";
 export const APP_COPYRIGHT = "pok29dev";
 ```
 

@@ -11,14 +11,20 @@ import {
   getActiveTabForSave,
   syncActiveTabContentFromEditor,
 } from "../lib/editor/getEditorContent";
+import { syncTabEditorContent } from "../lib/editor/tabEditorCache";
 import { refreshTreeIfUnderRoot } from "../lib/tauri/refreshTree";
 import {
   pickSaveHtml,
-  pickSaveMarkdown,
+  pickSaveFile,
   pickSavePdf,
   writeBinaryFile,
   writeFile,
 } from "../lib/tauri/commands";
+import { defaultExtensionForKind, supportsPreview } from "../lib/files/fileKind";
+import { confirmSaveDespiteInvalidSyntax } from "../lib/files/saveStructured";
+import {
+  formatStructuredContent,
+} from "../lib/files/validateStructured";
 
 function basename(path: string): string {
   const parts = path.split(/[/\\]/);
@@ -46,6 +52,10 @@ export function useFileActions() {
     const tabId = activeTab.id;
     const content = activeTab.content;
 
+    if (!(await confirmSaveDespiteInvalidSyntax(activeTab.fileKind, content))) {
+      return false;
+    }
+
     try {
       await writeFile(path, content);
       markTabSaved(tabId);
@@ -62,10 +72,14 @@ export function useFileActions() {
 
     const defaultName = activeTab.path
       ? basename(activeTab.path)
-      : `${activeTab.title.replace(/\s+/g, "-").toLowerCase() || "untitled"}.md`;
+      : `${activeTab.title.replace(/\s+/g, "-").toLowerCase() || "untitled"}.${defaultExtensionForKind(activeTab.fileKind)}`;
 
-    const path = await pickSaveMarkdown(defaultName);
+    const path = await pickSaveFile(defaultName, activeTab.fileKind);
     if (!path) return false;
+
+    if (!(await confirmSaveDespiteInvalidSyntax(activeTab.fileKind, activeTab.content))) {
+      return false;
+    }
 
     try {
       await writeFile(path, activeTab.content);
@@ -159,11 +173,33 @@ export function useFileActions() {
     }
   };
 
+  const formatDocument = async (): Promise<boolean> => {
+    const activeTab = syncActiveTabContentFromEditor();
+    if (!activeTab || supportsPreview(activeTab.fileKind)) return false;
+
+    try {
+      const formatted = formatStructuredContent(
+        activeTab.fileKind,
+        activeTab.content,
+      );
+      useAppStore.getState().updateTabContent(activeTab.id, formatted);
+      syncTabEditorContent(activeTab.id, formatted);
+      return true;
+    } catch (err) {
+      await message(String(err), {
+        title: "Format Failed",
+        kind: "error",
+      });
+      return false;
+    }
+  };
+
   const activeTab = getActiveTabForSave();
 
   return {
     save,
     saveAs,
+    formatDocument,
     exportHtml,
     exportPdf,
     cancelPdfExport,

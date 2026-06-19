@@ -16,8 +16,22 @@ import { LinkDialog } from "../editor/LinkDialog";
 import { SettingsModal } from "../settings/SettingsModal";
 import { useAppMenu } from "../../hooks/useAppMenu";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
+import { invoke, isTauri } from "@tauri-apps/api/core";
+import { useOpenExternalFileEvents } from "../../hooks/useOpenExternalFiles";
 import { usePersistPreferences } from "../../hooks/usePersistPreferences";
 import { loadPreferences, applySidebarWidth } from "../../lib/tauri/preferences";
+import { shouldSkipStartupWorkspaceRestore } from "../../lib/tauri/workspaceWindow";
+
+function usePreviewDisplayEffect() {
+  const previewFontSize = useAppStore((s) => s.previewFontSize);
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      "--preview-font-size",
+      `${previewFontSize}px`,
+    );
+  }, [previewFontSize]);
+}
 
 function useAppearanceEffect() {
   const colorScheme = useAppStore((s) => s.colorScheme);
@@ -47,16 +61,27 @@ function useAppearanceEffect() {
 
 export function AppShell() {
   useAppearanceEffect();
+  usePreviewDisplayEffect();
   useAppMenu();
   useKeyboardShortcuts();
   useSyncScroll();
   usePersistPreferences();
-  const { restoreLastFolder } = useFileTree();
+  const { restoreLastFolder, handleExternalFilePaths } = useFileTree();
+  useOpenExternalFileEvents(handleExternalFilePaths);
 
   useEffect(() => {
     void (async () => {
       await loadPreferences().catch(() => {});
-      await restoreLastFolder();
+      const skipWorkspaceRestore = shouldSkipStartupWorkspaceRestore();
+      if (!skipWorkspaceRestore) {
+        await restoreLastFolder();
+        if (isTauri()) {
+          const pending = await invoke<string[]>("get_pending_open_files");
+          if (pending.length > 0) {
+            await handleExternalFilePaths(pending);
+          }
+        }
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

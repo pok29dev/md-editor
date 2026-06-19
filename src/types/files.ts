@@ -17,6 +17,20 @@ export interface FileContent {
   modifiedAt: number;
 }
 
+export interface SyntaxColorPalette {
+  property: string;
+  string: string;
+  literal: string;
+  keyword: string;
+  comment: string;
+  punctuation: string;
+}
+
+export interface EditorSyntaxCustomColors {
+  light: SyntaxColorPalette;
+  dark: SyntaxColorPalette;
+}
+
 export interface AppPreferences {
   /** Light/dark appearance: system | light | dark */
   colorScheme: string;
@@ -33,6 +47,8 @@ export interface AppPreferences {
   editorTabSize: number;
   editorLineNumbers: boolean;
   editorLineWrap: boolean;
+  editorSyntaxColors: string;
+  editorSyntaxCustomColors: EditorSyntaxCustomColors;
   exportPdfTheme: string;
   exportPdfPageSize: string;
   recentFolders: string[];
