@@ -25,6 +25,9 @@ docs/*
 *.sln
 *.sw?
 
+# thClaws project config (created per workspace folder)
+.thclaws/
+
 # App icon sources (generated icons in src-tauri/icons/ are committed)
 app-icon.png
 app-icon-square.png

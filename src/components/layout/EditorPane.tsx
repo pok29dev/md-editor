@@ -7,6 +7,16 @@ import { useEditorStore } from "../../stores/editorStore";
 import { destroyOrphanTabEditors } from "../../lib/editor/tabEditorCache";
 import { supportsPreview } from "../../lib/files/fileKind";
 
+function AiStructureOverlay() {
+  const running = useAppStore((s) => s.aiStructureRunning);
+  if (!running) return null;
+  return (
+    <div className="ai-structure-overlay" role="status" aria-live="polite">
+      Running thClaws…
+    </div>
+  );
+}
+
 export function EditorPane() {
   const tabs = useAppStore((s) => s.tabs);
   const activeTabId = useAppStore((s) => s.activeTabId);
@@ -42,6 +52,25 @@ export function EditorPane() {
         fileKind={activeTab.fileKind}
         onChange={(content) => updateTabContent(activeTab.id, content)}
       />
+      <AiStructureOverlay />
+      <style>{`
+        .ai-structure-overlay {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.25);
+          color: #fff;
+          font-size: 14px;
+          font-weight: 600;
+          z-index: 20;
+          pointer-events: all;
+        }
+        .editor-pane {
+          position: relative;
+        }
+      `}</style>
     </div>
   );
 }

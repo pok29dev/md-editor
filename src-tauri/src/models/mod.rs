@@ -47,6 +47,40 @@ pub struct EditorSyntaxCustomColors {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct AiStructurePreferences {
+    #[serde(default)]
+    pub enabled: bool,
+    #[serde(default)]
+    pub thclaws_path: String,
+    #[serde(default = "default_true")]
+    pub use_thclaws_defaults: bool,
+    #[serde(default)]
+    pub model: String,
+    #[serde(default = "default_true")]
+    pub run_rule_pass_first: bool,
+    #[serde(default)]
+    pub last_health_check_ok: bool,
+    pub last_health_check_at: Option<u64>,
+    pub last_health_check_message: Option<String>,
+}
+
+impl Default for AiStructurePreferences {
+    fn default() -> Self {
+        Self {
+            enabled: false,
+            thclaws_path: String::new(),
+            use_thclaws_defaults: true,
+            model: String::new(),
+            run_rule_pass_first: true,
+            last_health_check_ok: false,
+            last_health_check_at: None,
+            last_health_check_message: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AppPreferences {
     #[serde(default = "default_color_scheme")]
     pub color_scheme: String,
@@ -85,6 +119,8 @@ pub struct AppPreferences {
     #[serde(default)]
     pub recent_folders: Vec<String>,
     pub last_open_folder: Option<String>,
+    #[serde(default)]
+    pub ai_structure: AiStructurePreferences,
 }
 
 fn default_color_scheme() -> String {
@@ -186,6 +222,7 @@ impl Default for AppPreferences {
             export_pdf_page_size: default_export_pdf_page_size(),
             recent_folders: Vec::new(),
             last_open_folder: None,
+            ai_structure: AiStructurePreferences::default(),
         }
     }
 }

@@ -113,7 +113,11 @@ export function useKeyboardShortcuts() {
         const activeTab = useAppStore
           .getState()
           .tabs.find((t) => t.id === useAppStore.getState().activeTabId);
-        if (activeTab && !supportsPreview(activeTab.fileKind)) {
+        if (
+          activeTab &&
+          (activeTab.fileKind === "markdown" ||
+            !supportsPreview(activeTab.fileKind))
+        ) {
           e.preventDefault();
           void formatDocument();
           return;
@@ -161,6 +165,7 @@ export function useKeyboardShortcuts() {
         if (activeTab && !supportsPreview(activeTab.fileKind) && mode !== "editor") {
           return;
         }
+        useAppStore.getState().setAppView("editor");
         setViewMode(mode);
       }
     };

@@ -25,6 +25,10 @@ import { confirmSaveDespiteInvalidSyntax } from "../lib/files/saveStructured";
 import {
   formatStructuredContent,
 } from "../lib/files/validateStructured";
+import { applyNormalizeMarkdown } from "../lib/editor/normalizeActions";
+import { normalizeMarkdown } from "../lib/markdown/normalize/normalizeMarkdown";
+import { getTabEditorView } from "../lib/editor/tabEditorCache";
+import { useEditorStore } from "../stores/editorStore";
 
 function basename(path: string): string {
   const parts = path.split(/[/\\]/);
@@ -175,7 +179,32 @@ export function useFileActions() {
 
   const formatDocument = async (): Promise<boolean> => {
     const activeTab = syncActiveTabContentFromEditor();
-    if (!activeTab || supportsPreview(activeTab.fileKind)) return false;
+    if (!activeTab) return false;
+
+    if (activeTab.fileKind === "markdown") {
+      try {
+        const storeView = useEditorStore.getState().view;
+        const view =
+          storeView ?? getTabEditorView(activeTab.id) ?? null;
+
+        if (view) {
+          return applyNormalizeMarkdown(view);
+        }
+
+        const normalized = normalizeMarkdown(activeTab.content);
+        useAppStore.getState().updateTabContent(activeTab.id, normalized);
+        syncTabEditorContent(activeTab.id, normalized);
+        return true;
+      } catch (err) {
+        await message(String(err), {
+          title: "Normalize Failed",
+          kind: "error",
+        });
+        return false;
+      }
+    }
+
+    if (supportsPreview(activeTab.fileKind)) return false;
 
     try {
       const formatted = formatStructuredContent(

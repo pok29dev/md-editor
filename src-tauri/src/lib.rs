@@ -4,7 +4,9 @@ mod models;
 use std::sync::Mutex;
 #[cfg(any(windows, target_os = "linux"))]
 use std::path::PathBuf;
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter, Manager, RunEvent};
+
+use commands::thclaws::ThclawsServeManager;
 
 struct PendingOpenFiles(Mutex<Vec<String>>);
 
@@ -87,6 +89,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .manage(PendingOpenFiles(Mutex::new(vec![])))
+        .manage(ThclawsServeManager::new())
         .setup(|app| {
             #[cfg(any(windows, target_os = "linux"))]
             queue_cli_open_files(app);
@@ -103,11 +106,28 @@ pub fn run() {
             commands::preferences::get_preferences,
             commands::preferences::save_preferences,
             commands::preferences::add_recent_folder,
+            commands::thclaws::detect_thclaws,
+            commands::thclaws::get_thclaws_config_dir,
+            commands::thclaws::get_thclaws_workspace_dir,
+            commands::thclaws::open_thclaws_workspace_dir,
+            commands::thclaws::open_thclaws_project_config_dir,
+            commands::thclaws::open_thclaws_user_config_dir,
+            commands::thclaws::start_thclaws_serve,
+            commands::thclaws::stop_thclaws_serve,
+            commands::thclaws::get_thclaws_serve_status,
+            commands::thclaws::test_thclaws_connection,
+            commands::thclaws::run_thclaws_structure,
             get_pending_open_files,
         ])
         .build(tauri::generate_context!())
         .expect("error while running tauri application")
         .run(|app, event| {
+            if matches!(event, RunEvent::Exit) {
+                if let Some(manager) = app.try_state::<ThclawsServeManager>() {
+                    manager.stop();
+                }
+            }
+
             #[cfg(any(
                 target_os = "macos",
                 target_os = "ios",

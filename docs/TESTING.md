@@ -1,8 +1,8 @@
 # MD Editor — Testing Checklist
 
-**Version:** `26.6.1901`  
-**Last updated:** 2026-06-19  
-**Status:** ✅ ทดสอบผ่านทั้งหมด (AC-1 – AC-8); AC-9, AC-10 รอทดสอบด้วยมือ
+**Version:** `26.6.2001`  
+**Last updated:** 2026-06-20  
+**Status:** ✅ ทดสอบผ่าน AC-1 – AC-8; AC-9, AC-10, AC-11 รอทดสอบด้วยมือ
 
 ---
 
@@ -195,6 +195,30 @@
 
 - [ ] Markdown tabs ยังมี toolbar + preview ปกติ
 - [ ] Save / Save As filter ตามชนิดไฟล์ของแท็บ
+
+### AC-11: thClaws & AI Structure
+
+ต้องติดตั้ง `thclaws` CLI และเปิดโฟลเดอร์ใน sidebar ก่อน
+
+#### thClaws view
+
+- [ ] Title bar **Editor | thClaws** สลับ view ได้
+- [ ] View menu → Editor / thClaws มี checkmark ตรงมุมมองที่เลือก
+- [ ] thClaws view แสดง Run / Stop และ placeholder (ไม่จอขาว)
+- [ ] กด **Run** → iframe โหลด thClaws web UI; **Stop** หยุด serve
+- [ ] เปลี่ยน/ปิด folder → serve หยุด; ปิด app → process ไม่ค้าง
+
+#### AI Structure
+
+- [ ] Settings → AI Structure — detect CLI, test connection, เปิด config dirs
+- [ ] Format → **AI Structure Markdown** แสดง diff dialog ก่อน apply
+- [ ] Format → **Normalize Markdown** ทำงานโดยไม่ต้อง thClaws
+
+#### Menus
+
+- [ ] **View** — Split / Editor Only / Preview, Toggle Sidebar, Editor / thClaws
+- [ ] **Window** — Minimize, Zoom, Full Screen, Bring All to Front (OS standard)
+- [ ] **Edit** — Find & Replace (`⌘F`)
 
 ---
 

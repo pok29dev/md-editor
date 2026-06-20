@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useAppStore } from "../../stores/appStore";
 import { supportsPreview } from "../../lib/files/fileKind";
 import { validateStructuredContent } from "../../lib/files/validateStructured";
+import { isThclawsView } from "../../lib/appView";
 
 function countWords(text: string): number {
   const trimmed = text.trim();
@@ -16,10 +17,13 @@ function formatCount(n: number): string {
 export function StatusBar() {
   const tabs = useAppStore((s) => s.tabs);
   const activeTabId = useAppStore((s) => s.activeTabId);
+  const appView = useAppStore((s) => s.appView);
+  const rootFolder = useAppStore((s) => s.rootFolder);
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
   const content = activeTab?.content ?? "";
   const fileKind = activeTab?.fileKind ?? "markdown";
+  const thclawsView = isThclawsView(appView);
 
   const { words, characters } = useMemo(
     () => ({
@@ -40,28 +44,43 @@ export function StatusBar() {
 
   return (
     <footer className="status-bar">
-      <span className="status-item status-path">
-        {activeTab?.path ?? activeTab?.title ?? "No file"}
-      </span>
-      {validation && !validation.valid && (
+      {thclawsView ? (
         <>
+          <span className="status-item">thClaws</span>
+          <span className="status-spacer" />
+          <span className="status-item status-path status-path--thclaws">
+            {rootFolder ?? "No folder open"}
+          </span>
+        </>
+      ) : (
+        <>
+          <span className="status-item status-path">
+            {activeTab?.path ?? activeTab?.title ?? "No file"}
+          </span>
+          {validation && !validation.valid && (
+            <>
+              <span className="status-item status-sep" aria-hidden>·</span>
+              <span
+                className="status-item status-error"
+                title={validation.message ?? undefined}
+              >
+                Syntax error
+              </span>
+            </>
+          )}
+          <span className="status-spacer" />
+          <span className="status-item">{formatCount(words)} words</span>
           <span className="status-item status-sep" aria-hidden>·</span>
-          <span className="status-item status-error" title={validation.message ?? undefined}>
-            Syntax error
+          <span className="status-item">{formatCount(characters)} chars</span>
+          <span className="status-item status-sep" aria-hidden>·</span>
+          <span
+            className={`status-item status-save ${isDirty ? "modified" : "saved"}`}
+          >
+            {isDirty && <span className="status-dot" aria-hidden />}
+            {isDirty ? "Modified" : "Saved"}
           </span>
         </>
       )}
-      <span className="status-spacer" />
-      <span className="status-item">{formatCount(words)} words</span>
-      <span className="status-item status-sep" aria-hidden>·</span>
-      <span className="status-item">{formatCount(characters)} chars</span>
-      <span className="status-item status-sep" aria-hidden>·</span>
-      <span
-        className={`status-item status-save ${isDirty ? "modified" : "saved"}`}
-      >
-        {isDirty && <span className="status-dot" aria-hidden />}
-        {isDirty ? "Modified" : "Saved"}
-      </span>
 
       <style>{`
         .status-bar {
@@ -82,6 +101,9 @@ export function StatusBar() {
           text-overflow: ellipsis;
           white-space: nowrap;
           color: var(--text-secondary);
+        }
+        .status-path--thclaws {
+          max-width: 60%;
         }
         .status-item {
           white-space: nowrap;

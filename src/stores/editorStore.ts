@@ -14,6 +14,10 @@ interface EditorState {
   referenceDialogOpen: boolean;
   helpDialogOpen: boolean;
   aboutDialogOpen: boolean;
+  aiStructureDiffOpen: boolean;
+  aiStructureBefore: string;
+  aiStructureAfter: string;
+  aiStructureRange: { from: number; to: number } | null;
   editorTextDirection: EditorTextDirection;
   setView: (view: EditorView | null) => void;
   setPreviewScrollEl: (el: HTMLElement | null) => void;
@@ -25,6 +29,15 @@ interface EditorState {
   setReferenceDialogOpen: (open: boolean) => void;
   setHelpDialogOpen: (open: boolean) => void;
   setAboutDialogOpen: (open: boolean) => void;
+  setAiStructureDiff: (
+    open: boolean,
+    payload?: {
+      before: string;
+      after: string;
+      from: number;
+      to: number;
+    },
+  ) => void;
   setEditorTextDirection: (direction: EditorTextDirection) => void;
   toggleEditorTextDirection: () => void;
 }
@@ -40,6 +53,10 @@ export const useEditorStore = create<EditorState>((set) => ({
   referenceDialogOpen: false,
   helpDialogOpen: false,
   aboutDialogOpen: false,
+  aiStructureDiffOpen: false,
+  aiStructureBefore: "",
+  aiStructureAfter: "",
+  aiStructureRange: null,
   editorTextDirection: "ltr",
   setView: (view) => set({ view }),
   setPreviewScrollEl: (previewScrollEl) => set({ previewScrollEl }),
@@ -51,6 +68,15 @@ export const useEditorStore = create<EditorState>((set) => ({
   setReferenceDialogOpen: (referenceDialogOpen) => set({ referenceDialogOpen }),
   setHelpDialogOpen: (helpDialogOpen) => set({ helpDialogOpen }),
   setAboutDialogOpen: (aboutDialogOpen) => set({ aboutDialogOpen }),
+  setAiStructureDiff: (aiStructureDiffOpen, payload) =>
+    set({
+      aiStructureDiffOpen,
+      aiStructureBefore: payload?.before ?? "",
+      aiStructureAfter: payload?.after ?? "",
+      aiStructureRange: payload
+        ? { from: payload.from, to: payload.to }
+        : null,
+    }),
   setEditorTextDirection: (editorTextDirection) => set({ editorTextDirection }),
   toggleEditorTextDirection: () =>
     set((state) => ({

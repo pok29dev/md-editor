@@ -49,8 +49,17 @@ import type {
 } from "../lib/theme/types";
 import type { FileKind } from "../lib/files/fileKind";
 import { detectFileKind, supportsPreview } from "../lib/files/fileKind";
+import {
+  DEFAULT_AI_STRUCTURE_PREFERENCES,
+  normalizeAiStructurePreferences,
+  type AiStructurePreferences,
+} from "../lib/aiStructure/settings";
+import type { AppView } from "../lib/appView";
+
+export type SettingsTabId = "general" | "editor" | "files" | "export" | "ai";
 
 export type ViewMode = "split" | "editor" | "preview";
+export type { AppView };
 export type { AppTheme, ColorScheme, ResolvedColorScheme };
 export type { ExportPdfPageSize, ExportPdfTheme } from "../lib/markdown/exportSettings";
 export type { FolderTreeExpansion } from "../lib/files/treeExpansion";
@@ -87,6 +96,9 @@ interface AppState {
   exportPdfPageSize: ExportPdfPageSize;
   recentFolders: string[];
   settingsOpen: boolean;
+  settingsRequestedTab: SettingsTabId | null;
+  aiStructure: AiStructurePreferences;
+  aiStructureRunning: boolean;
   tabs: EditorTab[];
   activeTabId: string | null;
   rootFolder: string | null;
@@ -94,6 +106,7 @@ interface AppState {
   expandedPaths: Record<string, boolean>;
   fileTreeLoading: boolean;
   fileTreeError: string | null;
+  appView: AppView;
 
   setColorScheme: (colorScheme: ColorScheme) => void;
   setResolvedColorScheme: (colorScheme: ResolvedColorScheme) => void;
@@ -122,8 +135,12 @@ interface AppState {
   setExportPdfTheme: (theme: ExportPdfTheme) => void;
   setExportPdfPageSize: (pageSize: ExportPdfPageSize) => void;
   setRecentFolders: (folders: string[]) => void;
-  setSettingsOpen: (open: boolean) => void;
+  setSettingsOpen: (open: boolean, tab?: SettingsTabId | null) => void;
+  clearSettingsRequestedTab: () => void;
+  setAiStructure: (prefs: Partial<AiStructurePreferences>) => void;
+  setAiStructureRunning: (running: boolean) => void;
   setViewMode: (mode: ViewMode) => void;
+  setAppView: (view: AppView) => void;
   setRootFolder: (path: string | null) => void;
   setFileTree: (nodes: TreeNode[]) => void;
   setFileTreeLoading: (loading: boolean) => void;
@@ -156,7 +173,9 @@ function createTab(
   defaultViewMode: ViewMode = "split",
 ): EditorTab {
   tabCounter += 1;
-  const fileKind = partial?.fileKind ?? (partial?.path ? detectFileKind(partial.path) : "markdown");
+  const fileKind =
+    partial?.fileKind ??
+    (partial?.path ? detectFileKind(partial.path) : "markdown");
   const viewMode =
     partial?.viewMode ??
     (supportsPreview(fileKind) ? defaultViewMode : "editor");
@@ -193,6 +212,9 @@ export const useAppStore = create<AppState>((set, get) => ({
   exportPdfPageSize: EXPORT_PDF_PAGE_SIZE_DEFAULT,
   recentFolders: [],
   settingsOpen: false,
+  settingsRequestedTab: null,
+  aiStructure: DEFAULT_AI_STRUCTURE_PREFERENCES,
+  aiStructureRunning: false,
   tabs: [
     createTab({
       title: "Welcome",
@@ -205,6 +227,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   expandedPaths: {},
   fileTreeLoading: false,
   fileTreeError: null,
+  appView: "editor",
 
   setColorScheme: (colorScheme) =>
     set({ colorScheme: normalizeColorScheme(colorScheme) }),
@@ -275,10 +298,23 @@ export const useAppStore = create<AppState>((set, get) => ({
   setExportPdfPageSize: (exportPdfPageSize) =>
     set({ exportPdfPageSize: normalizeExportPdfPageSize(exportPdfPageSize) }),
   setRecentFolders: (recentFolders) => set({ recentFolders }),
-  setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
+  setSettingsOpen: (settingsOpen, tab) =>
+    set({
+      settingsOpen,
+      settingsRequestedTab: settingsOpen ? (tab ?? null) : null,
+    }),
+  clearSettingsRequestedTab: () => set({ settingsRequestedTab: null }),
+  setAiStructure: (prefs) =>
+    set((state) => ({
+      aiStructure: normalizeAiStructurePreferences({
+        ...state.aiStructure,
+        ...prefs,
+      }),
+    })),
+  setAiStructureRunning: (aiStructureRunning) => set({ aiStructureRunning }),
   setViewMode: (viewMode) => {
-    const { activeTabId, tabs } = get();
-    if (!activeTabId) return;
+    const { activeTabId, tabs, appView } = get();
+    if (appView !== "editor" || !activeTabId) return;
     const active = tabs.find((t) => t.id === activeTabId);
     if (active && !supportsPreview(active.fileKind) && viewMode !== "editor") {
       return;
@@ -289,6 +325,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       ),
     });
   },
+  setAppView: (appView) => set({ appView }),
   setRootFolder: (rootFolder) => set({ rootFolder }),
   setFileTree: (fileTree) => set({ fileTree }),
   setFileTreeLoading: (fileTreeLoading) => set({ fileTreeLoading }),
@@ -325,6 +362,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((s) => ({
       tabs: [...s.tabs, tab],
       activeTabId: tab.id,
+      appView: "editor",
     }));
   },
 
@@ -388,6 +426,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     set((s) => ({
       tabs: [...s.tabs.filter((t) => t.path !== null), tab],
       activeTabId: tab.id,
+      appView: "editor",
     }));
   },
 

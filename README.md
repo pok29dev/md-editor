@@ -2,9 +2,16 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.1901` · **MVP Complete** (Settings + Formatting + UI Redesign)
+**Version:** `26.6.2001` · **MVP Complete** (Settings + Formatting + UI Redesign + thClaws)
 
 ## Features
+
+### thClaws & AI Structure
+
+- **thClaws chat view** — title bar **Editor | thClaws**; Run/Stop serve สำหรับโฟลเดอร์ที่เปิด (`<folder>/.thclaws/`)
+- **AI Structure Markdown** — Format menu → preview diff → apply structured markdown ผ่าน thClaws CLI
+- **Normalize Markdown** — Format menu; local cleanup pipeline ก่อน/แทน AI
+- **Settings → AI Structure** — detect CLI, test connection, เปิด config dirs
 
 ### Files & workspace
 
@@ -27,14 +34,14 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 ### Formatting
 
 - **Editor toolbar** — 7 groups with **Lucide icons**: history, heading, inline, align, lists, insert, utilities
-- **Native menus** — File, Edit, Insert, Format, Window, Help (sync กับ toolbar)
+- **Native menus** — File, Edit, **View**, Insert, Format, **Window**, Help (sync กับ toolbar)
 - **Keyboard shortcuts** — `Cmd+B/I/K/L//`, `` Cmd+` ``, headings via `Cmd+Option+1…6`
 - **Dialogs** — Link, Reference, Emoji, Symbols, Clear document, Help, About Markdown
 - Toolbar buttons highlight when the cursor is inside matching Markdown syntax
 
 ### Settings & themes
 
-- Modal with General, Editor, Files, Export tabs (`Cmd+,`)
+- Modal with General, Editor, Files, Export, **AI Structure** tabs (`Cmd+,`)
 - **Color scheme** — System / Light / Dark (`ColorSchemeToggle`)
 - **App theme** — Default / Blue / Warm (tokens + file tree icons)
 - Sync scroll, sidebar width/collapse, font size, line wrap, PDF export options
@@ -123,8 +130,8 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 - `VERSION` / `package.json` / `src/version.ts`
 - `src-tauri/Cargo.toml` / `tauri.conf.json`
-- Release tags: `v.26.6.1901` (unsigned: `v.26.6.1901-unsigned`)
-- Bundle filenames: `MD Editor_26.6.1901_...`
+- Release tags: `v.26.6.2001` (unsigned: `v.26.6.2001-unsigned`)
+- Bundle filenames: `MD Editor_26.6.2001_...`
 
 รายละเอียด: [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md)  
 ตรวจความสอดคล้อง: `npm run validate:version`

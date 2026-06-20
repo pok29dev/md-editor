@@ -3,14 +3,17 @@ import { Group, Panel, Separator } from "react-resizable-panels";
 import { useAppStore } from "../../stores/appStore";
 import { useFileTree } from "../../hooks/useFileTree";
 import { useActiveViewMode } from "../../hooks/useActiveViewMode";
+import { isThclawsView } from "../../lib/appView";
 import { useSyncScroll } from "../../hooks/useSyncScroll";
 import { WindowTitleBar } from "./WindowTitleBar";
 import { Sidebar } from "./Sidebar";
 import { SidebarTitleBar } from "./SidebarTitleBar";
 import { TabBar } from "./TabBar";
+import { ThclawsViewTitleBar } from "./ThclawsViewTitleBar";
 import { StatusBar } from "./StatusBar";
 import { EditorPane } from "./EditorPane";
 import { PreviewPane } from "./PreviewPane";
+import { ThclawsPane } from "../thclaws/ThclawsPane";
 import { FindReplace } from "../editor/FindReplace";
 import { LinkDialog } from "../editor/LinkDialog";
 import { SettingsModal } from "../settings/SettingsModal";
@@ -21,6 +24,7 @@ import { useOpenExternalFileEvents } from "../../hooks/useOpenExternalFiles";
 import { usePersistPreferences } from "../../hooks/usePersistPreferences";
 import { loadPreferences, applySidebarWidth } from "../../lib/tauri/preferences";
 import { shouldSkipStartupWorkspaceRestore } from "../../lib/tauri/workspaceWindow";
+import { stopThclawsServeIfRunning } from "../../hooks/useThclawsServe";
 
 function usePreviewDisplayEffect() {
   const previewFontSize = useAppStore((s) => s.previewFontSize);
@@ -86,16 +90,26 @@ export function AppShell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    return () => {
+      void stopThclawsServeIfRunning();
+    };
+  }, []);
+
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const sidebarWidth = useAppStore((s) => s.sidebarWidth);
+  const appView = useAppStore((s) => s.appView);
   const viewMode = useActiveViewMode();
+  const isThclawsViewActive = isThclawsView(appView);
 
   useEffect(() => {
     applySidebarWidth(sidebarWidth);
   }, [sidebarWidth]);
 
-  const showEditor = viewMode === "split" || viewMode === "editor";
-  const showPreview = viewMode === "split" || viewMode === "preview";
+  const showEditor =
+    !isThclawsViewActive && (viewMode === "split" || viewMode === "editor");
+  const showPreview =
+    !isThclawsViewActive && (viewMode === "split" || viewMode === "preview");
 
   return (
     <div className="app-shell">
@@ -110,7 +124,7 @@ export function AppShell() {
               </div>
             )}
             <div className="main-title-slot">
-              <TabBar />
+              {isThclawsViewActive ? <ThclawsViewTitleBar /> : <TabBar />}
             </div>
           </div>
 
@@ -126,7 +140,11 @@ export function AppShell() {
             <div className="main-slot">
               <div className="main-panel">
                 <div className="workspace">
-                {viewMode === "split" ? (
+                {isThclawsViewActive ? (
+                  <div className="panel-fill">
+                    <ThclawsPane />
+                  </div>
+                ) : viewMode === "split" ? (
                   <Group orientation="horizontal" id="md-editor-split">
                     <Panel id="editor" defaultSize={50} minSize={20}>
                       <div className="panel-fill">

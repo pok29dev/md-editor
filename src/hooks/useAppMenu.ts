@@ -1,9 +1,15 @@
 import { useEffect, useRef } from "react";
 import { isTauri } from "@tauri-apps/api/core";
-import { Menu, Submenu } from "@tauri-apps/api/menu";
+import {
+  CheckMenuItem,
+  Menu,
+  PredefinedMenuItem,
+  Submenu,
+  type CheckMenuItem as CheckMenuItemHandle,
+} from "@tauri-apps/api/menu";
 import { createNewWorkspaceWindow } from "../lib/tauri/workspaceWindow";
 import { APP_COPYRIGHT, APP_VERSION } from "../version";
-import { useAppStore } from "../stores/appStore";
+import { useAppStore, type AppView, type ViewMode } from "../stores/appStore";
 import { useFileActions } from "./useFileActions";
 import { useFileTree } from "./useFileTree";
 import {
@@ -17,6 +23,9 @@ import {
   openReferenceFromMenu,
   openSymbolsPickerFromMenu,
   runFormatFromMenu,
+  runNormalizeMarkdown,
+  runAiStructureMarkdownFromMenu,
+  setAppViewFromMenu,
   setViewModeFromMenu,
   toggleEditorFullscreenFromMenu,
   toggleSidebarFromMenu,
@@ -25,10 +34,46 @@ import {
 
 const APP_MENU_LABEL = "md-editor";
 
+type ViewMenuChecks = {
+  split: CheckMenuItemHandle | null;
+  editorOnly: CheckMenuItemHandle | null;
+  previewOnly: CheckMenuItemHandle | null;
+  appEditor: CheckMenuItemHandle | null;
+  appThclaws: CheckMenuItemHandle | null;
+};
+
+function activeViewModeFromStore(): ViewMode {
+  const { tabs, activeTabId } = useAppStore.getState();
+  return tabs.find((t) => t.id === activeTabId)?.viewMode ?? "split";
+}
+
+function syncViewMenuChecks(
+  checks: ViewMenuChecks,
+  appView: AppView,
+  viewMode: ViewMode,
+): void {
+  const editorAppView = appView === "editor";
+  void checks.split?.setChecked(editorAppView && viewMode === "split");
+  void checks.editorOnly?.setChecked(editorAppView && viewMode === "editor");
+  void checks.previewOnly?.setChecked(editorAppView && viewMode === "preview");
+  void checks.appEditor?.setChecked(appView === "editor");
+  void checks.appThclaws?.setChecked(appView === "thclaws");
+  void checks.split?.setEnabled(editorAppView);
+  void checks.editorOnly?.setEnabled(editorAppView);
+  void checks.previewOnly?.setEnabled(editorAppView);
+}
+
 export function useAppMenu() {
   const { openFolder, openMarkdownFile } = useFileTree();
   const { save, saveAs, exportHtml, exportPdf } = useFileActions();
   const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
+  const viewMenuChecksRef = useRef<ViewMenuChecks>({
+    split: null,
+    editorOnly: null,
+    previewOnly: null,
+    appEditor: null,
+    appThclaws: null,
+  });
 
   const handlersRef = useRef({
     openFolder,
@@ -39,6 +84,8 @@ export function useAppMenu() {
     exportPdf,
     setSettingsOpen,
     runFormatFromMenu,
+    runNormalizeMarkdown,
+    runAiStructureMarkdownFromMenu,
     insertImageFromMenu,
     openMarkdownLinkDialog,
     openClearDocumentFromMenu,
@@ -46,6 +93,7 @@ export function useAppMenu() {
     openEmojiPickerFromMenu,
     openSymbolsPickerFromMenu,
     toggleTextDirectionFromMenu,
+    setAppViewFromMenu,
     setViewModeFromMenu,
     toggleSidebarFromMenu,
     openFindReplaceFromMenu,
@@ -62,6 +110,8 @@ export function useAppMenu() {
     exportPdf,
     setSettingsOpen,
     runFormatFromMenu,
+    runNormalizeMarkdown,
+    runAiStructureMarkdownFromMenu,
     insertImageFromMenu,
     openMarkdownLinkDialog,
     openClearDocumentFromMenu,
@@ -69,6 +119,7 @@ export function useAppMenu() {
     openEmojiPickerFromMenu,
     openSymbolsPickerFromMenu,
     toggleTextDirectionFromMenu,
+    setAppViewFromMenu,
     setViewModeFromMenu,
     toggleSidebarFromMenu,
     openFindReplaceFromMenu,
@@ -81,8 +132,13 @@ export function useAppMenu() {
     if (!isTauri()) return;
 
     let cancelled = false;
+    let unsubscribeMenuSync: (() => void) | undefined;
 
     void (async () => {
+      const initialAppView = useAppStore.getState().appView;
+      const initialViewMode = activeViewModeFromStore();
+      const editorAppView = initialAppView === "editor";
+
       const appSubmenu = await Submenu.new({
         text: APP_MENU_LABEL,
         items: [
@@ -189,6 +245,13 @@ export function useAppMenu() {
           { item: "Paste" },
           { item: "Separator" },
           { item: "SelectAll" },
+          { item: "Separator" },
+          {
+            id: "edit-find-replace",
+            text: "Find & Replace...",
+            accelerator: "CmdOrCtrl+F",
+            action: () => handlersRef.current.openFindReplaceFromMenu(),
+          },
         ],
       });
 
@@ -270,6 +333,17 @@ export function useAppMenu() {
             id: "format-clear-document",
             text: "Clear Document...",
             action: () => handlersRef.current.openClearDocumentFromMenu(),
+          },
+          {
+            id: "format-normalize-markdown",
+            text: "Normalize Markdown",
+            accelerator: "CmdOrCtrl+Shift+F",
+            action: () => handlersRef.current.runNormalizeMarkdown(),
+          },
+          {
+            id: "format-ai-structure-markdown",
+            text: "AI Structure Markdown…",
+            action: () => handlersRef.current.runAiStructureMarkdownFromMenu(),
           },
           { item: "Separator" },
           {
@@ -401,49 +475,83 @@ export function useAppMenu() {
         ],
       });
 
-      const windowSubmenu = await Submenu.new({
-        text: "Window",
+      const viewSplit = await CheckMenuItem.new({
+        id: "view-split",
+        text: "Split View",
+        accelerator: "CmdOrCtrl+1",
+        checked: editorAppView && initialViewMode === "split",
+        enabled: editorAppView,
+        action: () => handlersRef.current.setViewModeFromMenu("split"),
+      });
+      const viewEditorOnly = await CheckMenuItem.new({
+        id: "view-editor-only",
+        text: "Editor Only",
+        accelerator: "CmdOrCtrl+2",
+        checked: editorAppView && initialViewMode === "editor",
+        enabled: editorAppView,
+        action: () => handlersRef.current.setViewModeFromMenu("editor"),
+      });
+      const viewPreviewOnly = await CheckMenuItem.new({
+        id: "view-preview-only",
+        text: "Preview Only",
+        accelerator: "CmdOrCtrl+3",
+        checked: editorAppView && initialViewMode === "preview",
+        enabled: editorAppView,
+        action: () => handlersRef.current.setViewModeFromMenu("preview"),
+      });
+      const viewAppEditor = await CheckMenuItem.new({
+        id: "view-app-editor",
+        text: "Editor",
+        checked: initialAppView === "editor",
+        action: () => handlersRef.current.setAppViewFromMenu("editor"),
+      });
+      const viewAppThclaws = await CheckMenuItem.new({
+        id: "view-app-thclaws",
+        text: "thClaws",
+        checked: initialAppView === "thclaws",
+        action: () => handlersRef.current.setAppViewFromMenu("thclaws"),
+      });
+
+      viewMenuChecksRef.current = {
+        split: viewSplit,
+        editorOnly: viewEditorOnly,
+        previewOnly: viewPreviewOnly,
+        appEditor: viewAppEditor,
+        appThclaws: viewAppThclaws,
+      };
+
+      const viewSubmenu = await Submenu.new({
+        text: "View",
         items: [
-          {
-            id: "window-split-view",
-            text: "Split View",
-            accelerator: "CmdOrCtrl+1",
-            action: () => handlersRef.current.setViewModeFromMenu("split"),
-          },
-          {
-            id: "window-editor-view",
-            text: "Editor Only",
-            accelerator: "CmdOrCtrl+2",
-            action: () => handlersRef.current.setViewModeFromMenu("editor"),
-          },
-          {
-            id: "window-preview-view",
-            text: "Preview Only",
-            accelerator: "CmdOrCtrl+3",
-            action: () => handlersRef.current.setViewModeFromMenu("preview"),
-          },
+          viewSplit,
+          viewEditorOnly,
+          viewPreviewOnly,
+          { item: "Separator" },
+          viewAppEditor,
+          viewAppThclaws,
           { item: "Separator" },
           {
-            id: "window-toggle-sidebar",
+            id: "view-toggle-sidebar",
             text: "Toggle Sidebar",
             accelerator: "CmdOrCtrl+\\",
             action: () => handlersRef.current.toggleSidebarFromMenu(),
           },
-          { item: "Separator" },
           {
-            id: "window-find-replace",
-            text: "Find & Replace...",
-            accelerator: "CmdOrCtrl+F",
-            action: () => handlersRef.current.openFindReplaceFromMenu(),
-          },
-          {
-            id: "window-editor-fullscreen",
+            id: "view-editor-fullscreen",
             text: "Enter Editor Full Screen",
             action: () => handlersRef.current.toggleEditorFullscreenFromMenu(),
           },
+        ],
+      });
+
+      const windowSubmenu = await Submenu.new({
+        text: "Window",
+        items: [
+          await PredefinedMenuItem.new({ item: "Minimize" }),
+          await PredefinedMenuItem.new({ item: "Maximize" }),
+          await PredefinedMenuItem.new({ item: "Fullscreen" }),
           { item: "Separator" },
-          { item: "Minimize" },
-          { item: "Maximize" },
+          await PredefinedMenuItem.new({ item: "BringAllToFront" }),
         ],
       });
 
@@ -470,6 +578,7 @@ export function useAppMenu() {
           appSubmenu,
           fileSubmenu,
           editSubmenu,
+          viewSubmenu,
           insertSubmenu,
           formatSubmenu,
           windowSubmenu,
@@ -477,10 +586,24 @@ export function useAppMenu() {
         ],
       });
       await menu.setAsAppMenu();
+
+      unsubscribeMenuSync = useAppStore.subscribe((state, prev) => {
+        if (
+          state.appView === prev.appView &&
+          state.activeTabId === prev.activeTabId &&
+          state.tabs === prev.tabs
+        ) {
+          return;
+        }
+        const viewMode =
+          state.tabs.find((t) => t.id === state.activeTabId)?.viewMode ?? "split";
+        syncViewMenuChecks(viewMenuChecksRef.current, state.appView, viewMode);
+      });
     })();
 
     return () => {
       cancelled = true;
+      unsubscribeMenuSync?.();
     };
   }, []);
 }

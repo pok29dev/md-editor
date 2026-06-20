@@ -6,6 +6,7 @@ import { useFocusTrap } from "../../hooks/useFocusTrap";
 import { EMOJI_PRESETS, SYMBOL_PRESETS } from "../../lib/editor/pickerPresets";
 import { MarkdownHelpView } from "./MarkdownHelpView";
 import markdownHelpContent from "../../../markdown-help.md?raw";
+import { AiStructureDiffDialog } from "./AiStructureDiffDialog";
 
 function DialogShell({
   open,
@@ -346,6 +347,7 @@ export function EditorToolbarDialogs() {
       <ReferenceDialog />
       <HelpDialog />
       <AboutDialog />
+      <AiStructureDiffDialog />
     </>
   );
 }

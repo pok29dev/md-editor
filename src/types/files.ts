@@ -31,6 +31,10 @@ export interface EditorSyntaxCustomColors {
   dark: SyntaxColorPalette;
 }
 
+import type { AiStructurePreferences } from "../lib/aiStructure/settings";
+
+export type { AiStructurePreferences };
+
 export interface AppPreferences {
   /** Light/dark appearance: system | light | dark */
   colorScheme: string;
@@ -53,4 +57,5 @@ export interface AppPreferences {
   exportPdfPageSize: string;
   recentFolders: string[];
   lastOpenFolder: string | null;
+  aiStructure: AiStructurePreferences;
 }

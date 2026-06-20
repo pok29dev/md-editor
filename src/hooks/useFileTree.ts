@@ -13,6 +13,7 @@ import {
   syncRecentFoldersFromPreferences,
 } from "../lib/tauri/preferences";
 import { isSupportedFilePath } from "../lib/files/fileKind";
+import { stopThclawsServeIfRunning } from "./useThclawsServe";
 
 function basename(path: string): string {
   const parts = path.split(/[/\\]/);
@@ -44,6 +45,11 @@ export function useFileTree() {
 
   const loadFolder = useCallback(
     async (path: string) => {
+      const previousRoot = useAppStore.getState().rootFolder;
+      if (previousRoot && previousRoot !== path) {
+        await stopThclawsServeIfRunning();
+      }
+
       setLoading(true);
       setError(null);
       setRootFolder(path);

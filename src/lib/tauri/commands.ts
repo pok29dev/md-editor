@@ -121,3 +121,108 @@ export function savePreferences(prefs: AppPreferences): Promise<void> {
 export function addRecentFolder(path: string): Promise<AppPreferences> {
   return invoke<AppPreferences>("add_recent_folder", { path });
 }
+
+export interface ThclawsDetectResult {
+  found: boolean;
+  path: string | null;
+  version: string | null;
+  message: string;
+}
+
+export interface ThclawsTestResult {
+  ok: boolean;
+  message: string;
+  sample: string | null;
+}
+
+export interface ThclawsStructureResult {
+  markdown: string;
+  stderr: string | null;
+}
+
+export interface ThclawsServeStartResult {
+  port: number;
+  url: string;
+  workingDir: string;
+}
+
+export interface ThclawsServeStatus {
+  running: boolean;
+  port: number | null;
+  url: string | null;
+  workingDir: string | null;
+}
+
+export function detectThclaws(customPath?: string): Promise<ThclawsDetectResult> {
+  return invoke<ThclawsDetectResult>("detect_thclaws", {
+    customPath: customPath?.trim() || null,
+  });
+}
+
+export function getThclawsConfigDir(): Promise<string> {
+  return invoke<string>("get_thclaws_config_dir");
+}
+
+export function getThclawsWorkspaceDir(workingDir: string): Promise<string> {
+  return invoke<string>("get_thclaws_workspace_dir", { workingDir });
+}
+
+export function openThclawsWorkspaceDir(workingDir: string): Promise<void> {
+  return invoke<void>("open_thclaws_workspace_dir", { workingDir });
+}
+
+export function openThclawsProjectConfigDir(workingDir: string): Promise<void> {
+  return invoke<void>("open_thclaws_project_config_dir", { workingDir });
+}
+
+export function openThclawsUserConfigDir(): Promise<void> {
+  return invoke<void>("open_thclaws_user_config_dir");
+}
+
+export function startThclawsServe(
+  workingDir: string,
+  customPath?: string,
+): Promise<ThclawsServeStartResult> {
+  return invoke<ThclawsServeStartResult>("start_thclaws_serve", {
+    workingDir,
+    customPath: customPath?.trim() || null,
+  });
+}
+
+export function stopThclawsServe(): Promise<void> {
+  return invoke<void>("stop_thclaws_serve");
+}
+
+export function getThclawsServeStatus(): Promise<ThclawsServeStatus> {
+  return invoke<ThclawsServeStatus>("get_thclaws_serve_status");
+}
+
+export function testThclawsConnection(
+  workingDir: string,
+  customPath: string | undefined,
+  useThclawsDefaults: boolean,
+  model: string,
+): Promise<ThclawsTestResult> {
+  return invoke<ThclawsTestResult>("test_thclaws_connection", {
+    workingDir,
+    customPath: customPath?.trim() || null,
+    useThclawsDefaults,
+    model,
+  });
+}
+
+export function runThclawsStructure(
+  workingDir: string,
+  content: string,
+  customPath: string | undefined,
+  useThclawsDefaults: boolean,
+  model: string,
+): Promise<ThclawsStructureResult> {
+  return invoke<ThclawsStructureResult>("run_thclaws_structure", {
+    workingDir,
+    content,
+    customPath: customPath?.trim() || null,
+    useThclawsDefaults,
+    model,
+  });
+}

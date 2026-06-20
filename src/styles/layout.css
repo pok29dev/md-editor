@@ -98,6 +98,12 @@
   flex-direction: column;
 }
 
+/* Direct workspace children must grow in the flex column (split uses #md-editor-split instead). */
+.workspace > .panel-fill {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 #editor,
 #preview {
   min-width: 0;

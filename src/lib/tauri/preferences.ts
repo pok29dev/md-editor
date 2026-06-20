@@ -41,6 +41,10 @@ import {
 } from "../files/treeExpansion";
 import { isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import {
+  DEFAULT_AI_STRUCTURE_PREFERENCES,
+  normalizeAiStructurePreferences,
+} from "../aiStructure/settings";
 import { getPreferences, savePreferences } from "./commands";
 
 function isPrimaryWorkspaceWindow(): boolean {
@@ -76,6 +80,7 @@ export const DEFAULT_PREFERENCES: AppPreferences = {
   exportPdfPageSize: EXPORT_PDF_PAGE_SIZE_DEFAULT,
   recentFolders: [],
   lastOpenFolder: null,
+  aiStructure: DEFAULT_AI_STRUCTURE_PREFERENCES,
 };
 
 const DEFAULT_VIEW_MODE: ViewMode = "split";
@@ -105,6 +110,7 @@ export function normalizePreferences(
   merged.folderTreeExpansion = normalizeFolderTreeExpansion(
     merged.folderTreeExpansion,
   );
+  merged.aiStructure = normalizeAiStructurePreferences(merged.aiStructure);
 
   return merged;
 }
@@ -136,6 +142,7 @@ export function buildPreferencesFromState(
     lastOpenFolder: isPrimaryWorkspaceWindow()
       ? (state.rootFolder ?? existing?.lastOpenFolder ?? null)
       : (existing?.lastOpenFolder ?? null),
+    aiStructure: state.aiStructure,
   };
 }
 
@@ -188,6 +195,7 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
     exportPdfTheme,
     exportPdfPageSize,
     recentFolders: normalized.recentFolders,
+    aiStructure: normalizeAiStructurePreferences(normalized.aiStructure),
     tabs: state.tabs.map((tab) =>
       tab.path === null ? { ...tab, viewMode: defaultViewMode } : tab,
     ),
@@ -290,6 +298,13 @@ export function resetExportSettings(): void {
     exportPdfPageSize: normalizeExportPdfPageSize(
       DEFAULT_PREFERENCES.exportPdfPageSize,
     ),
+  });
+  void flushPersistPreferences();
+}
+
+export function resetAiStructureSettings(): void {
+  useAppStore.setState({
+    aiStructure: DEFAULT_AI_STRUCTURE_PREFERENCES,
   });
   void flushPersistPreferences();
 }

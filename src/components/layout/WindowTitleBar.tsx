@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { isTauri } from "@tauri-apps/api/core";
-import { useAppStore, type ViewMode } from "../../stores/appStore";
+import { useAppStore, type AppView, type ViewMode } from "../../stores/appStore";
 import { useFileActions } from "../../hooks/useFileActions";
 import { useActiveViewMode } from "../../hooks/useActiveViewMode";
 import { useEditorStore } from "../../stores/editorStore";
@@ -17,12 +17,23 @@ const VIEW_MODES: { mode: ViewMode; label: string; title: string }[] = [
   { mode: "preview", label: "Preview", title: "Preview Only (⌘3)" },
 ];
 
+const APP_VIEWS: { view: AppView; label: string; title: string }[] = [
+  { view: "editor", label: "Editor", title: "Document editor and tabs" },
+  { view: "thclaws", label: "thClaws", title: "thClaws chat (Run to start)" },
+];
+
 export function WindowTitleBar() {
   const viewMode = useActiveViewMode();
+  const appView = useAppStore((s) => s.appView);
+  const setAppView = useAppStore((s) => s.setAppView);
   const tabs = useAppStore((s) => s.tabs);
   const activeTabId = useAppStore((s) => s.activeTabId);
   const activeTab = tabs.find((t) => t.id === activeTabId);
-  const previewAvailable = activeTab ? supportsPreview(activeTab.fileKind) : true;
+  const isEditorViewActive = appView === "editor";
+  const previewAvailable =
+    isEditorViewActive && activeTab
+      ? supportsPreview(activeTab.fileKind)
+      : true;
   const syncScroll = useAppStore((s) => s.syncScroll);
   const appTheme = useAppStore((s) => s.theme);
   const setViewMode = useAppStore((s) => s.setViewMode);
@@ -75,87 +86,112 @@ export function WindowTitleBar() {
         <div
           className="view-mode-segmented"
           role="group"
-          aria-label="View mode"
+          aria-label="Application view"
         >
-          {VIEW_MODES.map(({ mode, label, title }) => {
-            const disabled = !previewAvailable && mode !== "editor";
-            return (
+          {APP_VIEWS.map(({ view, label, title }) => (
             <button
-              key={mode}
+              key={view}
               type="button"
-              className={`segment-btn ${viewMode === mode ? "active" : ""}`}
-              title={disabled ? `${title} (not available for this file)` : title}
-              aria-pressed={viewMode === mode}
-              disabled={disabled}
-              onClick={() => setViewMode(mode)}
+              className={`segment-btn ${appView === view ? "active" : ""}`}
+              title={title}
+              aria-pressed={appView === view}
+              onClick={() => setAppView(view)}
             >
               {label}
             </button>
-            );
-          })}
+          ))}
         </div>
 
-        <div className="toolbar-divider" />
+        {isEditorViewActive ? (
+          <>
+            <div className="toolbar-divider" />
 
-        <button
-          type="button"
-          className="toolbar-icon-btn"
-          title="Find & Replace (⌘F)"
-          aria-label="Find & Replace"
-          onClick={() => setFindReplaceOpen(true)}
-        >
-          <FindIcon />
-        </button>
-        <button
-          type="button"
-          className={`toolbar-icon-btn ${syncScroll ? "active" : ""}`}
-          title="Sync Scroll"
-          aria-label="Sync Scroll"
-          aria-pressed={syncScroll}
-          onClick={() => setSyncScroll(!syncScroll)}
-        >
-          <SyncIcon />
-        </button>
-
-        <div className="titlebar-overflow" ref={overflowRef}>
-          <button
-            type="button"
-            className="toolbar-icon-btn"
-            title="More actions"
-            aria-label="More actions"
-            aria-expanded={overflowOpen}
-            aria-haspopup="menu"
-            onClick={() => setOverflowOpen((open) => !open)}
-          >
-            <MoreIcon />
-          </button>
-          {overflowOpen && (
-            <div className="titlebar-overflow-menu" role="menu">
-              <button
-                type="button"
-                className="titlebar-overflow-item"
-                role="menuitem"
-                onClick={() => {
-                  setOverflowOpen(false);
-                  exportHtml();
-                }}
-              >
-                Export HTML
-              </button>
-              <button
-                type="button"
-                className="titlebar-overflow-item"
-                role="menuitem"
-                onClick={() => {
-                  setOverflowOpen(false);
-                  exportPdf();
-                }}
-              >
-                Export PDF
-              </button>
+            <div
+              className="view-mode-segmented"
+              role="group"
+              aria-label="View mode"
+            >
+              {VIEW_MODES.map(({ mode, label, title }) => {
+                const disabled = !previewAvailable && mode !== "editor";
+                return (
+                <button
+                  key={mode}
+                  type="button"
+                  className={`segment-btn ${viewMode === mode ? "active" : ""}`}
+                  title={disabled ? `${title} (not available)` : title}
+                  aria-pressed={viewMode === mode}
+                  disabled={disabled}
+                  onClick={() => setViewMode(mode)}
+                >
+                  {label}
+                </button>
+                );
+              })}
             </div>
-          )}
-        </div>
+
+            <div className="toolbar-divider" />
+
+            <button
+              type="button"
+              className="toolbar-icon-btn"
+              title="Find & Replace (⌘F)"
+              aria-label="Find & Replace"
+              onClick={() => setFindReplaceOpen(true)}
+            >
+              <FindIcon />
+            </button>
+            <button
+              type="button"
+              className={`toolbar-icon-btn ${syncScroll ? "active" : ""}`}
+              title="Sync Scroll"
+              aria-label="Sync Scroll"
+              aria-pressed={syncScroll}
+              onClick={() => setSyncScroll(!syncScroll)}
+            >
+              <SyncIcon />
+            </button>
+
+            <div className="titlebar-overflow" ref={overflowRef}>
+              <button
+                type="button"
+                className="toolbar-icon-btn"
+                title="More actions"
+                aria-label="More actions"
+                aria-expanded={overflowOpen}
+                aria-haspopup="menu"
+                onClick={() => setOverflowOpen((open) => !open)}
+              >
+                <MoreIcon />
+              </button>
+              {overflowOpen && (
+                <div className="titlebar-overflow-menu" role="menu">
+                  <button
+                    type="button"
+                    className="titlebar-overflow-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setOverflowOpen(false);
+                      exportHtml();
+                    }}
+                  >
+                    Export HTML
+                  </button>
+                  <button
+                    type="button"
+                    className="titlebar-overflow-item"
+                    role="menuitem"
+                    onClick={() => {
+                      setOverflowOpen(false);
+                      exportPdf();
+                    }}
+                  >
+                    Export PDF
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        ) : null}
       </div>
 
       {overlay && (

@@ -5,14 +5,17 @@ import { SettingsExport } from "./SettingsExport";
 import { SettingsEditor } from "./SettingsEditor";
 import { SettingsFiles } from "./SettingsFiles";
 import { SettingsGeneral } from "./SettingsGeneral";
+import { SettingsAiStructure } from "./SettingsAiStructure";
+import type { SettingsTabId } from "../../stores/appStore";
 
-type SettingsTab = "general" | "editor" | "files" | "export";
+type SettingsTab = SettingsTabId;
 
 const TABS: { id: SettingsTab; label: string }[] = [
   { id: "general", label: "General" },
   { id: "editor", label: "Editor" },
   { id: "files", label: "Files" },
   { id: "export", label: "Export" },
+  { id: "ai", label: "AI Structure" },
 ];
 
 function SettingsPanel({ tab }: { tab: SettingsTab }) {
@@ -25,12 +28,16 @@ function SettingsPanel({ tab }: { tab: SettingsTab }) {
       return <SettingsFiles />;
     case "export":
       return <SettingsExport />;
+    case "ai":
+      return <SettingsAiStructure />;
   }
 }
 
 export function SettingsModal() {
   const open = useAppStore((s) => s.settingsOpen);
   const setOpen = useAppStore((s) => s.setSettingsOpen);
+  const settingsRequestedTab = useAppStore((s) => s.settingsRequestedTab);
+  const clearSettingsRequestedTab = useAppStore((s) => s.clearSettingsRequestedTab);
   const [activeTab, setActiveTab] = useState<SettingsTab>("general");
   const modalRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -40,7 +47,10 @@ export function SettingsModal() {
   useEffect(() => {
     if (!open) return;
 
-    setActiveTab("general");
+    setActiveTab(settingsRequestedTab ?? "general");
+    if (settingsRequestedTab) {
+      clearSettingsRequestedTab();
+    }
     requestAnimationFrame(() => closeRef.current?.focus());
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -52,7 +62,7 @@ export function SettingsModal() {
 
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, setOpen]);
+  }, [open, setOpen, settingsRequestedTab, clearSettingsRequestedTab]);
 
   if (!open) return null;
 

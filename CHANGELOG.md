@@ -1,6 +1,28 @@
 # Changelog
 
-รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.1901` = 2026-06-19 build 1) · tag `v.26.6.1901`
+รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.2001` = 2026-06-20 build 1) · tag `v.26.6.2001`
+
+## [26.6.2001] — 2026-06-20
+
+### Added
+
+- **thClaws chat view** — สลับ **Editor | thClaws** จาก title bar; มุมมองแยกจากแท็บเอกสาร (ไม่ใช่ tab)
+- **thClaws serve** — Run/Stop ใน `ThclawsPane`; lazy start `thclaws --serve` ผูกกับโฟลเดอร์ที่เปิดใน sidebar (`<folder>/.thclaws/`)
+- **Rust thClaws commands** — detect, serve start/stop/status, structure, test connection, เปิด config dirs
+- **Settings → AI Structure** — path CLI, detect, test connection, เปิด project `.thclaws/` และ user config
+- **AI Structure Markdown** — Format menu → diff preview ก่อน apply; เรียก thClaws one-shot
+- **Normalize Markdown** — Format menu + pipeline ใน `src/lib/markdown/normalize/`
+- **Native menus** — **View**: Split / Editor Only / Preview, Editor / thClaws (checkmark), Toggle Sidebar; **Window**: Minimize, Zoom, Full Screen, Bring All to Front (OS standard)
+
+### Changed
+
+- **Find & Replace** — ย้ายจาก Window ไป **Edit** menu (`⌘F`)
+- **Keyboard shortcuts** — `⌘1/2/3` สลับ pane layout แล้วกลับ Editor app view อัตโนมัติ
+- **CSP** — `frame-src` / `connect-src` สำหรับ thClaws localhost iframe
+
+### Fixed
+
+- **thClaws white screen** — `StatusBar` early return ก่อน hooks ทำให้ React crash ตอนสลับ view
 
 ## [26.6.1901] — 2026-06-19
 

@@ -11,9 +11,13 @@ import {
   openSymbolsPicker,
   useEditorStore,
 } from "../stores/editorStore";
-import { useAppStore, type ViewMode } from "../stores/appStore";
+import { useAppStore, type AppView, type ViewMode } from "../stores/appStore";
 import { pickOpenImage } from "../lib/tauri/commands";
+import { applyNormalizeMarkdown } from "../lib/editor/normalizeActions";
+import { normalizeMarkdown } from "../lib/markdown/normalize/normalizeMarkdown";
+import { syncTabEditorContent } from "../lib/editor/tabEditorCache";
 import { runFormatAction } from "./useMarkdownFormat";
+import { runAiStructureFromMenu } from "./useAiStructure";
 
 function resolveEditorView() {
   const { view } = useEditorStore.getState();
@@ -28,6 +32,30 @@ export function runFormatFromMenu(
   context: FormatContext = {},
 ): void {
   runFormatAction(actionId, context);
+}
+
+export function runNormalizeMarkdown(): boolean {
+  const view = resolveEditorView();
+  if (view) {
+    return applyNormalizeMarkdown(view);
+  }
+
+  const activeTabId = useAppStore.getState().activeTabId;
+  if (!activeTabId) return false;
+
+  const tab = useAppStore.getState().tabs.find((t) => t.id === activeTabId);
+  if (!tab || tab.fileKind !== "markdown") return false;
+
+  const normalized = normalizeMarkdown(tab.content);
+  if (normalized === tab.content) return true;
+
+  useAppStore.getState().updateTabContent(activeTabId, normalized);
+  syncTabEditorContent(activeTabId, normalized);
+  return true;
+}
+
+export function runAiStructureMarkdownFromMenu(): void {
+  void runAiStructureFromMenu();
 }
 
 export function openMarkdownLinkDialog(): void {
@@ -84,8 +112,14 @@ export function toggleEditorFullscreenFromMenu(): void {
   }
 }
 
+export function setAppViewFromMenu(view: AppView): void {
+  useAppStore.getState().setAppView(view);
+}
+
 export function setViewModeFromMenu(mode: ViewMode): void {
-  useAppStore.getState().setViewMode(mode);
+  const store = useAppStore.getState();
+  store.setAppView("editor");
+  store.setViewMode(mode);
 }
 
 export function toggleSidebarFromMenu(): void {

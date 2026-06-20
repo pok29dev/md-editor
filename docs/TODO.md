@@ -1,7 +1,7 @@
 # MD Editor — TODO List
 
-**Current version:** `26.6.1901`  
-**Status:** MVP Complete + JSON/YAML + UI Redesign ✅
+**Current version:** `26.6.2001`  
+**Status:** MVP Complete + thClaws integration ✅
 
 ---
 
@@ -60,6 +60,19 @@
 - [x] Phase 4: Validation + format (`⌘⇧F`) + save guard
 - [x] Custom syntax color palette (Settings → Editor)
 - [x] Spec: `docs/spec-json-yaml.md`
+
+---
+
+## thClaws & AI Structure ✅
+
+- [x] Rust serve manager + thClaws commands (`working_dir` จาก sidebar folder)
+- [x] App view `editor | thclaws` แยกจาก document tabs
+- [x] ThclawsPane — Run/Stop, iframe, lifecycle (stop เมื่อเปลี่ยน folder / ปิด app)
+- [x] Settings → AI Structure (CLI path, detect, test, open config dirs)
+- [x] AI Structure Markdown + diff dialog
+- [x] Normalize Markdown pipeline
+- [x] Native menus — View (layout + app views) / Window (OS standard)
+- [x] StatusBar hooks fix (white screen on thClaws switch)
 
 ---
 
