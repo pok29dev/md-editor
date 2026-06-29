@@ -28,7 +28,9 @@
 ### 1.4 ขอบเขต MVP (Basic)
 
 รวมเฉพาะ feature ที่จำเป็นสำหรับการใช้งานประจำวัน  
-**ไม่รวม** ใน MVP: GitHub import, Share via URL, mobile layout, i18n หลายภาษา, emoji picker, WYSIWYG/rich-text editing
+**ไม่รวม** ใน MVP: GitHub import, Share via URL, mobile layout, i18n หลายภาษา, emoji picker
+
+> **WYSIWYG (post-MVP):** วางแผนเพิ่มโหมดแก้ไขแบบ realtime preview ด้วย **Tiptap** — ดู [wysiwyg-plan.md](./wysiwyg-plan.md)
 
 ---
 

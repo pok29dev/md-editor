@@ -76,6 +76,19 @@
 
 ---
 
+## WYSIWYG (Tiptap) — Planned
+
+อ้างอิง: [wysiwyg-plan.md](./wysiwyg-plan.md) · branch `docs/wysiwyg-tiptap-plan`
+
+- [ ] Phase 0: Tiptap spike + round-trip tests
+- [ ] Phase 1: EditorAdapter abstraction
+- [ ] Phase 2: WYSIWYG MVP (GFM core + mode switch)
+- [ ] Phase 3: Parity (table, task list, math, mermaid, …)
+- [ ] Phase 4: MarkText-like UX (bubble menu, slash, paste image)
+- [ ] Phase 5: Find/replace, tests, docs
+
+---
+
 ## Post-MVP (Optional)
 
 - [ ] CI/CD release workflow
