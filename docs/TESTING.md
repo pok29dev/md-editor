@@ -63,6 +63,7 @@
 - [x] Sync scroll, Collapse sidebar persist
 - [x] Sidebar width slider (180–400px) persist
 - [x] Default view mode → Welcome tab / tab ใหม่ใช้ค่าที่ตั้ง
+- [x] Default edit mode (Source / WYSIWYG) → tab Markdown ใหม่ใช้ค่าที่ตั้ง
 - [x] Reset to defaults คืนค่า General
 
 #### Editor
@@ -245,3 +246,41 @@ npm run tauri build
 | `examples/sample-docs/markdown-features-test.md` | Full feature regression |
 | `examples/sample-docs/config.json` | JSON editor + validation |
 | `examples/sample-docs/config.yaml` | YAML editor + validation |
+
+---
+
+## WYSIWYG (Tiptap) — Manual checklist
+
+ใช้ `examples/sample-docs/markdown-features-test.md` ในโหมด **Editor** + **WYSIWYG**
+
+### โหมดและสลับมุมมอง
+
+- [ ] Title bar หรือ `⌘⌥S` สลับ Source ↔ WYSIWYG ได้
+- [ ] สลับแล้วเนื้อหา heading / list / link ไม่หาย
+- [ ] JSON/YAML tab ไม่แสดงตัวเลือก WYSIWYG
+- [ ] Settings → General → Default edit mode เปลี่ยนค่าเริ่มต้นสำหรับ tab ใหม่
+
+### แก้ไขและบันทึก
+
+- [ ] พิมพ์ heading, bold, bullet list ใน WYSIWYG แล้ว Save
+- [ ] เปิดไฟล์ใน editor อื่น → markdown อ่านได้
+- [ ] Mermaid / math block แสดงเป็น preserved widget (แก้ใน Source ได้)
+
+### Find & Replace
+
+- [ ] `⌘F` ใน Source → ค้นหา/แทนที่ทำงาน
+- [ ] `⌘F` ใน WYSIWYG → dialog แสดง "WYSIWYG", Next/Prev/Replace/Replace All ทำงาน
+
+### Phase 4 shortcuts
+
+- [ ] `/` เปิด slash menu (heading, list, table, …)
+- [ ] Paste / drop รูป → บันทึกใต้ `assets/` ในโฟลเดอร์ workspace
+- [ ] Focus / typewriter mode จาก toolbar
+
+### Automated round-trip
+
+```bash
+npm run test:wysiwyg
+```
+
+ตรวจ `prepareTiptapBody` / `getTiptapMarkdown` กับไฟล์ใน `examples/sample-docs/`

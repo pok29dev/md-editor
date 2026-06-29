@@ -30,7 +30,7 @@
 รวมเฉพาะ feature ที่จำเป็นสำหรับการใช้งานประจำวัน  
 **ไม่รวม** ใน MVP: GitHub import, Share via URL, mobile layout, i18n หลายภาษา, emoji picker
 
-> **WYSIWYG (post-MVP):** วางแผนเพิ่มโหมดแก้ไขแบบ realtime preview ด้วย **Tiptap** — ดู [wysiwyg-plan.md](./wysiwyg-plan.md)
+> **WYSIWYG:** โหมดแก้ไขแบบ visual ด้วย **Tiptap** (Source ↔ WYSIWYG, `⌘⌥S`) — ดู [wysiwyg-plan.md](./wysiwyg-plan.md)
 
 ---
 
@@ -322,7 +322,7 @@ interface AppPreferences {
 | Share via URL | เฉพาะ web app |
 | PDF export (advanced) | Basic PDF export มีแล้ว; advanced layout ยังไม่ครบ |
 | Git integration | เกินขอบเขต basic |
-| WYSIWYG / rich-text toolbar | MVP ใช้ Markdown syntax insertion |
+| Rich-text toolbar (แทน Markdown syntax) | MVP ใช้ Markdown syntax + WYSIWYG สำหรับ GFM พื้นฐาน |
 | Multi-language UI | MVP ภาษาอังกฤษ/ไทย UI เดียว |
 | Plugin system | Phase 2 |
 | Collaborative editing | Phase 2 |

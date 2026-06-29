@@ -1,4 +1,5 @@
 import { useAppStore, type AppTheme, type ColorScheme, type ViewMode } from "../../stores/appStore";
+import type { EditMode } from "../../lib/editor/editMode";
 import {
   SIDEBAR_WIDTH_MAX,
   SIDEBAR_WIDTH_MIN,
@@ -33,6 +34,11 @@ const VIEW_MODES: { value: ViewMode; label: string }[] = [
   { value: "split", label: "Split" },
   { value: "editor", label: "Editor" },
   { value: "preview", label: "Preview" },
+];
+
+const EDIT_MODES: { value: EditMode; label: string }[] = [
+  { value: "source", label: "Source (Markdown)" },
+  { value: "wysiwyg", label: "WYSIWYG" },
 ];
 
 function ColorSchemePreview({ variant }: { variant: "system" | "light" | "dark" }) {
@@ -73,12 +79,14 @@ export function SettingsGeneral() {
   const sidebarCollapsed = useAppStore((s) => s.sidebarCollapsed);
   const sidebarWidth = useAppStore((s) => s.sidebarWidth);
   const defaultViewMode = useAppStore((s) => s.defaultViewMode);
+  const defaultEditMode = useAppStore((s) => s.defaultEditMode);
   const setColorScheme = useAppStore((s) => s.setColorScheme);
   const setTheme = useAppStore((s) => s.setTheme);
   const setSyncScroll = useAppStore((s) => s.setSyncScroll);
   const setSidebarCollapsed = useAppStore((s) => s.setSidebarCollapsed);
   const setSidebarWidth = useAppStore((s) => s.setSidebarWidth);
   const setDefaultViewMode = useAppStore((s) => s.setDefaultViewMode);
+  const setDefaultEditMode = useAppStore((s) => s.setDefaultEditMode);
 
   return (
     <section className="settings-section">
@@ -194,6 +202,24 @@ export function SettingsGeneral() {
         </select>
         <span className="settings-hint">
           Default layout on startup and for newly opened tabs
+        </span>
+      </label>
+
+      <label className="settings-field">
+        <span className="settings-label">Default edit mode</span>
+        <select
+          className="settings-select"
+          value={defaultEditMode}
+          onChange={(e) => setDefaultEditMode(e.target.value as EditMode)}
+        >
+          {EDIT_MODES.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+        <span className="settings-hint">
+          Editor-only layout uses this mode for Markdown tabs (JSON/YAML stay Source)
         </span>
       </label>
 

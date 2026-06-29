@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "validate:version": "node scripts/validate-version.mjs",
-    "design-pack": "bash scripts/assemble-design-pack.sh"
+    "design-pack": "bash scripts/assemble-design-pack.sh",
+    "test": "vitest run",
+    "test:wysiwyg": "vitest run src/lib/editor/tiptap"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.3",
@@ -68,8 +70,10 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "happy-dom": "^20.10.6",
     "tailwindcss": "^4.1.8",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^4.1.9"
   }
 }

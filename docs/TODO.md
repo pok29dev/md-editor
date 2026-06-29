@@ -76,7 +76,7 @@
 
 ---
 
-## WYSIWYG (Tiptap) — In progress
+## WYSIWYG (Tiptap) ✅
 
 อ้างอิง: [wysiwyg-plan.md](./wysiwyg-plan.md) · branch `feature/wysiwyg-tiptap`
 
@@ -86,7 +86,7 @@
 - [x] Phase 3 (partial): table, task list, highlight, frontmatter banner, bubble menu
 - [x] Phase 3: preserved blocks (mermaid, math, alerts, footnotes, definition list), sup/sub
 - [x] Phase 4: slash commands, paste/drop image, focus/typewriter mode
-- [ ] Phase 5: Find/replace in WYSIWYG, round-trip tests, docs
+- [x] Phase 5: Find/replace in WYSIWYG, round-trip tests, docs
 
 ---
 
