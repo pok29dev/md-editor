@@ -1,11 +1,21 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { MarkdownEditor } from "../editor/MarkdownEditor";
 import { EditorToolbar } from "../editor/EditorToolbar";
 import { EditorToolbarDialogs } from "../editor/EditorToolbarDialogs";
 import { useAppStore } from "../../stores/appStore";
 import { useEditorStore } from "../../stores/editorStore";
 import { destroyOrphanTabEditors } from "../../lib/editor/tabEditorCache";
+import { destroyOrphanTabTiptapEditors } from "../../lib/editor/tiptapTabCache";
 import { supportsPreview } from "../../lib/files/fileKind";
+import { shouldUseWysiwyg } from "../../lib/editor/editMode";
+import { useActiveEditMode } from "../../hooks/useActiveEditMode";
+import { useActiveViewMode } from "../../hooks/useActiveViewMode";
+
+const TiptapEditor = lazy(() =>
+  import("../editor/TiptapEditor").then((module) => ({
+    default: module.TiptapEditor,
+  })),
+);
 
 function AiStructureOverlay() {
   const running = useAppStore((s) => s.aiStructureRunning);
@@ -22,11 +32,15 @@ export function EditorPane() {
   const activeTabId = useAppStore((s) => s.activeTabId);
   const updateTabContent = useAppStore((s) => s.updateTabContent);
   const editorTextDirection = useEditorStore((s) => s.editorTextDirection);
+  const viewMode = useActiveViewMode();
+  const editMode = useActiveEditMode();
 
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
   useEffect(() => {
-    destroyOrphanTabEditors(tabs.map((t) => t.id));
+    const tabIds = tabs.map((t) => t.id);
+    destroyOrphanTabEditors(tabIds);
+    destroyOrphanTabTiptapEditors(tabIds);
   }, [tabs]);
 
   if (!activeTab) {
@@ -42,16 +56,30 @@ export function EditorPane() {
     );
   }
 
+  const useWysiwyg = shouldUseWysiwyg(viewMode, editMode, activeTab.fileKind);
+
   return (
     <div className="editor-pane" data-direction={editorTextDirection}>
       {supportsPreview(activeTab.fileKind) && <EditorToolbar />}
       {supportsPreview(activeTab.fileKind) && <EditorToolbarDialogs />}
-      <MarkdownEditor
-        tabId={activeTab.id}
-        content={activeTab.content}
-        fileKind={activeTab.fileKind}
-        onChange={(content) => updateTabContent(activeTab.id, content)}
-      />
+      {useWysiwyg ? (
+        <Suspense
+          fallback={<div className="tiptap-editor-root markdown-editor" />}
+        >
+          <TiptapEditor
+            tabId={activeTab.id}
+            content={activeTab.content}
+            onChange={(content) => updateTabContent(activeTab.id, content)}
+          />
+        </Suspense>
+      ) : (
+        <MarkdownEditor
+          tabId={activeTab.id}
+          content={activeTab.content}
+          fileKind={activeTab.fileKind}
+          onChange={(content) => updateTabContent(activeTab.id, content)}
+        />
+      )}
       <AiStructureOverlay />
       <style>{`
         .ai-structure-overlay {

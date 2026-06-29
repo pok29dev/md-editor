@@ -44,6 +44,7 @@ export interface AppPreferences {
   sidebarCollapsed: boolean;
   syncScroll: boolean;
   defaultViewMode: string;
+  defaultEditMode: string;
   restoreLastFolderOnStartup: boolean;
   folderTreeExpansion: string;
   editorFontSize: number;

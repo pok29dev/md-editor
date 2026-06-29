@@ -13,6 +13,7 @@ export function shouldHandleEditorFormatShortcut(event: KeyboardEvent): boolean 
   if (!target) return false;
 
   if (target.closest(".cm-content")) return true;
+  if (target.closest(".tiptap-editor-root .tiptap")) return true;
 
   const tag = target.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") {
@@ -25,6 +26,19 @@ export function shouldHandleEditorFormatShortcut(event: KeyboardEvent): boolean 
     target.closest(".link-dialog")
   ) {
     return false;
+  }
+
+  const activeTabId = useAppStore.getState().activeTabId;
+  if (activeTabId) {
+    const tab = useAppStore.getState().tabs.find((t) => t.id === activeTabId);
+    if (
+      tab &&
+      tab.viewMode === "editor" &&
+      tab.editMode === "wysiwyg" &&
+      target.closest(".tiptap-editor-root")
+    ) {
+      return true;
+    }
   }
 
   return view !== null;

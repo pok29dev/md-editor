@@ -3,12 +3,14 @@ import { isTauri } from "@tauri-apps/api/core";
 import { useAppStore, type AppView, type ViewMode } from "../../stores/appStore";
 import { useFileActions } from "../../hooks/useFileActions";
 import { useActiveViewMode } from "../../hooks/useActiveViewMode";
+import { useActiveEditMode } from "../../hooks/useActiveEditMode";
 import { useEditorStore } from "../../stores/editorStore";
 import { ColorSchemeToggle } from "./ColorSchemeToggle";
 import { PdfExportOverlay } from "../export/PdfExportOverlay";
 import { getToolbarIcons } from "../../lib/theme/icons";
 import { handleWindowDrag } from "../../lib/tauri/windowDrag";
 import { supportsPreview } from "../../lib/files/fileKind";
+import type { EditMode } from "../../stores/appStore";
 import "../../styles/titlebar.css";
 
 const VIEW_MODES: { mode: ViewMode; label: string; title: string }[] = [
@@ -22,8 +24,14 @@ const APP_VIEWS: { view: AppView; label: string; title: string }[] = [
   { view: "thclaws", label: "thClaws", title: "thClaws chat (Run to start)" },
 ];
 
+const EDIT_MODES: { mode: EditMode; label: string; title: string }[] = [
+  { mode: "source", label: "Source", title: "Markdown source (⌘⌥S)" },
+  { mode: "wysiwyg", label: "WYSIWYG", title: "Visual editor (⌘⌥S)" },
+];
+
 export function WindowTitleBar() {
   const viewMode = useActiveViewMode();
+  const editMode = useActiveEditMode();
   const appView = useAppStore((s) => s.appView);
   const setAppView = useAppStore((s) => s.setAppView);
   const tabs = useAppStore((s) => s.tabs);
@@ -37,6 +45,7 @@ export function WindowTitleBar() {
   const syncScroll = useAppStore((s) => s.syncScroll);
   const appTheme = useAppStore((s) => s.theme);
   const setViewMode = useAppStore((s) => s.setViewMode);
+  const setEditMode = useAppStore((s) => s.setEditMode);
   const setSyncScroll = useAppStore((s) => s.setSyncScroll);
   const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
   const {
@@ -128,6 +137,30 @@ export function WindowTitleBar() {
                 );
               })}
             </div>
+
+            {previewAvailable && viewMode === "editor" && (
+              <>
+                <div className="toolbar-divider" />
+                <div
+                  className="view-mode-segmented"
+                  role="group"
+                  aria-label="Edit mode"
+                >
+                  {EDIT_MODES.map(({ mode, label, title }) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      className={`segment-btn ${editMode === mode ? "active" : ""}`}
+                      title={title}
+                      aria-pressed={editMode === mode}
+                      onClick={() => setEditMode(mode)}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
 
             <div className="toolbar-divider" />
 

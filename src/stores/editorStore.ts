@@ -1,10 +1,12 @@
 import { create } from "zustand";
 import type { EditorView } from "@codemirror/view";
+import type { Editor } from "@tiptap/core";
 
 export type EditorTextDirection = "ltr" | "rtl";
 
 interface EditorState {
   view: EditorView | null;
+  tiptapEditor: Editor | null;
   previewScrollEl: HTMLElement | null;
   findReplaceOpen: boolean;
   linkDialogOpen: boolean;
@@ -20,6 +22,7 @@ interface EditorState {
   aiStructureRange: { from: number; to: number } | null;
   editorTextDirection: EditorTextDirection;
   setView: (view: EditorView | null) => void;
+  setTiptapEditor: (editor: Editor | null) => void;
   setPreviewScrollEl: (el: HTMLElement | null) => void;
   setFindReplaceOpen: (open: boolean) => void;
   setLinkDialogOpen: (open: boolean) => void;
@@ -44,6 +47,7 @@ interface EditorState {
 
 export const useEditorStore = create<EditorState>((set) => ({
   view: null,
+  tiptapEditor: null,
   previewScrollEl: null,
   findReplaceOpen: false,
   linkDialogOpen: false,
@@ -59,6 +63,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   aiStructureRange: null,
   editorTextDirection: "ltr",
   setView: (view) => set({ view }),
+  setTiptapEditor: (tiptapEditor) => set({ tiptapEditor }),
   setPreviewScrollEl: (previewScrollEl) => set({ previewScrollEl }),
   setFindReplaceOpen: (findReplaceOpen) => set({ findReplaceOpen }),
   setLinkDialogOpen: (linkDialogOpen) => set({ linkDialogOpen }),

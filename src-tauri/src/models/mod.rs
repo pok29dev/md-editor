@@ -94,6 +94,8 @@ pub struct AppPreferences {
     pub sync_scroll: bool,
     #[serde(default = "default_view_mode")]
     pub default_view_mode: String,
+    #[serde(default = "default_edit_mode")]
+    pub default_edit_mode: String,
     #[serde(default = "default_true")]
     pub restore_last_folder_on_startup: bool,
     #[serde(default = "default_folder_tree_expansion")]
@@ -141,6 +143,10 @@ fn default_true() -> bool {
 
 fn default_view_mode() -> String {
     "split".to_string()
+}
+
+fn default_edit_mode() -> String {
+    "source".to_string()
 }
 
 fn default_folder_tree_expansion() -> String {
@@ -209,6 +215,7 @@ impl Default for AppPreferences {
             sidebar_collapsed: false,
             sync_scroll: default_true(),
             default_view_mode: default_view_mode(),
+            default_edit_mode: default_edit_mode(),
             restore_last_folder_on_startup: default_true(),
             folder_tree_expansion: default_folder_tree_expansion(),
             editor_font_size: default_editor_font_size(),

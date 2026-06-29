@@ -18,6 +18,11 @@ import {
 import { useAppStore } from "../../stores/appStore";
 import { getFormatIcons } from "../../lib/theme/icons";
 import { getTabEditorView } from "../../lib/editor/tabEditorCache";
+import { getTabTiptapEditor } from "../../lib/editor/tiptapTabCache";
+import {
+  runTiptapRedo,
+  runTiptapUndo,
+} from "../../lib/editor/tiptapFormatActions";
 import "../../styles/editor-toolbar.css";
 
 const HEADING_OPTIONS: { value: HeadingLevelValue; label: string }[] = [
@@ -157,11 +162,25 @@ export function EditorToolbar() {
 
     switch (id) {
       case "undo": {
+        const activeTabId = useAppStore.getState().activeTabId;
+        const tiptap =
+          activeTabId ? getTabTiptapEditor(activeTabId) : undefined;
+        if (tiptap) {
+          runTiptapUndo(tiptap);
+          return;
+        }
         const view = resolveEditorView();
         if (view) runEditorUndo(view);
         return;
       }
       case "redo": {
+        const activeTabId = useAppStore.getState().activeTabId;
+        const tiptap =
+          activeTabId ? getTabTiptapEditor(activeTabId) : undefined;
+        if (tiptap) {
+          runTiptapRedo(tiptap);
+          return;
+        }
         const view = resolveEditorView();
         if (view) runEditorRedo(view);
         return;

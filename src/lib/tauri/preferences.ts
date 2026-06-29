@@ -1,5 +1,5 @@
 import type { AppPreferences } from "../../types/files";
-import type { AppTheme, ColorScheme, ViewMode } from "../../stores/appStore";
+import type { AppTheme, ColorScheme, EditMode, ViewMode } from "../../stores/appStore";
 import { useAppStore } from "../../stores/appStore";
 import {
   SIDEBAR_WIDTH_DEFAULT,
@@ -39,6 +39,10 @@ import {
   FOLDER_TREE_EXPANSION_DEFAULT,
   normalizeFolderTreeExpansion,
 } from "../files/treeExpansion";
+import {
+  DEFAULT_EDIT_MODE,
+  normalizeEditMode,
+} from "../editor/editMode";
 import { isTauri } from "@tauri-apps/api/core";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
@@ -67,6 +71,7 @@ export const DEFAULT_PREFERENCES: AppPreferences = {
   sidebarCollapsed: false,
   syncScroll: true,
   defaultViewMode: "split",
+  defaultEditMode: DEFAULT_EDIT_MODE,
   restoreLastFolderOnStartup: true,
   folderTreeExpansion: FOLDER_TREE_EXPANSION_DEFAULT,
   editorFontSize: EDITOR_FONT_SIZE_DEFAULT,
@@ -87,6 +92,10 @@ const DEFAULT_VIEW_MODE: ViewMode = "split";
 
 function isViewMode(value: string): value is ViewMode {
   return value === "split" || value === "editor" || value === "preview";
+}
+
+function isEditMode(value: string): value is EditMode {
+  return value === "source" || value === "wysiwyg";
 }
 
 /** Migrate legacy preferences where `theme` stored color scheme. */
@@ -111,6 +120,7 @@ export function normalizePreferences(
     merged.folderTreeExpansion,
   );
   merged.aiStructure = normalizeAiStructurePreferences(merged.aiStructure);
+  merged.defaultEditMode = normalizeEditMode(merged.defaultEditMode);
 
   return merged;
 }
@@ -127,6 +137,7 @@ export function buildPreferencesFromState(
     sidebarCollapsed: state.sidebarCollapsed,
     syncScroll: state.syncScroll,
     defaultViewMode: state.defaultViewMode,
+    defaultEditMode: state.defaultEditMode,
     restoreLastFolderOnStartup: state.restoreLastFolderOnStartup,
     folderTreeExpansion: state.folderTreeExpansion,
     editorFontSize: state.editorFontSize,
@@ -153,6 +164,9 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
   const defaultViewMode: ViewMode = isViewMode(normalized.defaultViewMode)
     ? normalized.defaultViewMode
     : DEFAULT_VIEW_MODE;
+  const defaultEditMode: EditMode = isEditMode(normalized.defaultEditMode)
+    ? normalized.defaultEditMode
+    : DEFAULT_EDIT_MODE;
   const sidebarWidth = clampSidebarWidth(normalized.sidebarWidth);
   const editorFontSize = clampEditorFontSize(
     normalized.editorFontSize ?? EDITOR_FONT_SIZE_DEFAULT,
@@ -177,6 +191,7 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
     syncScroll: normalized.syncScroll,
     sidebarWidth,
     defaultViewMode,
+    defaultEditMode,
     restoreLastFolderOnStartup: normalized.restoreLastFolderOnStartup,
     folderTreeExpansion: normalizeFolderTreeExpansion(
       normalized.folderTreeExpansion,
@@ -197,7 +212,9 @@ export function applyPreferencesToStore(prefs: AppPreferences) {
     recentFolders: normalized.recentFolders,
     aiStructure: normalizeAiStructurePreferences(normalized.aiStructure),
     tabs: state.tabs.map((tab) =>
-      tab.path === null ? { ...tab, viewMode: defaultViewMode } : tab,
+      tab.path === null
+        ? { ...tab, viewMode: defaultViewMode, editMode: defaultEditMode }
+        : tab,
     ),
   }));
 
@@ -249,9 +266,14 @@ export function resetGeneralSettings(): void {
     sidebarCollapsed: DEFAULT_PREFERENCES.sidebarCollapsed,
     sidebarWidth: DEFAULT_PREFERENCES.sidebarWidth,
     defaultViewMode: DEFAULT_PREFERENCES.defaultViewMode as ViewMode,
+    defaultEditMode: DEFAULT_PREFERENCES.defaultEditMode as EditMode,
     tabs: state.tabs.map((tab) =>
       tab.path === null
-        ? { ...tab, viewMode: DEFAULT_PREFERENCES.defaultViewMode as ViewMode }
+        ? {
+            ...tab,
+            viewMode: DEFAULT_PREFERENCES.defaultViewMode as ViewMode,
+            editMode: DEFAULT_PREFERENCES.defaultEditMode as EditMode,
+          }
         : tab,
     ),
   }));

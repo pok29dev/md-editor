@@ -29,6 +29,7 @@ function isMod(e: KeyboardEvent) {
 
 export function useKeyboardShortcuts() {
   const setViewMode = useAppStore((s) => s.setViewMode);
+  const toggleEditMode = useAppStore((s) => s.toggleEditMode);
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
   const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
   const activeTabId = useAppStore((s) => s.activeTabId);
@@ -167,6 +168,21 @@ export function useKeyboardShortcuts() {
         }
         useAppStore.getState().setAppView("editor");
         setViewMode(mode);
+        return;
+      }
+
+      if (alt && key === "s" && !shift) {
+        const activeTab = useAppStore
+          .getState()
+          .tabs.find((t) => t.id === useAppStore.getState().activeTabId);
+        if (
+          activeTab &&
+          supportsPreview(activeTab.fileKind) &&
+          activeTab.viewMode === "editor"
+        ) {
+          e.preventDefault();
+          toggleEditMode();
+        }
       }
     };
 
@@ -175,6 +191,7 @@ export function useKeyboardShortcuts() {
   }, [
     activeTabId,
     setViewMode,
+    toggleEditMode,
     toggleSidebar,
     setFindReplaceOpen,
     setLinkDialogOpen,
