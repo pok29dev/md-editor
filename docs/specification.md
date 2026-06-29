@@ -1,8 +1,8 @@
 # MD Editor — Product Specification
 
-**Version:** `26.6.1901`  
-**Last updated:** 2026-06-19  
-**Status:** MVP Complete + JSON/YAML support
+**Version:** `26.6.2901`  
+**Last updated:** 2026-06-29  
+**Status:** MVP Complete + JSON/YAML + WYSIWYG (Tiptap)
 
 ---
 
@@ -28,7 +28,9 @@
 ### 1.4 ขอบเขต MVP (Basic)
 
 รวมเฉพาะ feature ที่จำเป็นสำหรับการใช้งานประจำวัน  
-**ไม่รวม** ใน MVP: GitHub import, Share via URL, mobile layout, i18n หลายภาษา, emoji picker, WYSIWYG/rich-text editing
+**ไม่รวม** ใน MVP: GitHub import, Share via URL, mobile layout, i18n หลายภาษา, emoji picker
+
+> **WYSIWYG:** โหมดแก้ไขแบบ visual ด้วย **Tiptap** (Source ↔ WYSIWYG, `⌘⌥S`) — ดู [wysiwyg-plan.md](./wysiwyg-plan.md)
 
 ---
 
@@ -67,7 +69,7 @@
 | Math | **MathJax 3** | LaTeX inline/block |
 | Diagrams | **Mermaid** | Flowchart, sequence, etc. |
 | YAML frontmatter | **js-yaml** | Parse metadata block |
-| Code editor | **CodeMirror 6** หรือ **Monaco Editor** | Line numbers, find/replace |
+| Code editor | **CodeMirror 6** (Source) + **Tiptap 3** (WYSIWYG) | Markdown editing |
 
 ### 3.3 หลักการออกแบบ
 
@@ -152,6 +154,12 @@
 | E-10 | Format JSON/YAML (`Cmd/Ctrl+Shift+F`) | Should |
 | E-11 | Save guard เมื่อ JSON/YAML syntax invalid | Should |
 | E-12 | Syntax color themes สำหรับ JSON/YAML (GitHub / Custom / Minimal) | Should |
+| E-13 | โหมด WYSIWYG สำหรับ Markdown (Tiptap) | Must |
+| E-14 | สลับ Source ↔ WYSIWYG (`⌘⌥S`) โดย sync เนื้อหา | Must |
+| E-15 | Find & Replace ใน Source และ WYSIWYG | Must |
+| E-16 | Default edit mode ใน Settings (Source / WYSIWYG) | Should |
+| E-17 | Preserved widgets สำหรับ mermaid/math/alerts ใน WYSIWYG | Should |
+| E-18 | Unsaved changes — in-app dialog Save / Don't Save / Cancel | Must |
 
 ### 5.3 Markdown Preview (ครบถ้วนตาม GFM)
 
@@ -186,6 +194,15 @@
 | Split | Editor + Preview คู่กัน (default) | Must |
 | Editor Only | ซ่อน preview | Must |
 | Preview Only | ซ่อน editor | Must |
+
+**Edit modes (Markdown, Editor layout only):**
+
+| Mode | คำอธิบาย |
+|------|----------|
+| Source | CodeMirror — raw Markdown |
+| WYSIWYG | Tiptap — visual editing; บันทึกเป็น `.md` |
+
+สลับด้วย `⌘⌥S` หรือ title bar. JSON/YAML ใช้ Source เท่านั้น.
 
 ### 5.5 Live Preview Behavior
 
@@ -296,6 +313,7 @@ interface EditorTab {
   content: string;
   isDirty: boolean;
   viewMode: 'split' | 'editor' | 'preview';
+  editMode: 'source' | 'wysiwyg';  // Markdown only; JSON/YAML always source
 }
 
 interface AppPreferences {
@@ -320,7 +338,7 @@ interface AppPreferences {
 | Share via URL | เฉพาะ web app |
 | PDF export (advanced) | Basic PDF export มีแล้ว; advanced layout ยังไม่ครบ |
 | Git integration | เกินขอบเขต basic |
-| WYSIWYG / rich-text toolbar | MVP ใช้ Markdown syntax insertion |
+| Rich-text toolbar (แทน Markdown syntax) | MVP ใช้ Markdown syntax + WYSIWYG สำหรับ GFM พื้นฐาน |
 | Multi-language UI | MVP ภาษาอังกฤษ/ไทย UI เดียว |
 | Plugin system | Phase 2 |
 | Collaborative editing | Phase 2 |

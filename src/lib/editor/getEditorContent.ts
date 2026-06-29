@@ -1,12 +1,24 @@
 import { useAppStore } from "../../stores/appStore";
 import { useEditorStore } from "../../stores/editorStore";
 import type { EditorTab } from "../../stores/appStore";
+import { shouldUseWysiwyg } from "./editMode";
+import { getTabTiptapMarkdown } from "./tiptapTabCache";
 
-/** Prefer live CodeMirror document over store (source of truth while editing). */
+/** Prefer live editor buffer over store (source of truth while editing). */
 export function getActiveTabForSave(): EditorTab | null {
   const { tabs, activeTabId } = useAppStore.getState();
   const tab = tabs.find((t) => t.id === activeTabId);
   if (!tab) return null;
+
+  if (
+    activeTabId &&
+    shouldUseWysiwyg(tab.viewMode, tab.editMode, tab.fileKind)
+  ) {
+    const wysiwygContent = getTabTiptapMarkdown(activeTabId);
+    if (wysiwygContent !== undefined) {
+      return { ...tab, content: wysiwygContent };
+    }
+  }
 
   const editorContent = useEditorStore.getState().view?.state.doc.toString();
   if (editorContent === undefined) return tab;

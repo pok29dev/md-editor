@@ -18,6 +18,14 @@ import {
 import { useAppStore } from "../../stores/appStore";
 import { getFormatIcons } from "../../lib/theme/icons";
 import { getTabEditorView } from "../../lib/editor/tabEditorCache";
+import { getTabTiptapEditor } from "../../lib/editor/tiptapTabCache";
+import { shouldUseWysiwyg } from "../../lib/editor/editMode";
+import { useActiveEditMode } from "../../hooks/useActiveEditMode";
+import { useActiveViewMode } from "../../hooks/useActiveViewMode";
+import {
+  runTiptapRedo,
+  runTiptapUndo,
+} from "../../lib/editor/tiptapFormatActions";
 import "../../styles/editor-toolbar.css";
 
 const HEADING_OPTIONS: { value: HeadingLevelValue; label: string }[] = [
@@ -42,6 +50,8 @@ type SpecialActionId =
   | "toggleDirection"
   | "fullscreen"
   | "findReplace"
+  | "focusMode"
+  | "typewriterMode"
   | "help"
   | "about";
 
@@ -87,8 +97,20 @@ export function EditorToolbar() {
   const { headingLevel, activeInline, activeList, canUndo, canRedo } =
     useEditorToolbarState();
   const editorTextDirection = useEditorStore((s) => s.editorTextDirection);
+  const editorFocusMode = useEditorStore((s) => s.editorFocusMode);
+  const editorTypewriterMode = useEditorStore((s) => s.editorTypewriterMode);
   const toggleEditorTextDirection = useEditorStore((s) => s.toggleEditorTextDirection);
+  const toggleEditorFocusMode = useEditorStore((s) => s.toggleEditorFocusMode);
+  const toggleEditorTypewriterMode = useEditorStore(
+    (s) => s.toggleEditorTypewriterMode,
+  );
   const setFindReplaceOpen = useEditorStore((s) => s.setFindReplaceOpen);
+  const activeFileKind = useAppStore(
+    (s) => s.tabs.find((tab) => tab.id === s.activeTabId)?.fileKind ?? "markdown",
+  );
+  const viewMode = useActiveViewMode();
+  const editMode = useActiveEditMode();
+  const isWysiwyg = shouldUseWysiwyg(viewMode, editMode, activeFileKind);
 
   const historyButtons: ToolbarButton[] = [
     { id: "undo", title: "Undo (⌘Z)", Icon: icons.UndoIcon },
@@ -142,6 +164,16 @@ export function EditorToolbar() {
   ];
 
   const utilityButtons: ToolbarButton[] = [
+    ...(isWysiwyg
+      ? [
+          { id: "focusMode" as const, title: "Focus mode", label: "Focus" },
+          {
+            id: "typewriterMode" as const,
+            title: "Typewriter mode",
+            label: "TW",
+          },
+        ]
+      : []),
     { id: "fullscreen", title: "Fullscreen", Icon: icons.FullscreenIcon },
     { id: "findReplace", title: "Find & Replace (⌘F)", Icon: icons.FindIcon },
     { id: "help", title: "Help", Icon: icons.HelpIcon },
@@ -157,11 +189,25 @@ export function EditorToolbar() {
 
     switch (id) {
       case "undo": {
+        const activeTabId = useAppStore.getState().activeTabId;
+        const tiptap =
+          activeTabId ? getTabTiptapEditor(activeTabId) : undefined;
+        if (tiptap) {
+          runTiptapUndo(tiptap);
+          return;
+        }
         const view = resolveEditorView();
         if (view) runEditorUndo(view);
         return;
       }
       case "redo": {
+        const activeTabId = useAppStore.getState().activeTabId;
+        const tiptap =
+          activeTabId ? getTabTiptapEditor(activeTabId) : undefined;
+        if (tiptap) {
+          runTiptapRedo(tiptap);
+          return;
+        }
         const view = resolveEditorView();
         if (view) runEditorRedo(view);
         return;
@@ -193,6 +239,12 @@ export function EditorToolbar() {
       case "findReplace":
         setFindReplaceOpen(true);
         return;
+      case "focusMode":
+        toggleEditorFocusMode();
+        return;
+      case "typewriterMode":
+        toggleEditorTypewriterMode();
+        return;
       case "help":
         openHelpDialog();
         return;
@@ -207,6 +259,8 @@ export function EditorToolbar() {
   const isActive = (id: ToolbarActionId): boolean => {
     if (id === "blockquote") return activeList.blockquote;
     if (id === "toggleDirection") return editorTextDirection === "rtl";
+    if (id === "focusMode") return editorFocusMode;
+    if (id === "typewriterMode") return editorTypewriterMode;
     if (id in activeList) return activeList[id as keyof typeof activeList] ?? false;
     if (id in activeInline) return activeInline[id as keyof typeof activeInline] ?? false;
     return false;
@@ -216,6 +270,7 @@ export function EditorToolbar() {
     if (!hasEditor) return true;
     if (id === "undo") return !canUndo;
     if (id === "redo") return !canRedo;
+    if ((id === "focusMode" || id === "typewriterMode") && !isWysiwyg) return true;
     return false;
   };
 

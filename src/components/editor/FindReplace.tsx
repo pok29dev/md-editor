@@ -8,53 +8,82 @@ import {
   setSearchQuery,
 } from "@codemirror/search";
 import { useEditorStore } from "../../stores/editorStore";
+import { useFindReplaceEditor } from "../../hooks/useFindReplaceEditor";
+import {
+  findNextTextMatch,
+  findPreviousTextMatch,
+  findTextMatches,
+  getCurrentMatchIndex,
+  replaceAllTextMatches,
+  replaceSelectedMatch,
+  selectTextMatch,
+} from "../../lib/editor/tiptap/findReplace";
 
 export function FindReplace() {
   const open = useEditorStore((s) => s.findReplaceOpen);
   const setOpen = useEditorStore((s) => s.setFindReplaceOpen);
-  const view = useEditorStore((s) => s.view);
+  const { kind, tiptap, codemirror } = useFindReplaceEditor();
   const findRef = useRef<HTMLInputElement>(null);
 
   const [findText, setFindText] = useState("");
   const [replaceText, setReplaceText] = useState("");
   const [matchInfo, setMatchInfo] = useState("");
 
-  const applyQuery = () => {
-    if (!view) return null;
+  const updateMatchInfo = () => {
+    if (!findText) {
+      setMatchInfo("");
+      return;
+    }
+
+    if (kind === "codemirror" && codemirror) {
+      const cursor = codemirror.state.selection.main.head;
+      const text = codemirror.state.doc.toString();
+      const re = new RegExp(
+        findText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+        "gi",
+      );
+      const matches: number[] = [];
+      let match: RegExpExecArray | null;
+      while ((match = re.exec(text)) !== null) {
+        matches.push(match.index);
+      }
+      if (matches.length === 0) {
+        setMatchInfo("No matches");
+        return;
+      }
+      setMatchInfo(
+        `${getCurrentMatchIndex(
+          matches.map((from) => ({ from, to: from })),
+          cursor,
+        )} of ${matches.length}`,
+      );
+      return;
+    }
+
+    if (kind === "tiptap" && tiptap) {
+      const matches = findTextMatches(tiptap, findText);
+      if (matches.length === 0) {
+        setMatchInfo("No matches");
+        return;
+      }
+      setMatchInfo(
+        `${getCurrentMatchIndex(matches, tiptap.state.selection.from)} of ${matches.length}`,
+      );
+      return;
+    }
+
+    setMatchInfo("No editor");
+  };
+
+  const applyCodemirrorQuery = () => {
+    if (!codemirror) return null;
     const query = new SearchQuery({
       search: findText,
       replace: replaceText,
       caseSensitive: false,
     });
-    view.dispatch({ effects: setSearchQuery.of(query) });
+    codemirror.dispatch({ effects: setSearchQuery.of(query) });
     return query;
-  };
-
-  const updateMatchInfo = () => {
-    if (!view || !findText) {
-      setMatchInfo("");
-      return;
-    }
-    const cursor = view.state.selection.main.head;
-    const matches = [];
-    const q = applyQuery();
-    if (!q) return;
-    const text = view.state.doc.toString();
-    const re = new RegExp(
-      findText.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-      "gi",
-    );
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(text)) !== null) {
-      matches.push(m.index);
-    }
-    if (matches.length === 0) {
-      setMatchInfo("No matches");
-      return;
-    }
-    const currentIdx = matches.findIndex((pos) => pos >= cursor);
-    const idx = currentIdx === -1 ? matches.length : currentIdx + 1;
-    setMatchInfo(`${idx} of ${matches.length}`);
   };
 
   useEffect(() => {
@@ -66,37 +95,80 @@ export function FindReplace() {
 
   useEffect(() => {
     updateMatchInfo();
-  }, [findText, view]);
+  }, [findText, kind, tiptap, codemirror]);
 
   if (!open) return null;
 
   const handleFindNext = () => {
-    if (!view) return;
-    applyQuery();
-    findNext(view);
-    updateMatchInfo();
+    if (kind === "codemirror" && codemirror) {
+      applyCodemirrorQuery();
+      findNext(codemirror);
+      updateMatchInfo();
+      return;
+    }
+
+    if (kind === "tiptap" && tiptap) {
+      const match = findNextTextMatch(tiptap, findText);
+      if (match) selectTextMatch(tiptap, match);
+      updateMatchInfo();
+    }
   };
 
   const handleFindPrev = () => {
-    if (!view) return;
-    applyQuery();
-    findPrevious(view);
-    updateMatchInfo();
+    if (kind === "codemirror" && codemirror) {
+      applyCodemirrorQuery();
+      findPrevious(codemirror);
+      updateMatchInfo();
+      return;
+    }
+
+    if (kind === "tiptap" && tiptap) {
+      const match = findPreviousTextMatch(tiptap, findText);
+      if (match) selectTextMatch(tiptap, match);
+      updateMatchInfo();
+    }
   };
 
   const handleReplace = () => {
-    if (!view) return;
-    applyQuery();
-    replaceNext(view);
-    updateMatchInfo();
+    if (kind === "codemirror" && codemirror) {
+      applyCodemirrorQuery();
+      replaceNext(codemirror);
+      updateMatchInfo();
+      return;
+    }
+
+    if (kind === "tiptap" && tiptap) {
+      if (!replaceSelectedMatch(tiptap, replaceText)) {
+        const match = findNextTextMatch(tiptap, findText);
+        if (match) {
+          selectTextMatch(tiptap, match);
+          replaceSelectedMatch(tiptap, replaceText);
+        }
+      }
+      updateMatchInfo();
+    }
   };
 
   const handleReplaceAll = () => {
-    if (!view) return;
-    applyQuery();
-    replaceAll(view);
-    updateMatchInfo();
+    if (kind === "codemirror" && codemirror) {
+      applyCodemirrorQuery();
+      replaceAll(codemirror);
+      updateMatchInfo();
+      return;
+    }
+
+    if (kind === "tiptap" && tiptap) {
+      replaceAllTextMatches(tiptap, findText, replaceText);
+      updateMatchInfo();
+    }
   };
+
+  const editorHint =
+    kind === "tiptap"
+      ? "WYSIWYG"
+      : kind === "codemirror"
+        ? "Source"
+        : "No active editor";
 
   return (
     <div className="app-dialog-overlay" onClick={() => setOpen(false)}>
@@ -117,6 +189,8 @@ export function FindReplace() {
             ×
           </button>
         </div>
+
+        <div className="app-dialog-meta">{editorHint}</div>
 
         <label className="app-dialog-field">
           <span>Find</span>
@@ -145,19 +219,35 @@ export function FindReplace() {
         <div className="app-dialog-meta">{matchInfo}</div>
 
         <div className="app-dialog-actions">
-          <button type="button" className="app-dialog-btn" onClick={handleFindPrev}>
+          <button
+            type="button"
+            className="app-dialog-btn"
+            onClick={handleFindPrev}
+            disabled={kind === "none"}
+          >
             ↑ Prev
           </button>
-          <button type="button" className="app-dialog-btn" onClick={handleFindNext}>
+          <button
+            type="button"
+            className="app-dialog-btn"
+            onClick={handleFindNext}
+            disabled={kind === "none"}
+          >
             ↓ Next
           </button>
-          <button type="button" className="app-dialog-btn" onClick={handleReplace}>
+          <button
+            type="button"
+            className="app-dialog-btn"
+            onClick={handleReplace}
+            disabled={kind === "none"}
+          >
             Replace
           </button>
           <button
             type="button"
             className="app-dialog-btn app-dialog-btn--primary"
             onClick={handleReplaceAll}
+            disabled={kind === "none"}
           >
             Replace All
           </button>

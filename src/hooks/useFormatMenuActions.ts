@@ -1,6 +1,11 @@
 import type { FormatActionId, FormatContext } from "../lib/editor/formatActions";
 import { runEditorRedo, runEditorUndo } from "../lib/editor/editorHistory";
 import { getTabEditorView } from "../lib/editor/tabEditorCache";
+import { getTabTiptapEditor } from "../lib/editor/tiptapTabCache";
+import {
+  runTiptapRedo,
+  runTiptapUndo,
+} from "../lib/editor/tiptapFormatActions";
 import {
   openAboutDialog,
   openClearDocumentDialog,
@@ -15,6 +20,8 @@ import { useAppStore, type AppView, type ViewMode } from "../stores/appStore";
 import { pickOpenImage } from "../lib/tauri/commands";
 import { applyNormalizeMarkdown } from "../lib/editor/normalizeActions";
 import { normalizeMarkdown } from "../lib/markdown/normalize/normalizeMarkdown";
+import { flushActiveEditorContent } from "../lib/editor/flushEditorContent";
+import { shouldUseWysiwyg } from "../lib/editor/editMode";
 import { syncTabEditorContent } from "../lib/editor/tabEditorCache";
 import { runFormatAction } from "./useMarkdownFormat";
 import { runAiStructureFromMenu } from "./useAiStructure";
@@ -35,22 +42,34 @@ export function runFormatFromMenu(
 }
 
 export function runNormalizeMarkdown(): boolean {
-  const view = resolveEditorView();
-  if (view) {
-    return applyNormalizeMarkdown(view);
-  }
-
   const activeTabId = useAppStore.getState().activeTabId;
   if (!activeTabId) return false;
 
   const tab = useAppStore.getState().tabs.find((t) => t.id === activeTabId);
   if (!tab || tab.fileKind !== "markdown") return false;
 
-  const normalized = normalizeMarkdown(tab.content);
-  if (normalized === tab.content) return true;
+  if (
+    !shouldUseWysiwyg(tab.viewMode, tab.editMode, tab.fileKind)
+  ) {
+    const view = resolveEditorView();
+    if (view) {
+      return applyNormalizeMarkdown(view);
+    }
+  }
+
+  flushActiveEditorContent();
+  const latest = useAppStore.getState().tabs.find((t) => t.id === activeTabId);
+  if (!latest) return false;
+
+  const normalized = normalizeMarkdown(latest.content);
+  if (normalized === latest.content) return true;
 
   useAppStore.getState().updateTabContent(activeTabId, normalized);
-  syncTabEditorContent(activeTabId, normalized);
+
+  if (!shouldUseWysiwyg(latest.viewMode, latest.editMode, latest.fileKind)) {
+    syncTabEditorContent(activeTabId, normalized);
+  }
+
   return true;
 }
 
@@ -69,11 +88,23 @@ export async function insertImageFromMenu(): Promise<void> {
 }
 
 export function runUndoFromMenu(): void {
+  const activeTabId = useAppStore.getState().activeTabId;
+  const tiptap = activeTabId ? getTabTiptapEditor(activeTabId) : undefined;
+  if (tiptap) {
+    runTiptapUndo(tiptap);
+    return;
+  }
   const view = resolveEditorView();
   if (view) runEditorUndo(view);
 }
 
 export function runRedoFromMenu(): void {
+  const activeTabId = useAppStore.getState().activeTabId;
+  const tiptap = activeTabId ? getTabTiptapEditor(activeTabId) : undefined;
+  if (tiptap) {
+    runTiptapRedo(tiptap);
+    return;
+  }
   const view = resolveEditorView();
   if (view) runEditorRedo(view);
 }

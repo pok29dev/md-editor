@@ -55,10 +55,17 @@ import {
   type AiStructurePreferences,
 } from "../lib/aiStructure/settings";
 import type { AppView } from "../lib/appView";
+import {
+  DEFAULT_EDIT_MODE,
+  normalizeEditMode,
+  type EditMode,
+} from "../lib/editor/editMode";
+import { flushActiveEditorContent } from "../lib/editor/flushEditorContent";
 
 export type SettingsTabId = "general" | "editor" | "files" | "export" | "ai";
 
 export type ViewMode = "split" | "editor" | "preview";
+export type { EditMode };
 export type { AppView };
 export type { AppTheme, ColorScheme, ResolvedColorScheme };
 export type { ExportPdfPageSize, ExportPdfTheme } from "../lib/markdown/exportSettings";
@@ -72,6 +79,7 @@ export interface EditorTab {
   content: string;
   isDirty: boolean;
   viewMode: ViewMode;
+  editMode: EditMode;
   fileKind: FileKind;
 }
 
@@ -83,6 +91,7 @@ interface AppState {
   sidebarWidth: number;
   syncScroll: boolean;
   defaultViewMode: ViewMode;
+  defaultEditMode: EditMode;
   restoreLastFolderOnStartup: boolean;
   folderTreeExpansion: FolderTreeExpansion;
   editorFontSize: number;
@@ -116,6 +125,9 @@ interface AppState {
   setSidebarWidth: (width: number) => void;
   setSyncScroll: (enabled: boolean) => void;
   setDefaultViewMode: (mode: ViewMode) => void;
+  setDefaultEditMode: (mode: EditMode) => void;
+  setEditMode: (mode: EditMode) => void;
+  toggleEditMode: () => void;
   setRestoreLastFolderOnStartup: (enabled: boolean) => void;
   setFolderTreeExpansion: (mode: FolderTreeExpansion) => void;
   setEditorFontSize: (size: number) => void;
@@ -168,9 +180,21 @@ interface AppState {
 
 let tabCounter = 0;
 
+const WELCOME_TAB_SNIPPET = "Open a folder to get started.";
+
+function isDisposableWelcomeTab(tab: EditorTab): boolean {
+  return (
+    tab.path === null &&
+    !tab.isDirty &&
+    tab.title === "Welcome" &&
+    tab.content.includes(WELCOME_TAB_SNIPPET)
+  );
+}
+
 function createTab(
   partial?: Partial<EditorTab>,
   defaultViewMode: ViewMode = "split",
+  defaultEditMode: EditMode = DEFAULT_EDIT_MODE,
 ): EditorTab {
   tabCounter += 1;
   const fileKind =
@@ -179,6 +203,9 @@ function createTab(
   const viewMode =
     partial?.viewMode ??
     (supportsPreview(fileKind) ? defaultViewMode : "editor");
+  const editMode =
+    partial?.editMode ??
+    (supportsPreview(fileKind) ? defaultEditMode : "source");
   return {
     id: `tab-${tabCounter}`,
     path: null,
@@ -186,6 +213,7 @@ function createTab(
     content: "",
     isDirty: false,
     viewMode,
+    editMode,
     fileKind,
     ...partial,
   };
@@ -199,6 +227,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   sidebarWidth: 240,
   syncScroll: true,
   defaultViewMode: "split",
+  defaultEditMode: DEFAULT_EDIT_MODE,
   restoreLastFolderOnStartup: true,
   folderTreeExpansion: FOLDER_TREE_EXPANSION_DEFAULT,
   editorFontSize: EDITOR_FONT_SIZE_DEFAULT,
@@ -248,6 +277,43 @@ export const useAppStore = create<AppState>((set, get) => ({
         t.path === null ? { ...t, viewMode: defaultViewMode } : t,
       ),
     })),
+  setDefaultEditMode: (defaultEditMode) =>
+    set((s) => ({
+      defaultEditMode: normalizeEditMode(defaultEditMode),
+      tabs: s.tabs.map((t) =>
+        t.path === null ? { ...t, editMode: normalizeEditMode(defaultEditMode) } : t,
+      ),
+    })),
+  setEditMode: (editMode) => {
+    const { activeTabId, tabs } = get();
+    if (!activeTabId) return;
+    const active = tabs.find((t) => t.id === activeTabId);
+    if (!active || !supportsPreview(active.fileKind)) return;
+    if (active.viewMode !== "editor") return;
+    if (active.editMode === editMode) return;
+
+    flushActiveEditorContent();
+    set({
+      tabs: tabs.map((t) =>
+        t.id === activeTabId ? { ...t, editMode: normalizeEditMode(editMode) } : t,
+      ),
+    });
+  },
+  toggleEditMode: () => {
+    const { activeTabId, tabs } = get();
+    if (!activeTabId) return;
+    const active = tabs.find((t) => t.id === activeTabId);
+    if (!active || !supportsPreview(active.fileKind)) return;
+    if (active.viewMode !== "editor") return;
+
+    flushActiveEditorContent();
+    const nextEditMode = active.editMode === "wysiwyg" ? "source" : "wysiwyg";
+    set({
+      tabs: tabs.map((t) =>
+        t.id === activeTabId ? { ...t, editMode: nextEditMode } : t,
+      ),
+    });
+  },
   setRestoreLastFolderOnStartup: (restoreLastFolderOnStartup) =>
     set({ restoreLastFolderOnStartup }),
   setFolderTreeExpansion: (folderTreeExpansion) =>
@@ -319,6 +385,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (active && !supportsPreview(active.fileKind) && viewMode !== "editor") {
       return;
     }
+    flushActiveEditorContent();
     set({
       tabs: tabs.map((t) =>
         t.id === activeTabId ? { ...t, viewMode } : t,
@@ -358,7 +425,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     get().tabs.find((t) => pathsEqual(t.path, path)),
 
   addTab: (partial) => {
-    const tab = createTab(partial, get().defaultViewMode);
+    const tab = createTab(partial, get().defaultViewMode, get().defaultEditMode);
     set((s) => ({
       tabs: [...s.tabs, tab],
       activeTabId: tab.id,
@@ -385,6 +452,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         content: "# Welcome to MD Editor\n\nOpen a folder to get started.",
       },
       get().defaultViewMode,
+      get().defaultEditMode,
     );
     set({ tabs: [tab], activeTabId: tab.id });
   },
@@ -395,7 +463,13 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ tabs: [kept], activeTabId: keepId });
   },
 
-  setActiveTab: (id) => set({ activeTabId: id }),
+  setActiveTab: (id) => {
+    const { activeTabId } = get();
+    if (activeTabId && activeTabId !== id) {
+      flushActiveEditorContent();
+    }
+    set({ activeTabId: id });
+  },
 
   updateTabContent: (id, content) =>
     set((s) => ({
@@ -405,11 +479,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     })),
 
   openFileInTab: ({ path, title, content, fileKind }) => {
-    const existing = get().findTabByPath(path);
+    const state = get();
+    const existing = state.findTabByPath(path);
     if (existing) {
-      set({ activeTabId: existing.id });
+      if (state.activeTabId !== existing.id) {
+        flushActiveEditorContent();
+      }
+      set({ activeTabId: existing.id, appView: "editor" });
       return;
     }
+
+    flushActiveEditorContent();
 
     const kind = fileKind ?? detectFileKind(path);
     const tab = createTab(
@@ -420,14 +500,18 @@ export const useAppStore = create<AppState>((set, get) => ({
         isDirty: false,
         fileKind: kind,
         viewMode: supportsPreview(kind) ? get().defaultViewMode : "editor",
+        editMode: supportsPreview(kind) ? get().defaultEditMode : "source",
       },
       get().defaultViewMode,
+      get().defaultEditMode,
     );
-    set((s) => ({
-      tabs: [...s.tabs.filter((t) => t.path !== null), tab],
+    const replaceWelcomeOnly =
+      state.tabs.length === 1 && isDisposableWelcomeTab(state.tabs[0]);
+    set({
+      tabs: replaceWelcomeOnly ? [tab] : [...state.tabs, tab],
       activeTabId: tab.id,
       appView: "editor",
-    }));
+    });
   },
 
   markTabSaved: (id) =>

@@ -1,0 +1,69 @@
+.tiptap-bubble-menu {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle, #d0d7de);
+  background: var(--bg-elevated, #fff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.tiptap-bubble-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.tiptap-bubble-btn:hover {
+  background: var(--bg-muted, rgba(127, 127, 127, 0.12));
+}
+
+.tiptap-bubble-btn--active {
+  background: var(--accent-muted, rgba(9, 105, 218, 0.12));
+  color: var(--link-color, #0969da);
+}
+
+.tiptap-bubble-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tiptap-frontmatter-banner {
+  padding: 8px 32px;
+  border-bottom: 1px solid var(--border-subtle, #d0d7de);
+  background: var(--bg-muted, rgba(127, 127, 127, 0.08));
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.tiptap-frontmatter-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tiptap-frontmatter-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.tiptap-frontmatter-summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tiptap-frontmatter-hint {
+  opacity: 0.8;
+  font-size: 11px;
+}

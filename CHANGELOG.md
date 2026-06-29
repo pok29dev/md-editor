@@ -1,6 +1,30 @@
 # Changelog
 
-รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.2001` = 2026-06-20 build 1) · tag `v.26.6.2001`
+รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.2901` = 2026-06-29 build 1) · tag `v.26.6.2901`
+
+## [26.6.2901] — 2026-06-29
+
+### Added
+
+- **WYSIWYG mode (Tiptap)** — แก้ Markdown แบบ visual ในโหมด Editor; สลับ Source ↔ WYSIWYG ด้วย `⌘⌥S` หรือ title bar
+- **Tiptap markdown parity** — table, task list, highlight (`==text==`), sup/sub (`^` / `~`), frontmatter banner
+- **Preserved blocks** — mermaid, math `$$`, GitHub alerts, footnotes, definition list แสดงเป็น widget (แก้ใน Source ได้)
+- **Slash commands** — `/` แทรก heading, list, table, code block ฯลฯ
+- **Paste / drop image** — บันทึกรูปใต้ `assets/` ใน workspace แล้วแทรก markdown image
+- **Focus / typewriter mode** — toolbar toggles สำหรับ WYSIWYG
+- **Find & Replace ใน WYSIWYG** — `⌘F` ใช้ ProseMirror search ในโหมด visual; Source ยังใช้ CodeMirror
+- **Settings → Default edit mode** — Source หรือ WYSIWYG สำหรับแท็บ Markdown ใหม่
+- **Round-trip tests** — `npm run test:wysiwyg` (vitest) กับ `examples/sample-docs/`
+
+### Changed
+
+- **Unsaved changes dialog** — in-app modal (Save / Quit Without Saving / Cancel) แทน native Tauri 3-button dialog บน macOS
+- **เปิดไฟล์จาก sidebar** — ไม่ลบแท็บ untitled / ที่กำลังแก้ (ยกเว้น Welcome เปล่าเพียงแท็บเดียว)
+
+### Fixed
+
+- **Quit Cancel** — กด Cancel ใน unsaved prompt ปิด dialog และกลับมาใช้งานแอปได้
+- **Close tab unsaved** — รองรับ Save ก่อนปิดแท็บ (Close All / Close Others รวม)
 
 ## [26.6.2001] — 2026-06-20
 

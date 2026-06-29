@@ -34,14 +34,15 @@ md-editor/
 │   ├── version.ts                # APP_VERSION
 │   ├── components/
 │   │   ├── layout/               # Shell, sidebar, tabs, panes
-│   │   ├── editor/               # MarkdownEditor, FindReplace
+│   │   ├── editor/               # MarkdownEditor, TiptapEditor, FindReplace, dialogs
+│   │   ├── dialogs/              # UnsavedChangesDialog
 │   │   ├── preview/              # MarkdownPreview
 │   │   └── icons/                # SVG icons
 │   ├── hooks/                    # Business logic hooks
 │   ├── stores/                   # Zustand (appStore, editorStore)
 │   ├── lib/
 │   │   ├── markdown/             # Preview engine
-│   │   ├── editor/               # CodeMirror config, syntax colors
+│   │   ├── editor/               # CodeMirror config, Tiptap, syntax colors
 │   │   ├── files/                # fileKind, validation, save guard
 │   │   ├── tauri/                # IPC wrappers
 │   │   ├── dialogs/              # Unsaved changes
@@ -101,7 +102,7 @@ Cmd+S → confirmSaveDespiteInvalidSyntax() → write_file
 ### แก้ไขและ Preview
 
 ```
-CodeMirror onChange
+CodeMirror onChange (Source mode)
      → appStore.updateTabContent(tabId, content)
      → usePreview(content) [debounce 100–240ms]
      → renderMarkdown() หรือ Web Worker
@@ -110,10 +111,30 @@ CodeMirror onChange
      → renderMermaid(), renderMathJax() [async]
 ```
 
+### WYSIWYG (Tiptap)
+
+```
+TiptapEditor onUpdate
+     → getTiptapMarkdown(editor) [tiptap-markdown + finalizeTiptapMarkdown]
+     → appStore.updateTabContent(tabId, content)
+
+เปิดแท็บ / สลับ Source ↔ WYSIWYG
+     → prepareTiptapBody(body) [preserved blocks + highlight/sup/sub HTML]
+     → editor.setContent() หรือสร้าง instance ใหม่ต่อ tab
+
+บันทึก (Cmd+S)
+     → flushActiveTabFromEditor() — อ่านจาก CodeMirror หรือ Tiptap ตาม editMode
+     → invoke("write_file", path, content)
+
+Find & Replace (⌘F)
+     → Source: CodeMirror @codemirror/search
+     → WYSIWYG: lib/editor/tiptap/findReplace.ts บน ProseMirror doc
+```
+
 ### บันทึกไฟล์
 
 ```
-Cmd+S → syncActiveTabContentFromEditor() [อ่านจาก CodeMirror โดยตรง]
+Cmd+S → flushActiveTabFromEditor() [CodeMirror หรือ Tiptap ตาม editMode]
       → invoke("write_file", path, content) [Rust atomic write]
       → appStore.markTabSaved()
 ```
@@ -135,6 +156,7 @@ TypeScript types อยู่ที่ `src/types/files.ts` ต้อง sync �
 |--------|-------|--------|
 | Tab content, dirty flag | `appStore` | Single source of truth สำหรับ UI |
 | CodeMirror view instance | `editorStore` | จำเป็นเพื่อ Find, sync scroll, save sync |
+| Tiptap editor instance | `tiptapTabCache` | WYSIWYG per-tab cache + find/replace target |
 | File tree structure | `appStore` | มาจาก Rust scan |
 | Preferences | Rust JSON + `usePersistPreferences` | Persist ข้าม session |
 | Preview HTML | `usePreview` (local ref + DOM) | ไม่เก็บใน global store — imperative DOM |

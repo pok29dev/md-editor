@@ -1,0 +1,43 @@
+.tiptap-slash-menu {
+  position: absolute;
+  z-index: 30;
+  min-width: 220px;
+  max-width: 320px;
+  max-height: 280px;
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--border-subtle, #d0d7de);
+  border-radius: 8px;
+  background: var(--bg-secondary, #fff);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.tiptap-slash-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.tiptap-slash-item.is-selected,
+.tiptap-slash-item:hover {
+  background: var(--bg-muted, rgba(127, 127, 127, 0.12));
+}
+
+.tiptap-slash-item__label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tiptap-slash-item__hint {
+  font-size: 11px;
+  color: var(--text-muted);
+}

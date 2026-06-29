@@ -1,10 +1,18 @@
 import { create } from "zustand";
 import type { EditorView } from "@codemirror/view";
+import type { Editor } from "@tiptap/core";
 
 export type EditorTextDirection = "ltr" | "rtl";
 
+export interface UnsavedChangesDialogState {
+  open: boolean;
+  message: string;
+  discardLabel: string;
+}
+
 interface EditorState {
   view: EditorView | null;
+  tiptapEditor: Editor | null;
   previewScrollEl: HTMLElement | null;
   findReplaceOpen: boolean;
   linkDialogOpen: boolean;
@@ -19,7 +27,11 @@ interface EditorState {
   aiStructureAfter: string;
   aiStructureRange: { from: number; to: number } | null;
   editorTextDirection: EditorTextDirection;
+  editorFocusMode: boolean;
+  editorTypewriterMode: boolean;
+  unsavedChangesDialog: UnsavedChangesDialogState;
   setView: (view: EditorView | null) => void;
+  setTiptapEditor: (editor: Editor | null) => void;
   setPreviewScrollEl: (el: HTMLElement | null) => void;
   setFindReplaceOpen: (open: boolean) => void;
   setLinkDialogOpen: (open: boolean) => void;
@@ -40,10 +52,14 @@ interface EditorState {
   ) => void;
   setEditorTextDirection: (direction: EditorTextDirection) => void;
   toggleEditorTextDirection: () => void;
+  toggleEditorFocusMode: () => void;
+  toggleEditorTypewriterMode: () => void;
+  setUnsavedChangesDialog: (dialog: UnsavedChangesDialogState) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
   view: null,
+  tiptapEditor: null,
   previewScrollEl: null,
   findReplaceOpen: false,
   linkDialogOpen: false,
@@ -58,7 +74,15 @@ export const useEditorStore = create<EditorState>((set) => ({
   aiStructureAfter: "",
   aiStructureRange: null,
   editorTextDirection: "ltr",
+  editorFocusMode: false,
+  editorTypewriterMode: false,
+  unsavedChangesDialog: {
+    open: false,
+    message: "",
+    discardLabel: "Close Without Saving",
+  },
   setView: (view) => set({ view }),
+  setTiptapEditor: (tiptapEditor) => set({ tiptapEditor }),
   setPreviewScrollEl: (previewScrollEl) => set({ previewScrollEl }),
   setFindReplaceOpen: (findReplaceOpen) => set({ findReplaceOpen }),
   setLinkDialogOpen: (linkDialogOpen) => set({ linkDialogOpen }),
@@ -82,6 +106,11 @@ export const useEditorStore = create<EditorState>((set) => ({
     set((state) => ({
       editorTextDirection: state.editorTextDirection === "ltr" ? "rtl" : "ltr",
     })),
+  toggleEditorFocusMode: () =>
+    set((state) => ({ editorFocusMode: !state.editorFocusMode })),
+  toggleEditorTypewriterMode: () =>
+    set((state) => ({ editorTypewriterMode: !state.editorTypewriterMode })),
+  setUnsavedChangesDialog: (unsavedChangesDialog) => set({ unsavedChangesDialog }),
 }));
 
 export function openLinkDialog(): void {
@@ -122,6 +151,7 @@ export function isToolbarDialogOpen(): boolean {
     state.symbolsPickerOpen ||
     state.referenceDialogOpen ||
     state.helpDialogOpen ||
-    state.aboutDialogOpen
+    state.aboutDialogOpen ||
+    state.unsavedChangesDialog.open
   );
 }

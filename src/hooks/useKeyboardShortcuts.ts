@@ -2,7 +2,8 @@ import { useEffect } from "react";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useAppStore, type ViewMode } from "../stores/appStore";
 import { useEditorStore } from "../stores/editorStore";
-import { confirmQuitWithoutSaving } from "../lib/dialogs/unsavedChanges";
+import { promptQuitWithUnsavedChanges } from "../lib/dialogs/unsavedChanges";
+import { saveAllDirtyTabs } from "../lib/files/saveDirtyTabs";
 import { shouldHandleEditorFormatShortcut } from "../lib/editor/formatShortcuts";
 import { flushPersistPreferences } from "../lib/tauri/preferences";
 import { runFormatAction } from "./useMarkdownFormat";
@@ -29,6 +30,7 @@ function isMod(e: KeyboardEvent) {
 
 export function useKeyboardShortcuts() {
   const setViewMode = useAppStore((s) => s.setViewMode);
+  const toggleEditMode = useAppStore((s) => s.toggleEditMode);
   const toggleSidebar = useAppStore((s) => s.toggleSidebar);
   const setSettingsOpen = useAppStore((s) => s.setSettingsOpen);
   const activeTabId = useAppStore((s) => s.activeTabId);
@@ -167,6 +169,21 @@ export function useKeyboardShortcuts() {
         }
         useAppStore.getState().setAppView("editor");
         setViewMode(mode);
+        return;
+      }
+
+      if (alt && key === "s" && !shift) {
+        const activeTab = useAppStore
+          .getState()
+          .tabs.find((t) => t.id === useAppStore.getState().activeTabId);
+        if (
+          activeTab &&
+          supportsPreview(activeTab.fileKind) &&
+          activeTab.viewMode === "editor"
+        ) {
+          e.preventDefault();
+          toggleEditMode();
+        }
       }
     };
 
@@ -175,6 +192,7 @@ export function useKeyboardShortcuts() {
   }, [
     activeTabId,
     setViewMode,
+    toggleEditMode,
     toggleSidebar,
     setFindReplaceOpen,
     setLinkDialogOpen,
@@ -189,10 +207,12 @@ export function useKeyboardShortcuts() {
 
   useEffect(() => {
     let unlisten: (() => void) | undefined;
+    let closePromptOpen = false;
 
     void getCurrentWindow()
       .onCloseRequested(async (event) => {
         event.preventDefault();
+        if (closePromptOpen) return;
 
         const hasDirty = useAppStore
           .getState()
@@ -204,10 +224,24 @@ export function useKeyboardShortcuts() {
           return;
         }
 
-        const quit = await confirmQuitWithoutSaving();
-        if (quit) {
+        closePromptOpen = true;
+        try {
+          await new Promise<void>((resolve) => {
+            requestAnimationFrame(() => resolve());
+          });
+
+          const choice = await promptQuitWithUnsavedChanges();
+          if (choice === "cancel") return;
+
+          if (choice === "save") {
+            const saved = await saveAllDirtyTabs();
+            if (!saved) return;
+          }
+
           await flushPersistPreferences().catch(() => {});
           await getCurrentWindow().destroy();
+        } finally {
+          closePromptOpen = false;
         }
       })
       .then((fn) => {

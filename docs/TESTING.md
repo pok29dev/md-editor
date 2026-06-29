@@ -1,8 +1,8 @@
 # MD Editor — Testing Checklist
 
-**Version:** `26.6.2001`  
-**Last updated:** 2026-06-20  
-**Status:** ✅ ทดสอบผ่าน AC-1 – AC-8; AC-9, AC-10, AC-11 รอทดสอบด้วยมือ
+**Version:** `26.6.2901`  
+**Last updated:** 2026-06-29  
+**Status:** ✅ ทดสอบผ่าน AC-1 – AC-8; WYSIWYG + merge checklist ด้านล่าง
 
 ---
 
@@ -63,6 +63,7 @@
 - [x] Sync scroll, Collapse sidebar persist
 - [x] Sidebar width slider (180–400px) persist
 - [x] Default view mode → Welcome tab / tab ใหม่ใช้ค่าที่ตั้ง
+- [x] Default edit mode (Source / WYSIWYG) → tab Markdown ใหม่ใช้ค่าที่ตั้ง
 - [x] Reset to defaults คืนค่า General
 
 #### Editor
@@ -245,3 +246,67 @@ npm run tauri build
 | `examples/sample-docs/markdown-features-test.md` | Full feature regression |
 | `examples/sample-docs/config.json` | JSON editor + validation |
 | `examples/sample-docs/config.yaml` | YAML editor + validation |
+
+---
+
+## WYSIWYG (Tiptap) — Manual checklist
+
+ใช้ `examples/sample-docs/markdown-features-test.md` ในโหมด **Editor** + **WYSIWYG**
+
+### โหมดและสลับมุมมอง
+
+- [ ] Title bar หรือ `⌘⌥S` สลับ Source ↔ WYSIWYG ได้
+- [ ] สลับแล้วเนื้อหา heading / list / link ไม่หาย
+- [ ] JSON/YAML tab ไม่แสดงตัวเลือก WYSIWYG
+- [ ] Settings → General → Default edit mode เปลี่ยนค่าเริ่มต้นสำหรับ tab ใหม่
+
+### แก้ไขและบันทึก
+
+- [ ] พิมพ์ heading, bold, bullet list ใน WYSIWYG แล้ว Save
+- [ ] เปิดไฟล์ใน editor อื่น → markdown อ่านได้
+- [ ] Mermaid / math block แสดงเป็น preserved widget (แก้ใน Source ได้)
+
+### Find & Replace
+
+- [ ] `⌘F` ใน Source → ค้นหา/แทนที่ทำงาน
+- [ ] `⌘F` ใน WYSIWYG → dialog แสดง "WYSIWYG", Next/Prev/Replace/Replace All ทำงาน
+
+### Phase 4 shortcuts
+
+- [ ] `/` เปิด slash menu (heading, list, table, …)
+- [ ] Paste / drop รูป → บันทึกใต้ `assets/` ในโฟลเดอร์ workspace
+- [ ] Focus / typewriter mode จาก toolbar
+
+### Automated round-trip
+
+```bash
+npm run test:wysiwyg
+```
+
+ตรวจ `prepareTiptapBody` / `getTiptapMarkdown` กับไฟล์ใน `examples/sample-docs/`
+
+### Unsaved changes dialog
+
+- [ ] แก้ไฟล์ให้ dirty → ปิดแอป → dialog แสดง Save / Quit Without Saving / Cancel
+- [ ] กด **Cancel** → dialog ปิด กลับมาใช้งานแอปได้
+- [ ] กด **Save** → บันทึกแล้วแอปปิด
+- [ ] ปิดแท็บ dirty → Close Without Saving / Save / Cancel ทำงานเหมือนกัน
+
+---
+
+## Pre-merge checklist (`feature/wysiwyg-tiptap` → `main`)
+
+รันก่อน push / merge:
+
+```bash
+npm run validate:version   # 26.6.2901 ทุกไฟล์ sync
+npm run test:wysiwyg       # round-trip tests
+npm run build              # tsc + vite
+npm run tauri build        # release (macOS) — optional ก่อน tag
+```
+
+- [ ] `git log main..HEAD` — 6 commits WYSIWYG + bugfixes
+- [ ] Manual WYSIWYG checklist ด้านบน (อย่างน้อย smoke test)
+- [ ] Unsaved Cancel ทำงาน (in-app dialog)
+- [ ] เปิดไฟล์จาก sidebar ไม่ลบ untitled tab
+- [ ] Merge แล้ว tag `v.26.6.2901`

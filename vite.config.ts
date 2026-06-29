@@ -8,6 +8,11 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [react(), tailwindcss()],
 
+  test: {
+    environment: "happy-dom",
+    include: ["src/**/*.test.ts"],
+  },
+
   clearScreen: false,
   server: {
     port: 1420,

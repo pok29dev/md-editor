@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.2001` · **MVP Complete** (Settings + Formatting + UI Redesign + thClaws)
+**Version:** `26.6.2901` · **MVP Complete** (Settings + Formatting + UI Redesign + thClaws + **WYSIWYG**)
 
 ## Features
 
@@ -27,9 +27,10 @@ Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
 ### Editor & preview
 
-- CodeMirror 6 — line numbers, find/replace, undo/redo, sync scroll, RTL toggle
+- **WYSIWYG (Tiptap)** — visual editing สำหรับ Markdown (`⌘⌥S` สลับ Source); bubble menu, slash commands, paste/drop image
+- CodeMirror 6 — line numbers, find/replace (Source + WYSIWYG), undo/redo, sync scroll, RTL toggle
 - Live GFM preview — highlight.js, Mermaid, MathJax (offline), GitHub alerts
-- View mode per tab: Split / Editor / Preview
+- View mode per tab: Split / Editor / Preview; edit mode per Markdown tab: Source / WYSIWYG
 
 ### Formatting
 
@@ -78,6 +79,7 @@ npm run tauri dev
 # Sidebar → Open folder → examples/sample-docs
 # Open markdown-features-test.md for full feature regression
 # Open config.json / config.yaml for JSON/YAML editor tests
+npm run test:wysiwyg   # round-trip tests (Tiptap markdown)
 ```
 
 Manual checklist: [docs/TESTING.md](./docs/TESTING.md) (AC-1–AC-10)
@@ -117,6 +119,7 @@ Format shortcuts apply when the editor is focused and no modal is open.
 | [docs/specification.md](./docs/specification.md) | Product spec |
 | [docs/TESTING.md](./docs/TESTING.md) | Acceptance criteria (manual QA) |
 | [docs/editor-toolbar-lucide.md](./docs/editor-toolbar-lucide.md) | Lucide icon mapping สำหรับ toolbar |
+| [docs/wysiwyg-plan.md](./docs/wysiwyg-plan.md) | WYSIWYG (Tiptap) implementation plan |
 | [docs/formatting-tools-plan.md](./docs/formatting-tools-plan.md) | Formatting MVP plan (F-1–F-5) |
 | [docs/settings-plan.md](./docs/settings-plan.md) | Settings MVP plan |
 | [technical-guide/](./technical-guide/) | Architecture & implementation guides |
@@ -130,8 +133,8 @@ Format shortcuts apply when the editor is focused and no modal is open.
 
 - `VERSION` / `package.json` / `src/version.ts`
 - `src-tauri/Cargo.toml` / `tauri.conf.json`
-- Release tags: `v.26.6.2001` (unsigned: `v.26.6.2001-unsigned`)
-- Bundle filenames: `MD Editor_26.6.2001_...`
+- Release tags: `v.26.6.2901` (unsigned: `v.26.6.2901-unsigned`)
+- Bundle filenames: `MD Editor_26.6.2901_...`
 
 รายละเอียด: [docs/VERSION-FORMAT.md](./docs/VERSION-FORMAT.md)  
 ตรวจความสอดคล้อง: `npm run validate:version`
@@ -139,7 +142,7 @@ Format shortcuts apply when the editor is focused and no modal is open.
 ## Tech Stack
 
 - Tauri v2, React 19, TypeScript, Vite, Zustand, **lucide-react**
-- CodeMirror 6 (`@codemirror/lang-markdown`, `lang-json`, `lang-yaml`), marked.js, highlight.js, DOMPurify, Mermaid, MathJax
+- **Tiptap 3** + `tiptap-markdown` (WYSIWYG), CodeMirror 6, marked.js, highlight.js, DOMPurify, Mermaid, MathJax
 - Rust file I/O backend
 
 ## License

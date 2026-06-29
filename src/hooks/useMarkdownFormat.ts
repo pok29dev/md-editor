@@ -2,6 +2,9 @@ import { useCallback } from "react";
 import { useAppStore } from "../stores/appStore";
 import { useEditorStore } from "../stores/editorStore";
 import { getTabEditorView } from "../lib/editor/tabEditorCache";
+import { getTabTiptapEditor } from "../lib/editor/tiptapTabCache";
+import { applyTiptapFormatAction } from "../lib/editor/tiptapFormatActions";
+import { shouldUseWysiwyg } from "../lib/editor/editMode";
 import {
   applyFormatAction,
   canApplyFormatAction,
@@ -9,7 +12,7 @@ import {
   type FormatContext,
 } from "../lib/editor/formatActions";
 
-function resolveEditorView(
+function resolveCodeMirrorView(
   storeView: ReturnType<typeof useEditorStore.getState>["view"],
   activeTabId: string | null,
 ) {
@@ -18,27 +21,34 @@ function resolveEditorView(
   return getTabEditorView(activeTabId) ?? null;
 }
 
+function resolveTiptapEditor(activeTabId: string | null) {
+  if (!activeTabId) return null;
+  return getTabTiptapEditor(activeTabId) ?? null;
+}
+
+function isWysiwygActive(activeTabId: string | null): boolean {
+  if (!activeTabId) return false;
+  const tab = useAppStore.getState().tabs.find((t) => t.id === activeTabId);
+  if (!tab) return false;
+  return shouldUseWysiwyg(tab.viewMode, tab.editMode, tab.fileKind);
+}
+
 export function useMarkdownFormat() {
   const activeTabId = useAppStore((s) => s.activeTabId);
   const storeView = useEditorStore((s) => s.view);
-  const view = resolveEditorView(storeView, activeTabId);
+  const view = resolveCodeMirrorView(storeView, activeTabId);
+  const wysiwyg = isWysiwygActive(activeTabId);
 
   const format = useCallback(
     (actionId: FormatActionId, context: FormatContext = {}) => {
-      const currentView = resolveEditorView(
-        useEditorStore.getState().view,
-        useAppStore.getState().activeTabId,
-      );
-      if (!currentView) return false;
-      if (!canApplyFormatAction(actionId, context)) return false;
-      return applyFormatAction(currentView, actionId, context);
+      return runFormatAction(actionId, context);
     },
     [],
   );
 
   return {
     format,
-    hasEditor: view !== null,
+    hasEditor: wysiwyg ? resolveTiptapEditor(activeTabId) !== null : view !== null,
   };
 }
 
@@ -47,9 +57,18 @@ export function runFormatAction(
   actionId: FormatActionId,
   context: FormatContext = {},
 ): boolean {
-  const currentView = resolveEditorView(
+  const activeTabId = useAppStore.getState().activeTabId;
+
+  if (isWysiwygActive(activeTabId)) {
+    const editor = resolveTiptapEditor(activeTabId);
+    if (!editor) return false;
+    if (!canApplyFormatAction(actionId, context)) return false;
+    return applyTiptapFormatAction(editor, actionId, context);
+  }
+
+  const currentView = resolveCodeMirrorView(
     useEditorStore.getState().view,
-    useAppStore.getState().activeTabId,
+    activeTabId,
   );
   if (!currentView) return false;
   if (!canApplyFormatAction(actionId, context)) return false;

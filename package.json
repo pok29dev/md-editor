@@ -1,7 +1,7 @@
 {
   "name": "md-editor",
   "private": true,
-  "version": "26.6.2001",
+  "version": "26.6.2901",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "validate:version": "node scripts/validate-version.mjs",
-    "design-pack": "bash scripts/assemble-design-pack.sh"
+    "design-pack": "bash scripts/assemble-design-pack.sh",
+    "test": "vitest run",
+    "test:wysiwyg": "vitest run src/lib/editor/tiptap"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.3",
@@ -26,6 +28,22 @@
     "@tauri-apps/plugin-fs": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-store": "^2",
+    "@tiptap/extension-bubble-menu": "^3.27.1",
+    "@tiptap/extension-highlight": "^3.27.1",
+    "@tiptap/extension-image": "^3.27.1",
+    "@tiptap/extension-link": "^3.27.1",
+    "@tiptap/extension-placeholder": "^3.27.1",
+    "@tiptap/extension-subscript": "^3.27.1",
+    "@tiptap/extension-superscript": "^3.27.1",
+    "@tiptap/extension-table": "^3.27.1",
+    "@tiptap/extension-table-cell": "^3.27.1",
+    "@tiptap/extension-table-header": "^3.27.1",
+    "@tiptap/extension-table-row": "^3.27.1",
+    "@tiptap/extension-task-item": "^3.27.1",
+    "@tiptap/extension-task-list": "^3.27.1",
+    "@tiptap/extension-underline": "^3.27.1",
+    "@tiptap/react": "^3.27.1",
+    "@tiptap/starter-kit": "^3.27.1",
     "codemirror": "^6.0.2",
     "dompurify": "^3.4.8",
     "github-markdown-css": "^5.9.0",
@@ -40,6 +58,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-resizable-panels": "^4.11.2",
+    "tiptap-markdown": "^0.9.0",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
@@ -51,8 +70,10 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "happy-dom": "^20.10.6",
     "tailwindcss": "^4.1.8",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "vitest": "^4.1.9"
   }
 }
