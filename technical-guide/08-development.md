@@ -33,6 +33,9 @@ Tauri เปิด window และเชื่อมกับ dev server อั
 | `tauri dev` | Tauri + Vite HMR | **แนะนำสำหรับพัฒนา** |
 | `tauri build` | Release build | `.app` / `.dmg` / `.msi` / `.deb` |
 | `design-pack` | `bash scripts/assemble-design-pack.sh` | Sync `design-pack/` สำหรับ AI design tools |
+| `test` | `vitest run` | Unit tests ทั้งหมด |
+| `test:wysiwyg` | `vitest run src/lib/editor/tiptap` | Tiptap round-trip + find/replace tests |
+| `validate:version` | `node scripts/validate-version.mjs` | ตรวจ version sync ทุกไฟล์ |
 
 ## 8.4 Release Build Output
 
@@ -56,6 +59,14 @@ npm run tauri build
 - Plugins: React, Tailwind 4
 
 ## 8.6 การทดสอบ
+
+### Automated Tests
+
+```bash
+npm run test:wysiwyg
+npm run test
+npm run build
+```
 
 ### Manual Testing
 

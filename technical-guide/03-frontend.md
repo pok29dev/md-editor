@@ -14,11 +14,12 @@ App
     │   │   ├── SidebarToolbar (open folder, expand/collapse all, refresh, hide)
     │   │   └── FileTree       (recursive, keyboard nav)
     ├── main-workspace
-    │       ├── EditorPane → EditorToolbar (Markdown only) + MarkdownEditor
+    │       ├── EditorPane → EditorToolbar + MarkdownEditor | TiptapEditor
     │       └── PreviewPane → MarkdownPreview (empty state สำหรับ JSON/YAML)
     ├── StatusBar
-    ├── FindReplace         (modal overlay)
-    ├── LinkDialog          (modal overlay)
+    ├── FindReplace         (Source + WYSIWYG)
+    ├── LinkDialog
+    ├── UnsavedChangesDialog (in-app Save / Don't Save / Cancel)
     └── SettingsModal
 ```
 
@@ -33,7 +34,7 @@ App
 | `Sidebar` | `.../Sidebar.tsx` | `SidebarToolbar` + file tree, loading/error/empty states |
 | `FileTree` | `.../FileTree.tsx` | Tree recursive, keyboard nav, indent guides |
 | `TabBar` | `.../TabBar.tsx` | Multi-tab, dirty indicator (`•`), close, context menu Close All |
-| `EditorPane` | `.../EditorPane.tsx` | Wrapper `EditorToolbar` (Markdown only) + `MarkdownEditor` |
+| `EditorPane` | `.../EditorPane.tsx` | Wrapper toolbar + `MarkdownEditor` หรือ `TiptapEditor` ตาม `editMode` |
 | `PreviewPane` | `.../PreviewPane.tsx` | Wrapper `MarkdownPreview`; empty state สำหรับ data files |
 | `PreviewFontControls` | `.../PreviewFontControls.tsx` | ปรับขนาดฟอนต์ preview (`-` / scale / `+` / reset) |
 | `StatusBar` | `.../StatusBar.tsx` | Path, word/char count, Modified/Saved, syntax error (JSON/YAML) |
@@ -52,11 +53,29 @@ App
 
 ### FindReplace
 
-**ไฟล์:** `components/editor/FindReplace.tsx`
+**ไฟล์:** `components/editor/FindReplace.tsx`, `lib/editor/tiptap/findReplace.ts`
 
 - Modal overlay (`z-index: 1000`)
-- ใช้ `@codemirror/search`: find, replace, replace all
+- **Source:** `@codemirror/search` — find, replace, replace all
+- **WYSIWYG:** ProseMirror text search บน Tiptap doc (`useFindReplaceEditor`)
 - เปิดด้วย `Cmd/Ctrl+F` หรือปุ่มใน title bar
+
+### TiptapEditor
+
+**ไฟล์:** `components/editor/TiptapEditor.tsx`, `lib/editor/tiptap/*`
+
+- ใช้เมื่อ `shouldUseWysiwyg(viewMode, editMode, fileKind)`
+- `prepareTiptapBody` / `getTiptapMarkdown` — round-trip กับ md-editor dialect
+- Instance ต่อ tab ใน `tiptapTabCache.ts`
+- Extensions: StarterKit, table, task list, highlight, preserved blocks, `tiptap-markdown`
+
+### UnsavedChangesDialog
+
+**ไฟล์:** `components/dialogs/UnsavedChangesDialog.tsx`
+
+- In-app `alertdialog` แทน native Tauri message (แก้ Cancel ค้างบน macOS)
+- ปุ่ม: Cancel / Quit or Close Without Saving / Save
+- เรียกจาก `promptQuitWithUnsavedChanges`, `promptCloseTabWithUnsavedChanges`
 
 ### EditorToolbar
 

@@ -1,7 +1,7 @@
 # MD Editor — TODO List
 
-**Current version:** `26.6.2001`  
-**Status:** MVP Complete + thClaws integration ✅
+**Current version:** `26.6.2901`  
+**Status:** MVP Complete + thClaws + WYSIWYG (Tiptap) ✅
 
 ---
 
@@ -78,7 +78,7 @@
 
 ## WYSIWYG (Tiptap) ✅
 
-อ้างอิง: [wysiwyg-plan.md](./wysiwyg-plan.md) · branch `feature/wysiwyg-tiptap`
+อ้างอิง: [wysiwyg-plan.md](./wysiwyg-plan.md) · merged via `feature/wysiwyg-tiptap`
 
 - [x] Phase 0: Tiptap packages + round-trip foundation (`tiptap-markdown`)
 - [x] Phase 1: `EditMode`, flush/save flow, format routing
@@ -103,3 +103,6 @@
 - [ ] JSON Schema validation
 - [ ] Regenerate design-pack screenshots
 - [ ] Emoji shortcodes (`:rocket:`)
+- [ ] WYSIWYG block handle (ลากซ้ายเปลี่ยนประเภทบล็อก)
+- [ ] WYSIWYG inline math `$...$` widget
+- [ ] Lazy-load Tiptap chunk (ลด bundle หลัก)

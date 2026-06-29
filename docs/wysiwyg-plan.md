@@ -1,9 +1,8 @@
 # MD Editor — WYSIWYG Mode Plan (Tiptap)
 
-**Version:** 0.1  
+**Version:** 1.0  
 **Last updated:** 2026-06-29  
-**Status:** Planning — engine decision locked to **Tiptap**  
-**Branch:** `docs/wysiwyg-tiptap-plan`  
+**Status:** ✅ Shipped in `26.6.2901` (branch `feature/wysiwyg-tiptap`)  
 **อ้างอิง:** [specification.md](./specification.md), [formatting-tools-plan.md](./formatting-tools-plan.md), [technical-guide/04-markdown-engine.md](../technical-guide/04-markdown-engine.md)
 
 ---
@@ -252,10 +251,10 @@ src/lib/editor/tiptapTabCache.ts   # cache editor instance ต่อ tab (คล
 
 **Deliverable:**
 
-- [ ] โหมด WYSIWYG เปิดแท็บ `.md` ได้
-- [ ] สลับ WYSIWYG ↔ Source โดย content sync
-- [ ] Save / Save As ได้ markdown ถูกต้อง
-- [ ] Toolbar format actions ทำงานใน WYSIWYG (อย่างน้อย bold, heading, list, link)
+- [x] โหมด WYSIWYG เปิดแท็บ `.md` ได้
+- [x] สลับ WYSIWYG ↔ Source โดย content sync
+- [x] Save / Save As ได้ markdown ถูกต้อง
+- [x] Toolbar format actions ทำงานใน WYSIWYG (อย่างน้อย bold, heading, list, link)
 
 ---
 
@@ -273,7 +272,7 @@ src/lib/editor/tiptapTabCache.ts   # cache editor instance ต่อ tab (คล
 |---------|------------|
 | Bubble menu | เลือกข้อความ → bold/italic/link/strike |
 | Slash commands `/` | แทรก heading, list, table, code block |
-| Block handle | เปลี่ยนประเภทบล็อก (paragraph → heading) |
+| Block handle | เปลี่ยนประเภทบล็อก (paragraph → heading) — **post-ship** |
 | Focus mode | จางบรรทัดอื่น (`editorStore` + CSS) |
 | Typewriter mode | scroll ให้ cursor อยู่กลาง |
 | Paste image | Tauri: บันทึกไฟล์ในโฟลเดอร์ → แทรก `![](relative/path)` |
@@ -357,7 +356,7 @@ Source → WYSIWYG:
 | Dialect ไม่ตรง marked | preview ≠ WYSIWYG | Parity matrix + fallback nodes |
 | Bundle ใหญ่ขึ้น | แอปช้าลง | Lazy load; วัดใน Phase 0 |
 | Toolbar/shortcut ซ้ำซ้อน | UX สับสน | `FormatCommand` เดียว หลาย adapter |
-| Find/replace ใน WYSIWYG | feature gap | Phase 5; ระหว่างนั้นแนะนำ source mode |
+| Find/replace ใน WYSIWYG | ~~feature gap~~ ✅ `findReplace.ts` + FindReplace dialog |
 
 ---
 

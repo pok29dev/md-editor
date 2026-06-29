@@ -34,14 +34,15 @@ md-editor/
 │   ├── version.ts                # APP_VERSION
 │   ├── components/
 │   │   ├── layout/               # Shell, sidebar, tabs, panes
-│   │   ├── editor/               # MarkdownEditor, FindReplace
+│   │   ├── editor/               # MarkdownEditor, TiptapEditor, FindReplace, dialogs
+│   │   ├── dialogs/              # UnsavedChangesDialog
 │   │   ├── preview/              # MarkdownPreview
 │   │   └── icons/                # SVG icons
 │   ├── hooks/                    # Business logic hooks
 │   ├── stores/                   # Zustand (appStore, editorStore)
 │   ├── lib/
 │   │   ├── markdown/             # Preview engine
-│   │   ├── editor/               # CodeMirror config, syntax colors
+│   │   ├── editor/               # CodeMirror config, Tiptap, syntax colors
 │   │   ├── files/                # fileKind, validation, save guard
 │   │   ├── tauri/                # IPC wrappers
 │   │   ├── dialogs/              # Unsaved changes

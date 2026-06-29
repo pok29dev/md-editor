@@ -185,6 +185,7 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 | `Cmd/Ctrl + S` | Save |
 | `Cmd/Ctrl + Shift + S` | Save As |
 | `Cmd/Ctrl + F` | Find & Replace |
+| `Cmd/Ctrl + Option + S` | Toggle Source ↔ WYSIWYG (Markdown, editor layout) |
 | `Cmd/Ctrl + W` | Close tab |
 | Right-click tab | Close All Tabs |
 | `Cmd/Ctrl + 1` | Split view |
@@ -222,9 +223,9 @@ Implementation: `SettingsModal.tsx`, `lib/tauri/preferences.ts`, `usePersistPref
 
 | สถานการณ์ | Dialog |
 |-----------|--------|
-| ปิด tab ที่มี unsaved changes | `confirm()` — Save / Don't Save / Cancel |
+| ปิด tab ที่มี unsaved changes | In-app `UnsavedChangesDialog` — Save / Close Without Saving / Cancel |
 | Save JSON/YAML ที่ syntax invalid | `confirmSaveDespiteInvalidSyntax()` — ยืนยันก่อนบันทึก |
-| ปิดแอปที่มี unsaved tabs | `confirmQuitWithoutSaving()` |
+| ปิดแอปที่มี unsaved tabs | `promptQuitWithUnsavedChanges()` → in-app dialog |
 | Open/Save | Native Tauri file dialog |
 | Insert link | LinkDialog modal (URL + label) |
 

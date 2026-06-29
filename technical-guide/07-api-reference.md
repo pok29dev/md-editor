@@ -203,7 +203,7 @@ type FileKind = "markdown" | "json" | "yaml";
 
 ```typescript
 // src/version.ts
-export const APP_VERSION = "26.6.1901";
+export const APP_VERSION = "26.6.2901";
 export const APP_COPYRIGHT = "pok29dev";
 ```
 

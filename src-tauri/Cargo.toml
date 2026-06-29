@@ -1,6 +1,6 @@
 [package]
 name = "md-editor"
-version = "26.6.2001"
+version = "26.6.2901"
 description = "MD Editor — Markdown desktop editor"
 authors = ["pok29dev"]
 edition = "2021"

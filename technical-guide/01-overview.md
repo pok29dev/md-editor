@@ -55,7 +55,8 @@ Use cases หลัก:
 
 | Layer | Technology | บทบาท |
 |-------|------------|--------|
-| Editor | CodeMirror 6 | Markdown + JSON + YAML editing |
+| Editor | CodeMirror 6 | Markdown Source + JSON + YAML |
+| WYSIWYG | Tiptap 3 + tiptap-markdown | Visual Markdown (`editMode`) |
 | Structured validation | js-yaml + `JSON.parse` | YAML/JSON syntax check + format |
 | Syntax colors | CodeMirror `HighlightStyle` | GitHub / Custom / Minimal (JSON/YAML) |
 | Parser | marked 18 | GFM → HTML |
@@ -89,6 +90,7 @@ Use cases หลัก:
 - Find & Replace, Link/Reference/Emoji/Symbols dialogs
 - **JSON & YAML** — open/edit/save `.json`, `.yaml`, `.yml`; syntax highlight, validate, format (`⌘⇧F`)
 - **Syntax color themes** — GitHub / Custom / Minimal สำหรับ structured files (Settings → Editor)
+- **WYSIWYG (Tiptap)** — Source ↔ WYSIWYG (`⌘⌥S`); preserved blocks; find/replace; slash commands; paste/drop image
 
 **ยังไม่รวม (Post-MVP):**
 
@@ -96,5 +98,6 @@ Use cases หลัก:
 - File watcher อัตโนมัติ
 - Sidebar drag-resize แบบ live (ปรับ width จาก Settings)
 - Emoji shortcodes (`:rocket:`)
+- WYSIWYG block handle, inline math widget
 
 ดูรายละเอียด gaps ใน [08-development.md](./08-development.md)
