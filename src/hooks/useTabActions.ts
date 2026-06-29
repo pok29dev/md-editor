@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useAppStore } from "../stores/appStore";
-import { confirmCloseTabWithoutSaving } from "../lib/dialogs/unsavedChanges";
+import { promptCloseTabWithUnsavedChanges } from "../lib/dialogs/unsavedChanges";
+import { saveDirtyTab } from "../lib/files/saveDirtyTabs";
 import { syncActiveTabContentFromEditor } from "../lib/editor/getEditorContent";
 
 export function useTabActions() {
@@ -8,20 +9,28 @@ export function useTabActions() {
   const closeAllTabs = useAppStore((s) => s.closeAllTabs);
   const closeOtherTabs = useAppStore((s) => s.closeOtherTabs);
 
+  const tryCloseDirtyTab = useCallback(async (id: string): Promise<boolean> => {
+    const tab = useAppStore.getState().tabs.find((item) => item.id === id);
+    if (!tab) return false;
+
+    if (!tab.isDirty) return true;
+
+    const choice = await promptCloseTabWithUnsavedChanges(tab.title);
+    if (choice === "cancel") return false;
+    if (choice === "save") {
+      return saveDirtyTab(id);
+    }
+    return true;
+  }, []);
+
   const tryCloseTab = useCallback(
     async (id: string): Promise<boolean> => {
-      const tab = useAppStore.getState().tabs.find((t) => t.id === id);
-      if (!tab) return false;
-
-      if (tab.isDirty) {
-        const confirmed = await confirmCloseTabWithoutSaving(tab.title);
-        if (!confirmed) return false;
-      }
-
+      const canClose = await tryCloseDirtyTab(id);
+      if (!canClose) return false;
       closeTab(id);
       return true;
     },
-    [closeTab],
+    [closeTab, tryCloseDirtyTab],
   );
 
   const hasDirtyTabs = useCallback(
@@ -31,18 +40,16 @@ export function useTabActions() {
 
   const tryCloseAllTabs = useCallback(async (): Promise<boolean> => {
     syncActiveTabContentFromEditor();
-    const tabs = useAppStore.getState().tabs;
+    const tabs = [...useAppStore.getState().tabs];
 
     for (const tab of tabs) {
-      if (tab.isDirty) {
-        const confirmed = await confirmCloseTabWithoutSaving(tab.title);
-        if (!confirmed) return false;
-      }
+      const canClose = await tryCloseDirtyTab(tab.id);
+      if (!canClose) return false;
     }
 
     closeAllTabs();
     return true;
-  }, [closeAllTabs]);
+  }, [closeAllTabs, tryCloseDirtyTab]);
 
   const tryCloseOtherTabs = useCallback(
     async (keepId: string): Promise<boolean> => {
@@ -53,16 +60,14 @@ export function useTabActions() {
       if (others.length === 0) return true;
 
       for (const tab of others) {
-        if (tab.isDirty) {
-          const confirmed = await confirmCloseTabWithoutSaving(tab.title);
-          if (!confirmed) return false;
-        }
+        const canClose = await tryCloseDirtyTab(tab.id);
+        if (!canClose) return false;
       }
 
       closeOtherTabs(keepId);
       return true;
     },
-    [closeOtherTabs],
+    [closeOtherTabs, tryCloseDirtyTab],
   );
 
   return { tryCloseTab, tryCloseAllTabs, tryCloseOtherTabs, hasDirtyTabs };

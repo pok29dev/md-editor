@@ -180,6 +180,17 @@ interface AppState {
 
 let tabCounter = 0;
 
+const WELCOME_TAB_SNIPPET = "Open a folder to get started.";
+
+function isDisposableWelcomeTab(tab: EditorTab): boolean {
+  return (
+    tab.path === null &&
+    !tab.isDirty &&
+    tab.title === "Welcome" &&
+    tab.content.includes(WELCOME_TAB_SNIPPET)
+  );
+}
+
 function createTab(
   partial?: Partial<EditorTab>,
   defaultViewMode: ViewMode = "split",
@@ -468,11 +479,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     })),
 
   openFileInTab: ({ path, title, content, fileKind }) => {
-    const existing = get().findTabByPath(path);
+    const state = get();
+    const existing = state.findTabByPath(path);
     if (existing) {
-      set({ activeTabId: existing.id });
+      if (state.activeTabId !== existing.id) {
+        flushActiveEditorContent();
+      }
+      set({ activeTabId: existing.id, appView: "editor" });
       return;
     }
+
+    flushActiveEditorContent();
 
     const kind = fileKind ?? detectFileKind(path);
     const tab = createTab(
@@ -488,11 +505,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       get().defaultViewMode,
       get().defaultEditMode,
     );
-    set((s) => ({
-      tabs: [...s.tabs.filter((t) => t.path !== null), tab],
+    const replaceWelcomeOnly =
+      state.tabs.length === 1 && isDisposableWelcomeTab(state.tabs[0]);
+    set({
+      tabs: replaceWelcomeOnly ? [tab] : [...state.tabs, tab],
       activeTabId: tab.id,
       appView: "editor",
-    }));
+    });
   },
 
   markTabSaved: (id) =>
