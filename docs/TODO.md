@@ -85,7 +85,7 @@
 - [x] Phase 2: WYSIWYG MVP + Source/WYSIWYG toggle (`⌘⌥S`, title bar)
 - [x] Phase 3 (partial): table, task list, highlight, frontmatter banner, bubble menu
 - [x] Phase 3: preserved blocks (mermaid, math, alerts, footnotes, definition list), sup/sub
-- [ ] Phase 4: slash commands, paste image, focus/typewriter mode
+- [x] Phase 4: slash commands, paste/drop image, focus/typewriter mode
 - [ ] Phase 5: Find/replace in WYSIWYG, round-trip tests, docs
 
 ---

@@ -21,6 +21,8 @@ interface EditorState {
   aiStructureAfter: string;
   aiStructureRange: { from: number; to: number } | null;
   editorTextDirection: EditorTextDirection;
+  editorFocusMode: boolean;
+  editorTypewriterMode: boolean;
   setView: (view: EditorView | null) => void;
   setTiptapEditor: (editor: Editor | null) => void;
   setPreviewScrollEl: (el: HTMLElement | null) => void;
@@ -43,6 +45,8 @@ interface EditorState {
   ) => void;
   setEditorTextDirection: (direction: EditorTextDirection) => void;
   toggleEditorTextDirection: () => void;
+  toggleEditorFocusMode: () => void;
+  toggleEditorTypewriterMode: () => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -62,6 +66,8 @@ export const useEditorStore = create<EditorState>((set) => ({
   aiStructureAfter: "",
   aiStructureRange: null,
   editorTextDirection: "ltr",
+  editorFocusMode: false,
+  editorTypewriterMode: false,
   setView: (view) => set({ view }),
   setTiptapEditor: (tiptapEditor) => set({ tiptapEditor }),
   setPreviewScrollEl: (previewScrollEl) => set({ previewScrollEl }),
@@ -87,6 +93,10 @@ export const useEditorStore = create<EditorState>((set) => ({
     set((state) => ({
       editorTextDirection: state.editorTextDirection === "ltr" ? "rtl" : "ltr",
     })),
+  toggleEditorFocusMode: () =>
+    set((state) => ({ editorFocusMode: !state.editorFocusMode })),
+  toggleEditorTypewriterMode: () =>
+    set((state) => ({ editorTypewriterMode: !state.editorTypewriterMode })),
 }));
 
 export function openLinkDialog(): void {

@@ -1,0 +1,16 @@
+.tiptap-editor-shell.tiptap-focus-mode .tiptap > *:not(.tiptap-block-focus) {
+  opacity: 0.38;
+  transition: opacity 0.15s ease;
+}
+
+.tiptap-editor-shell.tiptap-focus-mode .tiptap > .tiptap-block-focus {
+  opacity: 1;
+}
+
+.tiptap-editor-shell.tiptap-typewriter-mode .tiptap-editor-root {
+  scroll-behavior: smooth;
+}
+
+.tiptap-editor-root {
+  position: relative;
+}
