@@ -4,6 +4,12 @@ import type { Editor } from "@tiptap/core";
 
 export type EditorTextDirection = "ltr" | "rtl";
 
+export interface UnsavedChangesDialogState {
+  open: boolean;
+  message: string;
+  discardLabel: string;
+}
+
 interface EditorState {
   view: EditorView | null;
   tiptapEditor: Editor | null;
@@ -23,6 +29,7 @@ interface EditorState {
   editorTextDirection: EditorTextDirection;
   editorFocusMode: boolean;
   editorTypewriterMode: boolean;
+  unsavedChangesDialog: UnsavedChangesDialogState;
   setView: (view: EditorView | null) => void;
   setTiptapEditor: (editor: Editor | null) => void;
   setPreviewScrollEl: (el: HTMLElement | null) => void;
@@ -47,6 +54,7 @@ interface EditorState {
   toggleEditorTextDirection: () => void;
   toggleEditorFocusMode: () => void;
   toggleEditorTypewriterMode: () => void;
+  setUnsavedChangesDialog: (dialog: UnsavedChangesDialogState) => void;
 }
 
 export const useEditorStore = create<EditorState>((set) => ({
@@ -68,6 +76,11 @@ export const useEditorStore = create<EditorState>((set) => ({
   editorTextDirection: "ltr",
   editorFocusMode: false,
   editorTypewriterMode: false,
+  unsavedChangesDialog: {
+    open: false,
+    message: "",
+    discardLabel: "Close Without Saving",
+  },
   setView: (view) => set({ view }),
   setTiptapEditor: (tiptapEditor) => set({ tiptapEditor }),
   setPreviewScrollEl: (previewScrollEl) => set({ previewScrollEl }),
@@ -97,6 +110,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     set((state) => ({ editorFocusMode: !state.editorFocusMode })),
   toggleEditorTypewriterMode: () =>
     set((state) => ({ editorTypewriterMode: !state.editorTypewriterMode })),
+  setUnsavedChangesDialog: (unsavedChangesDialog) => set({ unsavedChangesDialog }),
 }));
 
 export function openLinkDialog(): void {
@@ -137,6 +151,7 @@ export function isToolbarDialogOpen(): boolean {
     state.symbolsPickerOpen ||
     state.referenceDialogOpen ||
     state.helpDialogOpen ||
-    state.aboutDialogOpen
+    state.aboutDialogOpen ||
+    state.unsavedChangesDialog.open
   );
 }

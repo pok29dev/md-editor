@@ -16,6 +16,7 @@ import { PreviewPane } from "./PreviewPane";
 import { ThclawsPane } from "../thclaws/ThclawsPane";
 import { FindReplace } from "../editor/FindReplace";
 import { LinkDialog } from "../editor/LinkDialog";
+import { UnsavedChangesDialog } from "../dialogs/UnsavedChangesDialog";
 import { SettingsModal } from "../settings/SettingsModal";
 import { useAppMenu } from "../../hooks/useAppMenu";
 import { useKeyboardShortcuts } from "../../hooks/useKeyboardShortcuts";
@@ -174,6 +175,7 @@ export function AppShell() {
       <StatusBar />
       <FindReplace />
       <LinkDialog />
+      <UnsavedChangesDialog />
       <SettingsModal />
 
       <style>{`

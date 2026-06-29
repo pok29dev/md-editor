@@ -1,48 +1,53 @@
-import { message } from "@tauri-apps/plugin-dialog";
+import { useEditorStore } from "../../stores/editorStore";
 
 export const SAVE = "Save";
 export const QUIT_WITHOUT_SAVING = "Quit Without Saving";
 export const CLOSE_WITHOUT_SAVING = "Close Without Saving";
-const CANCEL = "Cancel";
 
 export type UnsavedChoice = "save" | "discard" | "cancel";
 
-function parseUnsavedChoice(
-  result: string,
-  saveLabel: string,
+let pendingResolve: ((choice: UnsavedChoice) => void) | null = null;
+
+function showUnsavedDialog(
+  message: string,
   discardLabel: string,
-): UnsavedChoice {
-  if (result === saveLabel) return "save";
-  if (result === discardLabel) return "discard";
-  return "cancel";
+): Promise<UnsavedChoice> {
+  return new Promise((resolve) => {
+    pendingResolve = resolve;
+    useEditorStore.getState().setUnsavedChangesDialog({
+      open: true,
+      message,
+      discardLabel,
+    });
+  });
+}
+
+export function resolveUnsavedChangesDialog(choice: UnsavedChoice): void {
+  useEditorStore.getState().setUnsavedChangesDialog({
+    open: false,
+    message: "",
+    discardLabel: CLOSE_WITHOUT_SAVING,
+  });
+
+  const resolve = pendingResolve;
+  pendingResolve = null;
+  resolve?.(choice);
 }
 
 export async function promptQuitWithUnsavedChanges(): Promise<UnsavedChoice> {
-  const result = await message("Some files have unsaved changes.", {
-    title: "Unsaved Changes",
-    kind: "warning",
-    buttons: {
-      yes: SAVE,
-      no: QUIT_WITHOUT_SAVING,
-      cancel: CANCEL,
-    },
-  });
-  return parseUnsavedChoice(result, SAVE, QUIT_WITHOUT_SAVING);
+  return showUnsavedDialog(
+    "Some files have unsaved changes.",
+    QUIT_WITHOUT_SAVING,
+  );
 }
 
 export async function promptCloseTabWithUnsavedChanges(
   tabTitle: string,
 ): Promise<UnsavedChoice> {
-  const result = await message(`"${tabTitle}" has unsaved changes.`, {
-    title: "Unsaved Changes",
-    kind: "warning",
-    buttons: {
-      yes: SAVE,
-      no: CLOSE_WITHOUT_SAVING,
-      cancel: CANCEL,
-    },
-  });
-  return parseUnsavedChoice(result, SAVE, CLOSE_WITHOUT_SAVING);
+  return showUnsavedDialog(
+    `"${tabTitle}" has unsaved changes.`,
+    CLOSE_WITHOUT_SAVING,
+  );
 }
 
 /** @deprecated Use promptQuitWithUnsavedChanges */
