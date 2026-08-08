@@ -2,6 +2,17 @@
 
 รูปแบบ version: `yy.m.ddbb` semver (e.g. `26.6.2901` = 2026-06-29 build 1) · tag `v.26.6.2901`
 
+## [26.8.801] — 2026-08-08
+
+### Fixed
+
+- **Local image preview** — Preview pane แปลง relative/absolute path รูปใน `.md` เป็น Tauri asset URL (`convertFileSrc`) ให้ webview โหลดไฟล์จากดิสก์ได้
+- **Local image ใน WYSIWYG** — Tiptap `LocalImage` extension แสดงรูป `assets/...` ใน editor โดยเก็บ markdown path เดิมตอน save/export
+
+### Changed
+
+- **Tauri asset protocol** — เปิด `assetProtocol` ใน `tauri.conf.json` สำหรับ `$HOME`, `$DOCUMENT`, `$DESKTOP`, `$DOWNLOAD`, `/Volumes/**`
+
 ## [26.6.2901] — 2026-06-29
 
 ### Added

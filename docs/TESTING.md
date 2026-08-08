@@ -1,8 +1,8 @@
 # MD Editor — Testing Checklist
 
-**Version:** `26.6.2901`  
-**Last updated:** 2026-06-29  
-**Status:** ✅ ทดสอบผ่าน AC-1 – AC-8; WYSIWYG + merge checklist ด้านล่าง
+**Version:** `26.8.801`  
+**Last updated:** 2026-08-08  
+**Status:** ✅ ทดสอบผ่าน AC-1 – AC-8; WYSIWYG + local image preview
 
 ---
 
@@ -38,6 +38,7 @@
 - [x] Mermaid diagram render
 - [x] LaTeX math render (offline bundle)
 - [x] YAML frontmatter แสดง metadata table
+- [x] Local image (`![](assets/...)` หรือ absolute path) แสดงใน preview pane
 
 ### AC-5: Cross-platform build
 
@@ -47,7 +48,7 @@
 
 ### AC-6: Settings (MVP)
 
-เปิดจาก **md-editor → Settings…**, **`Cmd+,`**, หรือปุ่ม **Settings** ใน title bar
+เปิดจาก **md-editor → Settings…**, `Cmd+,`, หรือปุ่ม **Settings** ใน title bar
 
 #### Shell
 
@@ -115,7 +116,7 @@
 
 #### Keyboard shortcuts (editor focused)
 
-- [x] `Cmd+B` Bold, `Cmd+I` Italic, `Cmd+`` ` Inline code
+- [x] `Cmd+B` Bold, `Cmd+I` Italic, `Cmd+``` Inline code
 - [x] `Cmd+K` Link dialog, `Cmd+L` Task list, `Cmd+/` Comment
 - [x] `Cmd+Shift+K` Code block
 - [x] `Cmd+Option+1…6` Heading 1–6 (ไม่ชน `Cmd+1/2/3` view mode)
@@ -154,15 +155,15 @@
 
 #### Close All Tabs
 
-- [ ] เปิดหลายแท็บ → คลิกขวาที่แท็บใดก็ได้ → **Close All Tabs**
-- [ ] แท็บที่มี unsaved changes → ถามยืนยันทีละแท็บ; Cancel ยกเลิกทั้งหมด
-- [ ] หลังปิดครบ → เหลือแท็บ Welcome เดียว
+- [x] เปิดหลายแท็บ → คลิกขวาที่แท็บใดก็ได้ → **Close All Tabs**
+- [x] แท็บที่มี unsaved changes → ถามยืนยันทีละแท็บ; Cancel ยกเลิกทั้งหมด
+- [x] หลังปิดครบ → เหลือแท็บ Welcome เดียว
 
 #### Multi-window Save
 
-- [ ] File → New Window (`⌘⇧N`) → เปิดไฟล์คนละชุดในแต่ละหน้าต่าง
-- [ ] แก้ไขใน window รอง → `Cmd+S` บันทึกไฟล์ของแท็บ active ในหน้าต่างนั้น (ไม่ไปที่ main)
-- [ ] Save As ใน window รอง → อัปเดตแท็บในหน้าต่างนั้น
+- [x] File → New Window (`⌘⇧N`) → เปิดไฟล์คนละชุดในแต่ละหน้าต่าง
+- [x] แก้ไขใน window รอง → `Cmd+S` บันทึกไฟล์ของแท็บ active ในหน้าต่างนั้น (ไม่ไปที่ main)
+- [x] Save As ใน window รอง → อัปเดตแท็บในหน้าต่างนั้น
 
 ### AC-10: JSON & YAML files
 
@@ -170,32 +171,32 @@
 
 #### Open & tree
 
-- [ ] Sidebar แสดง `.json` / `.yaml` ร่วมกับ `.md`
-- [ ] Open File dialog รองรับ Markdown, JSON, YAML, All Files
-- [ ] Double-click จาก OS เปิดไฟล์ supported ได้
+- [x] Sidebar แสดง `.json` / `.yaml` ร่วมกับ `.md`
+- [x] Open File dialog รองรับ Markdown, JSON, YAML, All Files
+- [x] Double-click จาก OS เปิดไฟล์ supported ได้
 
 #### Editor
 
-- [ ] Syntax highlighting ตามชนิดไฟล์
-- [ ] ไม่แสดง Markdown toolbar
-- [ ] เปิดด้วย view mode **Editor only**; ปุ่ม Split/Preview disabled
-- [ ] Preview pane แสดง empty state
+- [x] Syntax highlighting ตามชนิดไฟล์
+- [x] ไม่แสดง Markdown toolbar
+- [x] เปิดด้วย view mode **Editor only**; ปุ่ม Split/Preview disabled
+- [x] Preview pane แสดง empty state
 
 #### Validation & format
 
-- [ ] พิมพ์ JSON/YAML invalid → status bar แสดง syntax error
-- [ ] `⌘⇧F` pretty-print เนื้อหาที่ valid
-- [ ] Save เมื่อ invalid → ถามยืนยันก่อนบันทึก
+- [x] พิมพ์ JSON/YAML invalid → status bar แสดง syntax error
+- [x] `⌘⇧F` pretty-print เนื้อหาที่ valid
+- [x] Save เมื่อ invalid → ถามยืนยันก่อนบันทึก
 
 #### Settings
 
-- [ ] Syntax colors: GitHub / Custom / Minimal เปลี่ยนสีทันที
-- [ ] Custom palette — แก้สี 6 token แยก Light/Dark + persist หลัง restart
+- [x] Syntax colors: GitHub / Custom / Minimal เปลี่ยนสีทันที
+- [x] Custom palette — แก้สี 6 token แยก Light/Dark + persist หลัง restart
 
 #### Regression
 
-- [ ] Markdown tabs ยังมี toolbar + preview ปกติ
-- [ ] Save / Save As filter ตามชนิดไฟล์ของแท็บ
+- [x] Markdown tabs ยังมี toolbar + preview ปกติ
+- [x] Save / Save As filter ตามชนิดไฟล์ของแท็บ
 
 ### AC-11: thClaws & AI Structure
 
@@ -203,23 +204,23 @@
 
 #### thClaws view
 
-- [ ] Title bar **Editor | thClaws** สลับ view ได้
-- [ ] View menu → Editor / thClaws มี checkmark ตรงมุมมองที่เลือก
-- [ ] thClaws view แสดง Run / Stop และ placeholder (ไม่จอขาว)
-- [ ] กด **Run** → iframe โหลด thClaws web UI; **Stop** หยุด serve
-- [ ] เปลี่ยน/ปิด folder → serve หยุด; ปิด app → process ไม่ค้าง
+- [x] Title bar **Editor | thClaws** สลับ view ได้
+- [x] View menu → Editor / thClaws มี checkmark ตรงมุมมองที่เลือก
+- [x] thClaws view แสดง Run / Stop และ placeholder (ไม่จอขาว)
+- [x] กด **Run** → iframe โหลด thClaws web UI; **Stop** หยุด serve
+- [x] เปลี่ยน/ปิด folder → serve หยุด; ปิด app → process ไม่ค้าง
 
 #### AI Structure
 
-- [ ] Settings → AI Structure — detect CLI, test connection, เปิด config dirs
-- [ ] Format → **AI Structure Markdown** แสดง diff dialog ก่อน apply
+- [x] Settings → AI Structure — detect CLI, test connection, เปิด config dirs
+- [x] Format → **AI Structure Markdown** แสดง diff dialog ก่อน apply
 - [ ] Format → **Normalize Markdown** ทำงานโดยไม่ต้อง thClaws
 
 #### Menus
 
-- [ ] **View** — Split / Editor Only / Preview, Toggle Sidebar, Editor / thClaws
-- [ ] **Window** — Minimize, Zoom, Full Screen, Bring All to Front (OS standard)
-- [ ] **Edit** — Find & Replace (`⌘F`)
+- [x] **View** — Split / Editor Only / Preview, Toggle Sidebar, Editor / thClaws
+- [x] **Window** — Minimize, Zoom, Full Screen, Bring All to Front (OS standard)
+- [x] **Edit** — Find & Replace (`⌘F`)
 
 ---
 
@@ -238,14 +239,14 @@ npm run tauri build
 
 ## Sample Files
 
-| File | Purpose |
-|------|---------|
-| `examples/sample-docs/README.md` | Basic navigation |
-| `examples/sample-docs/getting-started.md` | Simple content |
-| `examples/sample-docs/guides/basics.md` | Nested folder |
-| `examples/sample-docs/markdown-features-test.md` | Full feature regression |
-| `examples/sample-docs/config.json` | JSON editor + validation |
-| `examples/sample-docs/config.yaml` | YAML editor + validation |
+| File                                             | Purpose                  |
+| ------------------------------------------------ | ------------------------ |
+| `examples/sample-docs/README.md`                 | Basic navigation         |
+| `examples/sample-docs/getting-started.md`        | Simple content           |
+| `examples/sample-docs/guides/basics.md`          | Nested folder            |
+| `examples/sample-docs/markdown-features-test.md` | Full feature regression  |
+| `examples/sample-docs/config.json`               | JSON editor + validation |
+| `examples/sample-docs/config.yaml`               | YAML editor + validation |
 
 ---
 
@@ -255,27 +256,29 @@ npm run tauri build
 
 ### โหมดและสลับมุมมอง
 
-- [ ] Title bar หรือ `⌘⌥S` สลับ Source ↔ WYSIWYG ได้
-- [ ] สลับแล้วเนื้อหา heading / list / link ไม่หาย
-- [ ] JSON/YAML tab ไม่แสดงตัวเลือก WYSIWYG
-- [ ] Settings → General → Default edit mode เปลี่ยนค่าเริ่มต้นสำหรับ tab ใหม่
+- [x] Title bar หรือ `⌘⌥S` สลับ Source ↔ WYSIWYG ได้
+- [x] สลับแล้วเนื้อหา heading / list / link ไม่หาย
+- [x] JSON/YAML tab ไม่แสดงตัวเลือก WYSIWYG
+- [x] Settings → General → Default edit mode เปลี่ยนค่าเริ่มต้นสำหรับ tab ใหม่
 
 ### แก้ไขและบันทึก
 
-- [ ] พิมพ์ heading, bold, bullet list ใน WYSIWYG แล้ว Save
-- [ ] เปิดไฟล์ใน editor อื่น → markdown อ่านได้
-- [ ] Mermaid / math block แสดงเป็น preserved widget (แก้ใน Source ได้)
+- [x] พิมพ์ heading, bold, bullet list ใน WYSIWYG แล้ว Save
+- [x] เปิดไฟล์ใน editor อื่น → markdown อ่านได้
+- [x] Mermaid / math block แสดงเป็น preserved widget (แก้ใน Source ได้)
 
 ### Find & Replace
 
-- [ ] `⌘F` ใน Source → ค้นหา/แทนที่ทำงาน
-- [ ] `⌘F` ใน WYSIWYG → dialog แสดง "WYSIWYG", Next/Prev/Replace/Replace All ทำงาน
+- [x] `⌘F` ใน Source → ค้นหา/แทนที่ทำงาน
+- [x] `⌘F` ใน WYSIWYG → dialog แสดง "WYSIWYG", Next/Prev/Replace/Replace All ทำงาน
 
 ### Phase 4 shortcuts
 
-- [ ] `/` เปิด slash menu (heading, list, table, …)
-- [ ] Paste / drop รูป → บันทึกใต้ `assets/` ในโฟลเดอร์ workspace
-- [ ] Focus / typewriter mode จาก toolbar
+- [x] `/` เปิด slash menu (heading, list, table, …)
+- [x] Paste / drop รูป → บันทึกใต้ `assets/` ในโฟลเดอร์ workspace
+- [x] รูปที่ paste / มีอยู่ในไฟล์ แสดงใน WYSIWYG editor (ไม่ใช่แค่ preview)
+- [x] Save แล้ว markdown ยังเป็น relative path (`assets/...`) ไม่กลายเป็น asset URL
+- [x] Focus / typewriter mode จาก toolbar
 
 ### Automated round-trip
 
@@ -287,10 +290,10 @@ npm run test:wysiwyg
 
 ### Unsaved changes dialog
 
-- [ ] แก้ไฟล์ให้ dirty → ปิดแอป → dialog แสดง Save / Quit Without Saving / Cancel
-- [ ] กด **Cancel** → dialog ปิด กลับมาใช้งานแอปได้
-- [ ] กด **Save** → บันทึกแล้วแอปปิด
-- [ ] ปิดแท็บ dirty → Close Without Saving / Save / Cancel ทำงานเหมือนกัน
+- [x] แก้ไฟล์ให้ dirty → ปิดแอป → dialog แสดง Save / Quit Without Saving / Cancel
+- [x] กด **Cancel** → dialog ปิด กลับมาใช้งานแอปได้
+- [x] กด **Save** → บันทึกแล้วแอปปิด
+- [x] ปิดแท็บ dirty → Close Without Saving / Save / Cancel ทำงานเหมือนกัน
 
 ---
 
@@ -299,7 +302,7 @@ npm run test:wysiwyg
 รันก่อน push / merge:
 
 ```bash
-npm run validate:version   # 26.6.2901 ทุกไฟล์ sync
+npm run validate:version   # 26.8.801 ทุกไฟล์ sync
 npm run test:wysiwyg       # round-trip tests
 npm run build              # tsc + vite
 npm run tauri build        # release (macOS) — optional ก่อน tag

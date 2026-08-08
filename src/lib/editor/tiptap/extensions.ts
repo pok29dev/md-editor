@@ -1,6 +1,5 @@
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
-import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
 import Underline from "@tiptap/extension-underline";
 import { Highlight } from "@tiptap/extension-highlight";
@@ -13,6 +12,7 @@ import { TaskItem } from "@tiptap/extension-task-item";
 import Subscript from "@tiptap/extension-subscript";
 import Superscript from "@tiptap/extension-superscript";
 import { PreservedMarkdown } from "./preservedBlockExtension";
+import { LocalImage } from "./localImageExtension";
 
 import { Markdown } from "tiptap-markdown";
 
@@ -25,7 +25,7 @@ export function buildTiptapExtensions() {
       openOnClick: false,
       autolink: true,
     }),
-    Image.configure({ inline: false }),
+    LocalImage.configure({ inline: false }),
     Underline,
     Highlight,
     Subscript,

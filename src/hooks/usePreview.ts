@@ -8,6 +8,7 @@ import { renderMermaid, forceMermaidTheme } from "../lib/markdown/mermaid";
 import { renderMathJax } from "../lib/markdown/mathjax";
 import { enhanceGitHubAlerts } from "../lib/markdown/alerts";
 import { applyReferencePreviewLinks } from "../lib/markdown/references";
+import { applyLocalPreviewImages } from "../lib/markdown/previewImages";
 import {
   patchPreviewDom,
   captureScrollElement,
@@ -39,6 +40,8 @@ function isFullRequired(
 export function usePreview(
   content: string,
   tabId: string | null,
+  documentPath: string | null,
+  rootFolder: string | null,
   scrollElRef: RefObject<HTMLElement | null>,
 ) {
   const resolvedColorScheme = useAppStore((s) => s.resolvedColorScheme);
@@ -164,6 +167,7 @@ export function usePreview(
     body.setAttribute("data-color-mode", isDark ? "dark" : "light");
     enhanceGitHubAlerts(body);
     applyReferencePreviewLinks(body, result.references);
+    applyLocalPreviewImages(body, documentPath, rootFolder);
     restoreScrollElement(scrollElRef.current, scrollSnapshot);
 
     void (async () => {
@@ -180,7 +184,7 @@ export function usePreview(
         await renderMathJax(container);
       }
     })();
-  }, [commitToken, isDark, scrollElRef]);
+  }, [commitToken, isDark, documentPath, rootFolder, scrollElRef]);
 
   return { containerRef, isRefreshing };
 }

@@ -6,12 +6,25 @@ import { PreviewFontControls } from "./PreviewFontControls";
 interface MarkdownPreviewProps {
   content: string;
   tabId: string | null;
+  documentPath: string | null;
+  rootFolder: string | null;
 }
 
-export function MarkdownPreview({ content, tabId }: MarkdownPreviewProps) {
+export function MarkdownPreview({
+  content,
+  tabId,
+  documentPath,
+  rootFolder,
+}: MarkdownPreviewProps) {
   const paneRef = useRef<HTMLDivElement>(null);
   const setPreviewScrollEl = useEditorStore((s) => s.setPreviewScrollEl);
-  const { containerRef, isRefreshing } = usePreview(content, tabId, paneRef);
+  const { containerRef, isRefreshing } = usePreview(
+    content,
+    tabId,
+    documentPath,
+    rootFolder,
+    paneRef,
+  );
 
   useEffect(() => {
     setPreviewScrollEl(paneRef.current);

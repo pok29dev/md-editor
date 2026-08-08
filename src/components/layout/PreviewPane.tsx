@@ -5,6 +5,7 @@ import { supportsPreview } from "../../lib/files/fileKind";
 export function PreviewPane() {
   const tabs = useAppStore((s) => s.tabs);
   const activeTabId = useAppStore((s) => s.activeTabId);
+  const rootFolder = useAppStore((s) => s.rootFolder);
   const activeTab = tabs.find((t) => t.id === activeTabId);
 
   if (activeTab && !supportsPreview(activeTab.fileKind)) {
@@ -24,6 +25,8 @@ export function PreviewPane() {
     <MarkdownPreview
       content={activeTab?.content ?? ""}
       tabId={activeTabId}
+      documentPath={activeTab?.path ?? null}
+      rootFolder={rootFolder}
     />
   );
 }

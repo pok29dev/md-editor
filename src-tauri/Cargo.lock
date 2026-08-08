@@ -1967,7 +1967,7 @@ dependencies = [
 
 [[package]]
 name = "md-editor"
-version = "26.6.2901"
+version = "26.8.801"
 dependencies = [
  "serde",
  "serde_json",

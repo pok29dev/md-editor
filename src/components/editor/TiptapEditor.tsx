@@ -22,6 +22,10 @@ import {
   saveImageFileForInsert,
 } from "../../lib/editor/tiptap/pasteImage";
 import {
+  refreshLocalImageNodes,
+  setLocalImageContext,
+} from "../../lib/editor/tiptap/localImageExtension";
+import {
   useTiptapFocusMode,
   useTiptapTypewriterMode,
 } from "../../lib/editor/tiptap/useTiptapEditorModes";
@@ -51,6 +55,8 @@ export function TiptapEditor({ tabId, content, onChange }: TiptapEditorProps) {
   );
   const editorFocusMode = useEditorStore((s) => s.editorFocusMode);
   const editorTypewriterMode = useEditorStore((s) => s.editorTypewriterMode);
+
+  setLocalImageContext({ documentPath, rootFolder });
 
   const { body, frontmatterPrefix } = useMemo(
     () => splitDocumentContent(content),
@@ -131,6 +137,11 @@ export function TiptapEditor({ tabId, content, onChange }: TiptapEditorProps) {
       },
     });
   }, [editor, editorFontSize, insertImageFromFile, documentPath, rootFolder]);
+
+  useEffect(() => {
+    if (!editor || editor.isDestroyed) return;
+    refreshLocalImageNodes(editor);
+  }, [editor, documentPath, rootFolder]);
 
   useEffect(() => {
     documentRef.current = { frontmatterPrefix, body };

@@ -2,7 +2,7 @@
 
 Desktop Markdown editor — **Tauri v2** + **React** + **CodeMirror 6**
 
-**Version:** `26.6.2901` · **MVP Complete** (Settings + Formatting + UI Redesign + thClaws + **WYSIWYG**)
+**Version:** `26.8.801` · **MVP Complete** (Settings + Formatting + UI Redesign + thClaws + **WYSIWYG**)
 
 ## Features
 

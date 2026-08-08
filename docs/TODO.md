@@ -1,6 +1,6 @@
 # MD Editor — TODO List
 
-**Current version:** `26.6.2901`  
+**Current version:** `26.8.801`  
 **Status:** MVP Complete + thClaws + WYSIWYG (Tiptap) ✅
 
 ---
@@ -87,6 +87,7 @@
 - [x] Phase 3: preserved blocks (mermaid, math, alerts, footnotes, definition list), sup/sub
 - [x] Phase 4: slash commands, paste/drop image, focus/typewriter mode
 - [x] Phase 5: Find/replace in WYSIWYG, round-trip tests, docs
+- [x] Local image preview + WYSIWYG display (`convertFileSrc`, asset protocol)
 
 ---
 

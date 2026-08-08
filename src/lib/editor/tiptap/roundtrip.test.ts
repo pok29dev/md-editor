@@ -75,6 +75,12 @@ describe("tiptap editor round-trip", () => {
     expect(result).toContain("Paragraph.");
   });
 
+  it("preserves local image markdown paths on round-trip", () => {
+    const body = "Intro\n\n![diagram](assets/pasted.png)\n";
+    const result = roundTripWithEditor(body);
+    expect(result).toContain("assets/pasted.png");
+  });
+
   it("round-trips sample docs without losing preserved blocks", () => {
     const files = listMarkdownFiles(SAMPLE_DOCS_DIR);
     expect(files.length).toBeGreaterThan(0);
